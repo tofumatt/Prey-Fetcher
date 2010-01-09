@@ -1,0 +1,33 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  username: MyString
+  prowl_api_key: MyString
+  access_key: MyString
+  access_secret: MyString
+  twitter_user_id: 1
+  mention_since_id: 1
+  dm_since_id: 1
+  retweet_since_id: 1
+  enable_mentions: false
+  enable_dms: false
+  enable_retweets: false
+  mention_priority: 1
+  dm_priority: 1
+  retweet_priority: 1
+
+two:
+  username: MyString
+  prowl_api_key: MyString
+  access_key: MyString
+  access_secret: MyString
+  twitter_user_id: 1
+  mention_since_id: 1
+  dm_since_id: 1
+  retweet_since_id: 1
+  enable_mentions: false
+  enable_dms: false
+  enable_retweets: false
+  mention_priority: 1
+  dm_priority: 1
+  retweet_priority: 1

@@ -5,8 +5,8 @@
 # Make sure the secret is at least 30 characters and all random, 
 # no regular words or you'll be exposed to dictionary attacks.
 ActionController::Base.session = {
-  :key         => '_git_session',
-  :secret      => 'fe681c6ce023a8a8602158814319498aff139a796ad6c94bc362338f959c1117483f9de09559614b5da6817199f8c75b030d113cbbe792af864ed8ad819f45fb'
+  :key         => 'preyfetcher_session',
+  :secret      => SESSION_SECRET
 }
 
 # Use the database for sessions instead of the cookie-based default,

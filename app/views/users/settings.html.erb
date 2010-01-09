@@ -1,0 +1,59 @@
+<% form_for(:user, @user, :url => '/account/settings', :html => { :method => :put }) do |f| %>
+	<div>
+		<%= error_messages_for :user, :header_message => nil, :message => 'Sorry, but there was a problem. Please correct the following errors:', :id => 'alert', :class => 'notice' %>
+		
+		<p>Choose the tweets you want to be notified about:</p>
+		
+		<ul class="smaller">
+			<li><em class="underline">DMs</em> &mdash; when you have new Direct Messages</li>
+			<li><em class="underline">mentions</em> &mdash; when your username appears in a tweet</li>
+		</ul>
+		
+		<h3 class="clear">Twitter Options</h3>
+		
+		<div class="clear">
+			<%= f.label :enable_dms, 'Check for DMs', {:class => 'for-checkbox'} %>
+			<%= f.check_box :enable_dms, {:class => 'checkbox'} %>
+			
+			<div id="dm-priority-container" class="clear js-hide">
+				<label for="dm-priority" class="for-select">DM Priority</label>
+				<select name="user[dm_priority]" id="dm-priority" class="select">
+					<option value="-1" <% if @user.dm_priority == -1 %>selected="selected"<% end %>>Low</option>
+					<option value="0" <% if @user.dm_priority == 0 %>selected="selected"<% end %>>Normal</option>
+					<option value="1" <% if @user.dm_priority == 1 %>selected="selected"<% end %>>High</option>
+					<option value="2" <% if @user.dm_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="clear space">
+			<%= f.label :enable_mentions, 'Check for mentions', {:class => 'for-checkbox'} %>
+			<%= f.check_box :enable_mentions, {:class => 'checkbox'} %>
+			
+			<div id="mention-priority-container" class="clear js-hide">
+				<label for="mention-priority" class="for-select">mention Priority</label>
+				<select name="user[mention_priority]" id="mention-priority" class="select">
+					<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
+					<option value="0" <% if @user.mention_priority == 0 %>selected="selected"<% end %>>Normal</option>
+					<option value="1" <% if @user.mention_priority == 1 %>selected="selected"<% end %>>High</option>
+					<option value="2" <% if @user.mention_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+				</select>
+			</div>
+		</div>
+		
+		<%#= f.label :enable_retweets, 'Check for retweets', {:class => 'for-checkbox'} %>
+		<%#= f.check_box :enable_retweets, {:class => 'checkbox'} %>
+		
+		<h3 class="clear space">iPhone Options</h3>
+		
+		<div class="clear">
+			<%= f.label :prowl_api_key, 'Prowl API Key <span class="req">*<span class="hide">Required</span></span>' %>
+			<%= f.text_field :prowl_api_key, :class => "text-long" %>
+		</div>
+		
+		<div class="clear space">
+			<%= f.label 'submit', 'Submit Settings Change', {:class => 'hide'} %>
+			<%= f.submit 'Update Settings', { :class => 'submit', :method => :put } %> | <%= link_to 'Cancel', '/account', {:class => 'button'} %>
+		</div>
+	</div>
+<% end %>

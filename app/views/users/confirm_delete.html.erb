@@ -1,0 +1,8 @@
+<p>Are you sure you want to delete your Prey Fetcher account? There's no undo!</p>
+
+<% form_tag('/account', { :class => 'clear form', :method => :delete }) do %>
+	<div>
+ 		<%= submit_tag "I'm sure &mdash; delete my account!", {:class => 'submit'} %> | <%= link_to 'I changed my mind', '/account', {:class => 'button'} %>
+	</div>
+	<div class="block clear space"></div>
+<% end %>

@@ -1,0 +1,156 @@
+!background_colour = #f3f3f3
+!link_colour = #a27226
+
+!error_colour = #f2a2a2
+!alert_colour = #f2d7a2
+!notice_colour = #a8f2a2
+
+body
+    background = !background_colour
+    color: black
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
+    font-size: .9em
+    text-align: justify
+
+a
+    color = !link_colour
+    
+    &:hover, &:focus
+        background = !background_colour - #bbbbbb
+        color = !link_colour + #666666
+        text-decoration: underline
+
+strong
+    font-weight: bold
+
+em
+    font-style: italic
+    
+    &.underline
+        border-bottom: 1px dashed
+        font-style: normal
+
+span.ampersand
+    font-family: "Lucida Calligraphy", "Lucida Handwriting", cursive
+    font-size: 1.2em
+    font-style: italic
+
+h1, h2, h3, h4, h5, h6
+    font-size: 1.5em
+    margin: 0 10% .5em 0
+
+h1
+    font-size: 2em
+    text-align: center
+
+p, ul, ol, label, input
+    font-size: .8em
+    line-height: 1.3em
+    margin: .25em 15% 1.5em 5%
+
+ul
+    margin-top: -.25em
+
+li
+    list-style: square inside
+    margin: 0 0 0 2em
+    
+    &.no-bullet
+        list-style: none outside !important
+
+.block
+    display: block
+
+.clear
+    clear: both
+
+.hide
+    display: none
+
+ul.smaller
+    margin-top: -.75em
+
+.smaller
+    font-size: .9em
+
+.space
+    padding: 12px 0 0
+
+.space-bottom
+    padding: 0 0 12px
+
+label
+    clear: both
+    display: block
+    line-height: 1em
+    margin-bottom: 0
+    margin-top: 3px
+
+label span.req
+    color: red
+
+label.for-checkbox
+    float: left
+    width: 200px
+
+input
+    display: block
+    line-height: 1.2em
+    margin-bottom: 0
+    margin-top: 6px
+
+input.checkbox
+    float: left
+    width: auto
+
+input.submit
+    float: left
+    margin: -1px .75em 0 0
+
+#page, #footer
+    margin: 12px auto 12px 24px
+
+#secondary-content li
+    list-style: circle outside
+
+.notice
+    border: 2px solid
+    font-weight: bold
+    margin: 0 auto
+    padding: 5px
+    text-align: center
+    width: 90%
+
+#error
+    background = !error_colour + #111111
+    border-color = !error_colour - #666666
+    color = !error_colour - #666666
+
+#alert
+    background = !alert_colour + #111111
+    border-color = !alert_colour - #666666
+    color = !alert_colour - #666666
+
+#notice
+    background = !notice_colour + #111111
+    border-color = !notice_colour - #666666
+    color = !notice_colour - #666666
+
+#user_api_key
+    padding: 2px 2px 2px 4px
+    width: 280px
+
+#signup-button
+    background: url('/images/signin-twitter.png') no-repeat center
+    display: block
+    height: 16px
+    margin: 0 0 0 0
+    text-indent: -9999px
+    width: 136px
+
+#footer
+    border-top: 1px solid black
+    clear: both
+    font-size: .8em
+    padding: .8em 0 0
+    width: 90%

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>Prey Fetcher<% unless @title.nil? %> :: <%= @title %><% end %></title>
+		
+		<%= stylesheet_link_tag 'reset' %>
+		<%= stylesheet_link_tag 'site' %>
+		<!--[if IE 6]><%= stylesheet_link_tag 'ie-6' %><![endif]-->
+		<!--[if IE 7]><%= stylesheet_link_tag 'ie-7' %><![endif]-->
+		<!--[if IE 8]><%= stylesheet_link_tag 'ie-8' %><![endif]-->
+		
+		<!--
+		<% if iphone_user_agent? %>
+			<meta id="viewport" name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+			<%= stylesheet_link_tag 'iphone' %>
+		<% end %>
+		-->
+		
+		<%= javascript_include_tag 'jquery-1.3.2.min.js' %>
+		<%= javascript_include_tag 'jquery.preyfetcher.js' %>
+		
+		<link rel="icon" type="image/png" href="http://static.preyfetcher.com/favicon.png" />
+		<!--[if IE]><link rel="shortcut icon" href="http://static.preyfetcher.com/favicon.ico" /><![endif]-->
+	</head>
+	<body>
+		<div id="page">
+			<div id="header">
+				<h1><a href="/" id="app-name">Prey Fetcher</a></h1>
+				<% unless @title.nil? %><h2><%= @title %></h2><% end %>
+			</div>
+			
+			<div id="content">
+				<% unless flash[:error].blank? %><p id="error" class="notice"><%= flash[:error] %></p><% end %>
+				<% unless flash[:alert].blank? %><p id="alert" class="notice"><%= flash[:alert] %></p><% end %>
+				<% unless flash[:notice].blank? %><p id="notice" class="notice"><%= flash[:notice] %></p><% end %>
+				<%= yield %>
+			</div>
+			
+			<div id="secondary-content">
+				<%= render :partial => 'shared/menu' %>
+			</div>
+			
+			<div id="footer">
+				<p><%= number_format(Notification.count_all_from_cache) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.</p>
+
+				<p>Crafted with <a href="http://rubyonrails.org">Rails</a> | Served with <a href="http://lighttpd.net">lighttpd</a> <span class="ampersand">&amp;</span> <a href="http://code.macournoyer.com/thin/">thin</a>. <br />&copy; 2009 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.</p>
+			</div>
+		</div>
+		
+		<% if ENV['RAILS_ENV'] == 'production' %>
+			<script type="text/javascript">
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+			</script>
+			<script type="text/javascript">
+			try {
+			var pageTracker = _gat._getTracker("UA-3850161-7");
+			pageTracker._trackPageview();
+			} catch(err) {}</script>
+		<% end %>
+	</body>
+</html>

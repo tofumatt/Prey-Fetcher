@@ -1,0 +1,146 @@
+body {
+  background: #f3f3f3;
+  color: black;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif;
+  font-size: .9em;
+  text-align: justify; }
+
+a {
+  color: #a27226; }
+  a:hover, a:focus {
+    background: #383838;
+    color: #ffd88c;
+    text-decoration: underline; }
+
+strong {
+  font-weight: bold; }
+
+em {
+  font-style: italic; }
+  em.underline {
+    border-bottom: 1px dashed;
+    font-style: normal; }
+
+span.ampersand {
+  font-family: "Lucida Calligraphy", "Lucida Handwriting", cursive;
+  font-size: 1.2em;
+  font-style: italic; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1.5em;
+  margin: 0 10% .5em 0; }
+
+h1 {
+  font-size: 2em;
+  text-align: center; }
+
+p, ul, ol, label, input {
+  font-size: .8em;
+  line-height: 1.3em;
+  margin: .25em 15% 1.5em 5%; }
+
+ul {
+  margin-top: -.25em; }
+
+li {
+  list-style: square inside;
+  margin: 0 0 0 2em; }
+  li.no-bullet {
+    list-style: none outside !important; }
+
+.block {
+  display: block; }
+
+.clear {
+  clear: both; }
+
+.hide {
+  display: none; }
+
+ul.smaller {
+  margin-top: -.75em; }
+
+.smaller {
+  font-size: .9em; }
+
+.space {
+  padding: 12px 0 0; }
+
+.space-bottom {
+  padding: 0 0 12px; }
+
+label {
+  clear: both;
+  display: block;
+  line-height: 1em;
+  margin-bottom: 0;
+  margin-top: 3px; }
+
+label span.req {
+  color: red; }
+
+label.for-checkbox {
+  float: left;
+  width: 200px; }
+
+input {
+  display: block;
+  line-height: 1.2em;
+  margin-bottom: 0;
+  margin-top: 6px; }
+
+input.checkbox {
+  float: left;
+  width: auto; }
+
+input.submit {
+  float: left;
+  margin: -1px .75em 0 0; }
+
+#page, #footer {
+  margin: 12px auto 12px 24px; }
+
+#secondary-content li {
+  list-style: circle outside; }
+
+.notice {
+  border: 2px solid;
+  font-weight: bold;
+  margin: 0 auto;
+  padding: 5px;
+  text-align: center;
+  width: 90%; }
+
+#error {
+  background: #ffb3b3;
+  border-color: #8c3c3c;
+  color: #8c3c3c; }
+
+#alert {
+  background: #ffe8b3;
+  border-color: #8c713c;
+  color: #8c713c; }
+
+#notice {
+  background: #b9ffb3;
+  border-color: #428c3c;
+  color: #428c3c; }
+
+#user_api_key {
+  padding: 2px 2px 2px 4px;
+  width: 280px; }
+
+#signup-button {
+  background: url('/images/signin-twitter.png') no-repeat center;
+  display: block;
+  height: 16px;
+  margin: 0 0 0 0;
+  text-indent: -9999px;
+  width: 136px; }
+
+#footer {
+  border-top: 1px solid black;
+  clear: both;
+  font-size: .8em;
+  padding: .8em 0 0;
+  width: 90%; }

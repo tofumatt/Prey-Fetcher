@@ -1,0 +1,23 @@
+<p>If there's a question that isn't answered here, please ask us <a href="http://twitter.com/preyfetcher">via Twitter</a> — we'll answer promptly and probably even post the answer here.</p>
+
+<h3>How Do I Get Notifications for Multiple Twitter Accounts?</h3>
+
+<p>Currently, each Twitter account maps to a Prey Fetcher account, so you'll have to sign up/authorize each Twitter account you want to use separately.</p>
+
+<p><% if twitter_user.nil? %>Logout<% else %><%= link_to 'Logout', '/logout' %><% end %> of Prey Fetcher <em>and</em> <a href="http://twitter.com/logout">logout from twitter.com</a>, then use the "<% if twitter_user.nil? %><%= link_to 'Sign in with Twitter', '/sign-in' %><% else %>Sign in with Twitter<% end %>" link to authorize each account you want to use. You should use the same Prowl API key for each Prey Fetcher account so all notifications will go to the same device(s).</p>
+
+<h3>Why Is This So Free?</h3>
+
+<p>Because <a href="http://lonelyvegan.com">Matt</a> really wanted to get notified of new tweets on his iPhone. He figured he might as well make it free for anyone in the same boat.</p>
+
+<p>If you're worried about stability (i.e. will this be around next month), Prey Fetcher has been around since August 2009 &mdash; and it shouldn't be going anywhere as long as tweets still need to make it to people's iPhones.</p>
+
+<h3>Why Does It Take <Em>Forever</Em> to Get Notifications?</h3>
+
+<p>It can occasionally take up to ten minutes to get notified about a DM, mention, etc. because Prey Fetcher only checks Twitter every 5-10 minutes — if your account was <em>just</em> checked, then you get a DM, it might take a good five or six minutes to check your account again and send you the notification.</p>
+
+<h3>How Do I Open My Tweets in My Mobile Twitter App?</h3>
+
+<p>You can use Prowl Redirections to open your Tweets in an iPhone Twitter client instead of Prowl.</p>
+
+<p>Use the app name "Prey Fetcher" to redirect all notifications from Prey Fetcher to <a href="http://forums.cocoaforge.com/viewtopic.php?f=45&amp;t=20704">any app Prowl supports</a>. You can also use "Prey Fetcher DM" specifically for DM notifications or "Prey Fetcher mention" for mentions &mdash; in case, for example, you only want DMs to open your Twitter app.</p>

@@ -1,0 +1,10 @@
+<ul>
+	<li><%= link_to 'Home', '/', :class => "menu-item" %></li>
+	<li><%= link_to 'FAQ', '/faq', :class => "menu-item" %></li>
+	<li><%= link_to 'Privacy', '/privacy', :class => "menu-item" %></li>
+	<% if twitter_user.nil? %>
+		<li id="user-info"><%= link_to 'Signup now', '/login', :id => 'signup-button' %></li>
+	<% else %>
+		<li id="user-info"><span class="menu-item"><strong><%= link_to "@#{twitter_user.screen_name}", "/account" %></strong> | <%= link_to 'Settings', '/account/settings' %> | <%= link_to 'Logout', '/logout' %></span></li>
+	<% end %>
+</ul>

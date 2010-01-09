@@ -4,3 +4,6 @@ tmp/**/*
 doc/api
 doc/app
 doc/plugins
+
+config/database.yml
+config/prey_fetcher.rb

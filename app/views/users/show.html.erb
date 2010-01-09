@@ -1,0 +1,22 @@
+<p>Interesting info about your Prey Fetcher account:</p>
+
+<h3>Notifications Sent To You</h3>
+
+<dl>
+	<dt>Total</dt>
+	<dd><%= @user.notifications.length %></dd>
+	<dt>Past 30 days</dt>
+	<dd><%= @user.notifications.this_month %></dd>
+</dl>
+
+<h3 class="clear">Delete Your Prey Fetcher Account</h3>
+<% form_tag('/account/confirm_delete', { :class => 'clear form' }) do %>
+	<div>
+		<p>Note that deleting your account will not remove Prey Fetcher from your <a href="http://twitter.com/account/connections">Connections pane</a> on Twitter. You can alternatively revoke access for Prey Fetcher from the <a href="http://twitter.com/account/connections">Connections pane</a> on Twitter and your Prey Fetcher account will be automatically deleted.</p>
+		
+		<p>Either way, deleting your account will mean no more Prey Fetcher notifications. You can sign up again if you change your mind.</p>
+		
+ 		<%= submit_tag "Delete Account", { :class => 'submit' } %>
+	</div>
+	<div class="block clear space"></div>
+<% end %>

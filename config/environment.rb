@@ -6,6 +6,9 @@ RAILS_GEM_VERSION = '2.3.5' unless defined? RAILS_GEM_VERSION
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+# Load Prey Fetcher settings
+require File.join(File.dirname(__FILE__), 'prey_fetcher')
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
@@ -19,6 +22,11 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
+  config.gem 'haml'
+	config.gem 'soauth', :lib => false
+	config.gem 'twitter-login', :lib => 'twitter/login'
+  config.gem 'typhoeus', :lib => false
+  config.gem 'whenever', :lib => false
 
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
@@ -38,4 +46,9 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
+  
+  # Middleware to load
+  config.middleware.use "Twitter::Login", :consumer_key => OAUTH_SETTINGS['consumer_key'], :secret => OAUTH_SETTINGS['consumer_secret']
+  
+  HOST = "0.0.0.0:3000"
 end
