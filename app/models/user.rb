@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if since_id > 1
-          prowl.add(:application => APPNAME + ' DM', :apikey => self.prowl_api_key, :priority => priority, :event => event, :description => description)
+          prowl.add(:application => APPNAME + ' ' + tweet_type, :apikey => self.prowl_api_key, :priority => priority, :event => event, :description => description)
           Notification.new(:twitter_user_id => self.twitter_user_id).save
         end
         
