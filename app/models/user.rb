@@ -68,14 +68,14 @@ class User < ActiveRecord::Base
           description = tweets.first['text']
         end
         
+        # Update this users's since_id
+        update_attribute("#{tweet_type.downcase}_since_id", tweets.first['id'])
+        
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if since_id > 1
           prowl.add(:application => APPNAME + ' ' + tweet_type, :apikey => self.prowl_api_key, :priority => priority, :event => event, :description => description)
           Notification.new(:twitter_user_id => self.twitter_user_id).save
         end
-        
-        # Update this users's since_id
-        update_attribute("#{tweet_type.downcase}_since_id", tweets.first['id'])
       end
     rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
       logger.error Time.now.to_s + '   @' + self.twitter_username
