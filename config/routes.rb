@@ -1,18 +1,16 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users
-
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:
   #   map.connect 'products/:id', :controller => 'catalog', :action => 'view'
   # Keep in mind you can assign values other than :controller and :action
-  map.root_static_actions :staticactions, [:faq, :privacy]
-  
   map.connect '/account', :controller => 'users', :action => 'show', :conditions => { :method => :get }
   map.connect '/account', :controller => 'users', :action => 'delete', :conditions => { :method => :delete }
   map.connect '/account/confirm_delete', :controller => 'users', :action => 'confirm_delete'
   map.connect '/account/settings', :controller => 'users', :action => 'update', :conditions => { :method => :put }
   map.connect '/account/settings', :controller => 'users', :action => 'settings'
+  map.connect '/faq', :controller => 'staticactions', :action => 'faq'
+  map.connect '/privacy', :controller => 'staticactions', :action => 'privacy'
   map.connect '/logout', :controller => 'users', :action => 'logout'
 
   # Sample of named route:
