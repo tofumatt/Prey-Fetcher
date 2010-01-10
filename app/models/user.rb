@@ -141,8 +141,8 @@ class User < ActiveRecord::Base
     users.each do |u|
       # If the user doesn't have an API key we won't do anything
       unless u.prowl_api_key.blank?
-        hydra.queue(u.check_dms)
-        hydra.queue(u.check_mentions)
+        hydra.queue(u.check_dms) if u.enable_dms
+        hydra.queue(u.check_mentions) if u.enable_mentions
       end
     end
     
@@ -153,8 +153,8 @@ class User < ActiveRecord::Base
   	users.each do |u|
   	  # Again, skip users with no key
   	  unless u.prowl_api_key.blank?
-        u.process_response('DM', prowl)
-        u.process_response('mention', prowl)
+        u.process_response('DM', prowl) if u.enable_dms
+        u.process_response('mention', prowl) if u.enable_mentions
       end
     end
   end
