@@ -8,7 +8,7 @@
 
 # Add in the notifications from the old site (when notifications
 # were just a count without an attached user record)
-(1..5).each do
+(1..61793).each do
   # None of the old notifications are tied to a user,
   # but it's nice for them to be part of the new count,
   # as there were over 60k
