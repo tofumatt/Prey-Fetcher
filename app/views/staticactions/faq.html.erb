@@ -4,7 +4,7 @@
 
 <p>Currently, each Twitter account maps to a Prey Fetcher account, so you'll have to sign up/authorize each Twitter account you want to use separately.</p>
 
-<p><% if twitter_user.nil? %>Logout<% else %><%= link_to 'Logout', '/logout' %><% end %> of Prey Fetcher <em>and</em> <a href="http://twitter.com/logout">logout from twitter.com</a>, then use the "<% if twitter_user.nil? %><%= link_to 'Sign in with Twitter', '/sign-in' %><% else %>Sign in with Twitter<% end %>" link to authorize each account you want to use. You should use the same Prowl API key for each Prey Fetcher account so all notifications will go to the same device(s).</p>
+<p><% if twitter_user.nil? %>Logout<% else %><%= link_to 'Logout', '/logout' %><% end %> of Prey Fetcher <em>and</em> <a href="http://twitter.com/logout">logout from twitter.com</a>, then use the "<% if twitter_user.nil? %><%= link_to 'Sign in with Twitter', '/login' %><% else %>Sign in with Twitter<% end %>" link to authorize each account you want to use. You should use the same Prowl API key for each Prey Fetcher account so all notifications will go to the same device(s).</p>
 
 <h3>Why Is This So Free?</h3>
 
