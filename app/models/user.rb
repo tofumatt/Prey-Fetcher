@@ -22,7 +22,8 @@ class User < ActiveRecord::Base
         :twitter_user_id => twitter_user.id,
         :twitter_username => twitter_user.screen_name,
         :access_key => session[:access_token][0],
-        :access_secret => session[:access_token][1]
+        :access_secret => session[:access_token][1],
+        :protected => twitter_user.protected
       )
       
       # Save the record, so now we can do lookups on this user
@@ -87,39 +88,39 @@ class User < ActiveRecord::Base
   end
   
   def check_dms
-		uri = 'https://twitter.com/direct_messages.json'
-		params = {
-			'count' => 11,
-			'since_id' => self.dm_since_id,
-			'prey_fetcher_twitterid' => self.twitter_user_id
-		}
-		
+    uri = 'https://twitter.com/direct_messages.json'
+    params = {
+      'count' => 11,
+      'since_id' => self.dm_since_id,
+      'prey_fetcher_twitterid' => self.twitter_user_id
+    }
+    
     @dm_request = Typhoeus::Request.new(uri,
-			:user_agent => USER_AGENT,
-			:method => :get,
-			:headers => { :Authorization => SOAuth.header(uri, oauth, params) },
-			:params => params
-		)
-		
+      :user_agent => USER_AGENT,
+      :method => :get,
+      :headers => { :Authorization => SOAuth.header(uri, oauth, params) },
+      :params => params
+    )
+    
     # Return the request object (usually to Hydra)
     @dm_request
   end
   
   def check_mentions
-		uri = 'https://twitter.com/statuses/mentions.json'
-		params = {
-			'count' => 11,
-			'since_id' => self.mention_since_id,
-			'prey_fetcher_twitterid' => self.twitter_user_id
-		}
-		
+    uri = 'https://twitter.com/statuses/mentions.json'
+    params = {
+      'count' => 11,
+      'since_id' => self.mention_since_id,
+      'prey_fetcher_twitterid' => self.twitter_user_id
+    }
+    
     @mention_request = Typhoeus::Request.new(uri,
-			:user_agent => USER_AGENT,
-			:method => :get,
-			:headers => { :Authorization => SOAuth.header(uri, oauth, params) },
-			:params => params
-		)
-		
+      :user_agent => USER_AGENT,
+      :method => :get,
+      :headers => { :Authorization => SOAuth.header(uri, oauth, params) },
+      :params => params
+    )
+    
     # Return the request object (usually to Hydra)
     @mention_request
   end
@@ -127,8 +128,8 @@ class User < ActiveRecord::Base
   # Method called by cron to check all user accounts for new DMs and
   # mentions, then send any notifications to Prowl
   def self.check_twitter
-    require "soauth"
-    require "prowl"
+    require 'fastprowl'
+    require 'soauth'
     
     hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
     prowl = Prowl.new(
@@ -142,7 +143,9 @@ class User < ActiveRecord::Base
       # If the user doesn't have an API key we won't do anything
       unless u.prowl_api_key.blank?
         hydra.queue(u.check_dms) if u.enable_dms
-        hydra.queue(u.check_mentions) if u.enable_mentions
+        # Only check mentions if we can't use the Streaming API because
+        # this user's account is protected
+        hydra.queue(u.check_mentions) if u.enable_mentions && u.protected
       end
     end
     
@@ -150,24 +153,27 @@ class User < ActiveRecord::Base
     hydra.run
     
     # Loop through each user again, sending Prowl notifications if necessary
-  	users.each do |u|
-  	  # Again, skip users with no key
-  	  unless u.prowl_api_key.blank?
+    users.each do |u|
+      # Again, skip users with no key
+      unless u.prowl_api_key.blank?
         u.process_response('DM', prowl) if u.enable_dms
-        u.process_response('mention', prowl) if u.enable_mentions
+        u.process_response('mention', prowl) if u.enable_mentions && u.protected
       end
     end
+    
+    # Send all the prowl notifications
+    prowl.run
   end
   
   protected
   
   def oauth
     {
-  		:consumer_key => OAUTH_SETTINGS['consumer_key'],
-  		:consumer_secret => OAUTH_SETTINGS['consumer_secret'],
-  		:token => self.access_key,
-  		:token_secret => self.access_secret
-  	}
+      :consumer_key => OAUTH_SETTINGS['consumer_key'],
+      :consumer_secret => OAUTH_SETTINGS['consumer_secret'],
+      :token => self.access_key,
+      :token_secret => self.access_secret
+    }
   end
   
 end
