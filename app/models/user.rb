@@ -141,12 +141,7 @@ class User < ActiveRecord::Base
     # Loop through all users and queue all requests to Twitter in Hydra
     users.each do |u|
       # If the user doesn't have an API key we won't do anything
-      unless u.prowl_api_key.blank?
-        hydra.queue(u.check_dms) if u.enable_dms
-        # Only check mentions if we can't use the Streaming API because
-        # this user's account is protected
-        hydra.queue(u.check_mentions) if u.enable_mentions && u.protected
-      end
+      hydra.queue(u.check_dms) if u.enable_dms && !u.prowl_api_key.blank?
     end
     
     # Run all the requests
@@ -155,10 +150,7 @@ class User < ActiveRecord::Base
     # Loop through each user again, sending Prowl notifications if necessary
     users.each do |u|
       # Again, skip users with no key
-      unless u.prowl_api_key.blank?
-        u.process_response('DM', prowl) if u.enable_dms
-        u.process_response('mention', prowl) if u.enable_mentions && u.protected
-      end
+      u.process_response('DM', prowl) if u.enable_dms && !u.prowl_api_key.blank?
     end
     
     # Send all the prowl notifications
