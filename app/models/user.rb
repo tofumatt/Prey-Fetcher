@@ -149,7 +149,7 @@ class User < ActiveRecord::Base
       end
     end
     
-    # Run all the requests (won't run more than MAX_CONCURRENCY at a time)
+    # Run all the requests
     hydra.run
     
     # Loop through each user again, sending Prowl notifications if necessary
