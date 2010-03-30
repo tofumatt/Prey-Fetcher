@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091230011202) do
+ActiveRecord::Schema.define(:version => 20100216231324) do
 
   create_table "notifications", :force => true do |t|
     t.integer  "twitter_user_id", :limit => 8
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20091230011202) do
     t.integer  "retweet_priority",              :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "protected"
   end
 
 end

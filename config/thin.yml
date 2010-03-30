@@ -2,7 +2,7 @@
 pid: tmp/pids/thin.pid
 servers: 3
 address: 127.0.0.1
-port: 7000
+port: 17000
 timeout: 30
 log: log/thin.log
 max_conns: 1024

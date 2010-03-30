@@ -6,6 +6,6 @@ module ApplicationHelper
   
   # Return a number as a string with commas
   def number_format(number)
-    (s=number.to_s;x=s.length;s).rjust(x+(3-(x%3))).scan(/.{3}/).join(',').strip
+    (s=number.to_s;x=s.length;s).rjust(x+(3-(x%3))).scan(/.{3}/).join(',').strip.sub(/^,/, '')
   end
 end

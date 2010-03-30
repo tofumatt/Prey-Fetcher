@@ -53,4 +53,20 @@ class ApplicationController < ActionController::Base
     render :template => "/errors/404.html.erb", :status => 404
   end
   
+  # private
+  # 
+  # def log_error(exception)
+  #   super
+  #   
+  #   require "prowl"
+  #   Prowl.add(
+  #     :application => APPNAME,
+  #     :providerkey => PROWL_PROVIDER_KEY,
+  #     :apikey => "",
+  #     :priority => 2,
+  #     :event => "Exception Raised!",
+  #     :description => "An exception was raised at http://preyfetcher.com. You better check it out."
+  #   )
+  # end
+  
 end

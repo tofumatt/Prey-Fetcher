@@ -38,6 +38,12 @@ class User < ActiveRecord::Base
     HUMANIZED_ATTRIBUTES[attr.to_sym] || super
   end
   
+  def save(perform_validation = true)
+    system "/home/matt/sites/preyfetcher.com/lib/stream_controller.rb restart"
+    
+    super(perform_validation)
+  end
+  
   def prowl_api_key_is_valid
     logger.debug Time.now.to_s
     logger.debug 'Validating a Prowl API Key...'
@@ -53,8 +59,7 @@ class User < ActiveRecord::Base
     # Send any DM notifications -- handle exceptions from the JSON parser in case
     # Twitter sends us back malformed JSON or (more likely) HTML when it's over capacity
     begin
-      request, priority, since_id = [@dm_request, self.dm_priority, self.dm_since_id]
-      tweets = JSON.parse(request.response.body)
+      tweets = JSON.parse(@dm_request.response.body)
       if tweets.size > 0
         # The notification text depends on the number of new tweets
         if tweets.size == 1
@@ -72,8 +77,14 @@ class User < ActiveRecord::Base
         update_attribute('dm_since_id', tweets.first['id'])
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
-        if since_id != 1
-          prowl.add(:application => APPNAME + ' DM', :apikey => self.prowl_api_key, :priority => priority, :event => event, :description => description)
+        if self.dm_since_id != 1
+          prowl.add(
+            :application => APPNAME + ' DM',
+            :apikey => self.prowl_api_key,
+            :priority => self.dm_priority,
+            :event => event,
+            :description => description
+          )
           Notification.new(:twitter_user_id => self.twitter_user_id).save
         end
       end
@@ -112,7 +123,7 @@ class User < ActiveRecord::Base
     require 'soauth'
     
     hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
-    prowl = Prowl.new(
+    prowl = FastProwl.new(
       :application => APPNAME,
       :providerkey => PROWL_PROVIDER_KEY
     )
