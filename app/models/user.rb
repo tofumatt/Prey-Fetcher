@@ -39,8 +39,6 @@ class User < ActiveRecord::Base
   end
   
   def save(perform_validation = true)
-    system "/home/matt/sites/preyfetcher.com/lib/stream_controller.rb restart"
-    
     super(perform_validation)
   end
   
