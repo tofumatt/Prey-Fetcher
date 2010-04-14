@@ -4,9 +4,9 @@
 
 <dl>
 	<dt>Total</dt>
-	<dd><%= @user.notifications.length %></dd>
+	<dd><%= number_format(@user.notifications.length) %></dd>
 	<dt>Past 30 days</dt>
-	<dd><%= @user.notifications.this_month %></dd>
+	<dd><%= number_format(@user.notifications.this_month) %></dd>
 </dl>
 
 <h3 class="clear">Delete Your Prey Fetcher Account</h3>
