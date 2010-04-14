@@ -23,8 +23,10 @@ Rails::Initializer.run do |config|
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem 'haml'
-	config.gem 'soauth', :lib => false
-	config.gem 'twitter-login', :lib => 'twitter/login'
+  config.gem 'fastprowl', :lib => false
+  config.gem 'soauth', :lib => false
+  config.gem 'twitter', :lib => false
+  config.gem 'twitter-login', :lib => 'twitter/login'
   config.gem 'typhoeus', :lib => false
   config.gem 'whenever', :lib => false
 
