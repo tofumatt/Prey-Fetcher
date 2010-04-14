@@ -38,10 +38,6 @@ class User < ActiveRecord::Base
     HUMANIZED_ATTRIBUTES[attr.to_sym] || super
   end
   
-  def save(perform_validation = true)
-    super(perform_validation)
-  end
-  
   def prowl_api_key_is_valid
     logger.debug Time.now.to_s
     logger.debug 'Validating a Prowl API Key...'
@@ -121,7 +117,7 @@ class User < ActiveRecord::Base
     require 'soauth'
     
     hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
-    prowl = FastProwl.new(
+    prowl = Prowl.new(
       :application => APPNAME,
       :providerkey => PROWL_PROVIDER_KEY
     )
@@ -144,6 +140,28 @@ class User < ActiveRecord::Base
     
     # Send all the prowl notifications
     prowl.run
+  end
+  
+  # Test each user's OAuth credentials
+  def self.verify_credentials
+    require 'twitter'
+    
+    User.all.each do |u|
+      begin
+        oauth = Twitter::OAuth.new(OAUTH_SETTINGS['consumer_key'], OAUTH_SETTINGS['consumer_secret'])
+        oauth.authorize_from_access(u.access_key, u.access_secret)
+        
+        Twitter::Base.new(oauth).verify_credentials
+      rescue Twitter::Unauthorized # Delete this user; they've revoked access
+        u.delete
+      rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
+        logger.error Time.now.to_s + '   @' + self.twitter_username
+        logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
+      rescue Exception # Bad data or some other weird response
+        logger.error Time.now.to_s + '   @' + self.twitter_username
+        logger.error 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
+      end
+    end
   end
   
   protected
