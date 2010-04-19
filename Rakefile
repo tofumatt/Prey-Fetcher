@@ -8,3 +8,11 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 
 require 'tasks/rails'
+
+# Load Vlad The Deployer
+begin
+  require 'vlad'
+  Vlad.load :app => :passenger, :scm => :git
+rescue LoadError
+  # So the server doesn't fail if it doesn't have Vlad
+end
