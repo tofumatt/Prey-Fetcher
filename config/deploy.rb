@@ -33,17 +33,17 @@ namespace :vlad do
   
   desc "Start the streaming daemon"
   remote_task :start_stream do
-    run "#{stream_controller} start"
+    run "ruby #{stream_controller} start"
   end
   
   desc "Stop the streaming daemon"
   remote_task :stop_stream do
-    run "#{stream_controller} stop"
+    run "ruby #{stream_controller} stop"
   end
   
   desc "Restart the streaming daemon"
   remote_task :restart_stream do
-    run "#{stream_controller} restart"
+    run "ruby #{stream_controller} restart"
   end
   
   desc "Full deployment cycle: Update, migrate, restart, cleanup"
