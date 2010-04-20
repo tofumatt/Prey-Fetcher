@@ -6,6 +6,7 @@ set :deploy_to, '/home/preyfetcher/sites/preyfetcher.com/' # target directory on
 set :repository, 'git@github.com:tofumatt/Prey-Fetcher.git' # git repo to clone
 set :revision, 'master' # git branch to deploy
 set :config_files, ['database.yml', 'prey_fetcher.rb']
+set :stream_controller, "#{current_path}/lib/stream_controller.rb"
 
 namespace :vlad do
   desc "Symlinks the configuration files"
@@ -28,6 +29,21 @@ namespace :vlad do
     config_files.each do |file|
       system "scp #{Dir.pwd}/config/#{file} #{domain}:#{shared_path}/config/#{file}"
     end
+  end
+  
+  desc "Start the streaming daemon"
+  remote_task :start_stream do
+    run "#{stream_controller} start"
+  end
+  
+  desc "Stop the streaming daemon"
+  remote_task :stop_stream do
+    run "#{stream_controller} stop"
+  end
+  
+  desc "Restart the streaming daemon"
+  remote_task :restart_stream do
+    run "#{stream_controller} restart"
   end
   
   desc "Full deployment cycle: Update, migrate, restart, cleanup"
