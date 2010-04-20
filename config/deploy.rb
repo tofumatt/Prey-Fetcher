@@ -48,9 +48,11 @@ namespace :vlad do
   
   desc "Full deployment cycle: Update, migrate, restart, cleanup"
   remote_task :deploy, :roles => :app do
+    Rake::Task['vlad:stop_stream'].invoke
     Rake::Task['vlad:update'].invoke
     Rake::Task['vlad:symlink_config'].invoke
     Rake::Task['vlad:migrate'].invoke
+    Rake::Task['vlad:start_stream'].invoke
     Rake::Task['vlad:start_app'].invoke
     Rake::Task['vlad:cleanup'].invoke
   end
