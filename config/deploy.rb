@@ -7,6 +7,7 @@ set :repository, 'git@github.com:tofumatt/Prey-Fetcher.git' # git repo to clone
 set :revision, 'origin/master' # git branch to deploy
 set :config_files, ['database.yml', 'prey_fetcher.rb']
 set :stream_controller, "#{current_path}/lib/stream_controller.rb"
+set :ree_path, "/opt/ruby-enterprise-1.8.7-2010.01"
 
 namespace :vlad do
   desc "Symlinks the configuration files"
@@ -31,19 +32,25 @@ namespace :vlad do
     end
   end
   
+  desc "Load Ruby Enterprise Edition"
+  remote_task :load_ree_env do
+    run "export PATH=#{ree_path}/bin/:$PATH"
+    run "export GEM_HOME=#{ree_path}/lib/ruby/gems/1.8/gems/"
+  end
+  
   desc "Start the streaming daemon"
-  remote_task :start_stream do
-    run "ruby #{stream_controller} start"
+  remote_task :start_stream => :load_ree_env do
+    run "#{stream_controller} start"
   end
   
   desc "Stop the streaming daemon"
-  remote_task :stop_stream do
-    run "ruby #{stream_controller} stop"
+  remote_task :stop_stream => :load_ree_env do
+    run "#{stream_controller} stop"
   end
   
   desc "Restart the streaming daemon"
-  remote_task :restart_stream do
-    run "ruby #{stream_controller} restart"
+  remote_task :restart_stream => :load_ree_env do
+    run "#{stream_controller} restart"
   end
   
   desc "Full deployment cycle: Update, migrate, restart, cleanup"
