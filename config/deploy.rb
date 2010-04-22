@@ -8,6 +8,14 @@ set :revision, 'origin/master' # git branch to deploy
 set :config_files, ['database.yml', 'prey_fetcher.rb']
 set :stream_controller, "#{current_path}/lib/stream_controller.rb"
 
+set :asset_servers, [
+  {
+    :user => 'preyfetcher',
+    :server => "ifrit.hosts.kicksass.ca",
+    :path => "/home/preyfetcher/sites/static.preyfetcher.com"
+  }
+]
+
 namespace :vlad do
   desc "Symlinks the configuration files"
   remote_task :symlink_config, :roles => :web do
