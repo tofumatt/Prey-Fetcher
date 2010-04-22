@@ -47,11 +47,6 @@ end
 
 track_string.chop!
 
-prowl = FastProwl.new(
-  :application => APPNAME + ' mention',
-  :providerkey => PROWL_PROVIDER_KEY
-)
-
 EventMachine::run do
   stream = Twitter::JSONStream.connect(
     :path    => '/1/statuses/filter.json',
@@ -67,17 +62,18 @@ EventMachine::run do
     
     prowl_users.each do |user|
       if tweet['text'].index("@#{user[:username]}")
-        prowl.add(
+        FastProwl.add(
+          :application => APPNAME + ' mention',
+          :providerkey => PROWL_PROVIDER_KEY,
           :apikey => user[:prowl_key],
           :priority => user[:priority],
           :event => "From @#{tweet['user']['screen_name']}",
           :description => tweet['text']
         )
+        
         Notification.new(:twitter_user_id => user[:id]).save
       end
     end
-    
-    prowl.run
   end
   
   stream.on_error do |message|
