@@ -7,7 +7,7 @@ require File.join(File.dirname(__FILE__), '../app/models/notification.rb')
 require File.join(File.dirname(__FILE__), '../app/models/user.rb')
 require 'yaml'
 
-DATABASE_CONFIG = YAML::load(File.open(File.join(ENV['PWD'], "config/database.yml")))
+DATABASE_CONFIG = YAML::load(File.open(File.join(File.dirname(__FILE__), '../config/database.yml')))
 
 def establish_connection(database)
   dbconfig = DATABASE_CONFIG
