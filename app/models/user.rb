@@ -39,12 +39,13 @@ class User < ActiveRecord::Base
   end
   
   def prowl_api_key_is_valid
+    require 'fastprowl'
     logger.debug Time.now.to_s
     logger.debug 'Validating a Prowl API Key...'
     
     if self.prowl_api_key.blank?
       errors.add(:prowl_api_key, " is blank. You need to supply an API Key.")
-    elsif !Prowl.verify(self.prowl_api_key)
+    elsif !FastProwl.verify(self.prowl_api_key)
       errors.add(:prowl_api_key, " you submitted isn't valid.")
     end
   end
