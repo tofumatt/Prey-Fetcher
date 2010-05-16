@@ -89,6 +89,9 @@ class User < ActiveRecord::Base
     rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
       logger.error Time.now.to_s + '   @' + self.twitter_username
       logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
+    rescue Timeout::Error
+      logger.error Time.now.to_s + '   @' + self.twitter_username
+      logger.error 'Twitter timed out for @' + self.twitter_username + "."
     rescue Exception # Bad data or some other weird response
       logger.error Time.now.to_s + '   @' + self.twitter_username
       logger.error 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
@@ -139,6 +142,9 @@ class User < ActiveRecord::Base
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
         logger.error Time.now.to_s + '   @' + self.twitter_username
         logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
+      rescue Timeout::Error
+        logger.error Time.now.to_s + '   @' + self.twitter_username
+        logger.error 'Twitter timed out for @' + self.twitter_username + "."
       rescue Exception # Bad data or some other weird response
         logger.error Time.now.to_s + '   @' + self.twitter_username
         logger.error 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
