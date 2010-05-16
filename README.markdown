@@ -13,6 +13,14 @@ If you're a Ruby/Rails coder and think you can make Prey Fetcher better or add a
 
 Once you've added a feature/made fixes, assuming you made a fork, just send me a pull request and I'll take a look at it. If there's an issue related to whatever you pushed, update that ticket as well.
 
+## Donating
+
+Prey Fetcher is, and will always be, a totally free service for users. I run it on its own small VPS (512 MB ram, 1024 MB burst) out of my own pocket. The server is not very expensive (only a bit more than the price of a latte every month) and I'm happy to have the service running, though I welcome donations to keep the project going, the server resources available, and to motivate me to actually work on the project :-)
+
+Prey Fetcher does basically everything _I_ want it to do already, but I want to add features for others. Because I work on it in my spare time and most new features will require more API polling and thus more resources, donations are greatly appreciated.
+
+To donate money via PayPal, just click the Pledgie link on the [repository home page](http://github.com/tofumatt/Prey-Fetcher). Or you can donate some time (by coding), or resources (if you want to host Prey Fetcher for free). :-)
+
 # License
 This program is free software; it is distributed under the [GNU Affero General Public License, Version 3](http://www.gnu.org/licenses/agpl-3.0.html).
 
