@@ -76,8 +76,9 @@ class User < ActiveRecord::Base
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if self.dm_since_id != 1
-          @@prowl.add(
+          FastProwl.add(
             :application => APPNAME + ' DM',
+            :providerkey => PROWL_PROVIDER_KEY,
             :apikey => self.prowl_api_key,
             :priority => self.dm_priority,
             :event => event,
@@ -104,19 +105,11 @@ class User < ActiveRecord::Base
     require 'fastprowl'
     require 'twitter'
     
-    @@prowl = FastProwl.new(
-      {:application => APPNAME, :providerkey => PROWL_PROVIDER_KEY},
-      {:max_concurrency => MAX_CONCURRENCY}
-    )
-    
     # Loop through all users and queue all requests to Twitter in Hydra
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
       u.check_dms if u.enable_dms && !u.prowl_api_key.blank?
     end
-    
-    # Send all the prowl notifications
-    @@prowl.run
   end
   
   # Test each user's OAuth credentials
