@@ -40,6 +40,16 @@ namespace :vlad do
     end
   end
   
+  desc "Copy public files to asset webserver"
+  task :update_assets do
+    asset_servers.each do |server|
+      Dir.chdir('public')
+      Dir["*"].each do |file|
+        system "scp #{Dir.pwd}/#{file} #{server[:user]}@#{server[:server]}:#{server[:path]}/#{file}"
+      end
+    end
+  end
+  
   desc "Update the crontab from whenever"
   remote_task :update_crontab do
     run "cd #{current_path} && whenever --update-crontab #{application}"
