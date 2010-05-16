@@ -1,5 +1,5 @@
 body {
-  background: #c2c4cc url('/images/page-bg.png') repeat-x top;
+  background: #c2c4cc url('http://static.preyfetcher.com/images/page-bg.png') repeat-x top;
   color: #030303;
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif;
   font-size: 1em;
@@ -144,7 +144,7 @@ input.text-long {
   padding-bottom: 0; }
 
 #app-name {
-  background: transparent url('/images/logo.png') no-repeat left top;
+  background: transparent url('http://static.preyfetcher.com/images/logo.png') no-repeat left top;
   display: block;
   height: 116px;
   margin: 0 0 40px -10px;
@@ -235,7 +235,7 @@ input.text-long {
   width: 280px; }
 
 #signup-button {
-  background: url('/images/signin-twitter-new.png') no-repeat center !important;
+  background: url('http://static.preyfetcher.com/images/signin-twitter-new.png') no-repeat center !important;
   display: block;
   height: 24px;
   margin: 0 0 0 auto;
