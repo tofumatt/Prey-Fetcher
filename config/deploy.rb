@@ -64,6 +64,7 @@ namespace :vlad do
   remote_task :deploy, :roles => :app do
     Rake::Task['vlad:stream_stop'].invoke
     Rake::Task['vlad:update'].invoke
+    Rake::Task['vlad:config_create'].invoke
     Rake::Task['vlad:symlink_config'].invoke
     Rake::Task['vlad:migrate'].invoke
     Rake::Task['vlad:update_crontab'].invoke
