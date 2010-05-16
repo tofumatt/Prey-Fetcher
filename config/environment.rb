@@ -25,7 +25,6 @@ Rails::Initializer.run do |config|
   config.gem 'haml'
   config.gem 'json', :lib => false
   config.gem 'fastprowl', :lib => false
-  config.gem 'soauth', :lib => false
   config.gem 'twitter', :lib => false
   config.gem 'twitter-login', :lib => 'twitter/login'
   config.gem 'typhoeus', :lib => false

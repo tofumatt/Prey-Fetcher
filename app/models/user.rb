@@ -1,5 +1,4 @@
 class User < ActiveRecord::Base
-  
   PRIORITY_RANGE = -1..2
   
   HUMANIZED_ATTRIBUTES = {
@@ -50,28 +49,30 @@ class User < ActiveRecord::Base
     end
   end
   
-  def process_dms
+  def check_dms
     # Send any DM notifications -- handle exceptions from the JSON parser in case
     # Twitter sends us back malformed JSON or (more likely) HTML when it's over capacity
     begin
-      tweets = JSON.parse(@dm_request.response.body)
-      if tweets.size > 0
+      @oauth = Twitter::OAuth.new(OAUTH_SETTINGS['consumer_key'], OAUTH_SETTINGS['consumer_secret'])
+      @oauth.authorize_from_access(self.access_key, self.access_secret)
+      
+      @direct_messages = Twitter::Base.new(@oauth).direct_messages :count => 11, :since_id => self.dm_since_id
+      
+      if @direct_messages.size > 0
         # The notification text depends on the number of new tweets
-        if tweets.size == 1
-          event = "From @#{tweets.first['sender']['screen_name']}"
-          description = tweets.first['text']
-        elsif tweets.size == 11
-          event = "Over 10 DMs! Latest from @#{tweets.first['sender']['screen_name']}"
-          description = tweets.first['text']
+        if @direct_messages.size == 1
+          event = "From @#{@direct_messages.first['sender']['screen_name']}"
+          description = @direct_messages.first['text']
+        elsif @direct_messages.size == 11
+          event = "Over 10 DMs! Latest from @#{@direct_messages.first['sender']['screen_name']}"
+          description = @direct_messages.first['text']
         else
-          event = "#{tweets.size} DMs. Latest from @#{tweets.first['sender']['screen_name']}"
-          description = tweets.first['text']
+          event = "#{@direct_messages.size} DMs. Latest from @#{@direct_messages.first['sender']['screen_name']}"
+          description = @direct_messages.first['text']
         end
         
-        puts tweets.first['id']
-        
         # Update this users's since_id
-        update_attribute('dm_since_id', tweets.first['id'])
+        update_attribute('dm_since_id', @direct_messages.first['id'])
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if self.dm_since_id != 1
@@ -94,51 +95,21 @@ class User < ActiveRecord::Base
     end
   end
   
-  def check_dms
-    uri = 'https://api.twitter.com/1/direct_messages.json'
-    params = {
-      'count' => 11,
-      'since_id' => self.dm_since_id,
-      'prey_fetcher_twitterid' => self.twitter_user_id
-    }
-    
-    @dm_request = Typhoeus::Request.new(uri,
-      :user_agent => USER_AGENT,
-      :method => :get,
-      :headers => { :Authorization => SOAuth.header(uri, oauth, params) },
-      :params => params
-    )
-    
-    # Return the request object (usually to Hydra)
-    @dm_request
-  end
-  
   # Method called by cron to check all user accounts for new DMs,
   # then send any notifications to Prowl
   def self.check_twitter
     require 'fastprowl'
-    require 'soauth'
+    require 'twitter'
     
-    @@hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
     @@prowl = FastProwl.new(
-      :application => APPNAME,
-      :providerkey => PROWL_PROVIDER_KEY
+      {:application => APPNAME, :providerkey => PROWL_PROVIDER_KEY},
+      {:max_concurrency => MAX_CONCURRENCY}
     )
-    users = User.all
     
     # Loop through all users and queue all requests to Twitter in Hydra
-    users.each do |u|
+    User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
-      @@hydra.queue(u.check_dms) if u.enable_dms && !u.prowl_api_key.blank?
-    end
-    
-    # Run all the requests
-    @@hydra.run
-    
-    # Loop through each user again, sending Prowl notifications if necessary
-    users.each do |u|
-      # Again, skip users with no key
-      u.process_dms if u.enable_dms && !u.prowl_api_key.blank?
+      u.check_dms if u.enable_dms && !u.prowl_api_key.blank?
     end
     
     # Send all the prowl notifications
@@ -174,16 +145,4 @@ class User < ActiveRecord::Base
       end
     end
   end
-  
-  protected
-  
-  def oauth
-    {
-      :consumer_key => OAUTH_SETTINGS['consumer_key'],
-      :consumer_secret => OAUTH_SETTINGS['consumer_secret'],
-      :token => self.access_key,
-      :token_secret => self.access_secret
-    }
-  end
-  
 end
