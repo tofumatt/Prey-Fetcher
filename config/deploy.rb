@@ -66,6 +66,7 @@ namespace :vlad do
     Rake::Task['vlad:update'].invoke
     Rake::Task['vlad:symlink_config'].invoke
     Rake::Task['vlad:migrate'].invoke
+    Rake::Task['vlad:update_crontab'].invoke
     Rake::Task['vlad:stream_start'].invoke
     Rake::Task['vlad:start_app'].invoke
     Rake::Task['vlad:cleanup'].invoke
