@@ -1,10 +1,10 @@
-!body_background_colour = #303335
-!background_colour = #1b3240
-!text_colour = #f3f3f3
-!link_colour = #f2e788 + #222222
+!body_background_colour = #c2c4cc
+!background_colour = #999
+!text_colour = #030303
+!link_colour = #2e6299
 
-!border_colour = #5d7f93
-!header_colour = #9fc9d0
+!border_colour = #030303
+!header_colour = #214871
 
 !error_colour = #f2a2a2
 !alert_colour = #f2d7a2
@@ -13,261 +13,270 @@
 !preyf_colour = #154e7a
 
 body
-    background = !body_background_colour url('http://static.preyfetcher.com/images/page-bg.png') repeat-y top center
-    color = !text_colour
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
-    font-size: 1em
-    text-shadow = !background_colour 1px 1px 3px
+  background = !body_background_colour url('/images/page-bg.png') repeat-x top
+  color = !text_colour
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
+  font-size: 1em
+  text-shadow = !background_colour 0 0 5px
 
 a
-    color = !link_colour
-    text-decoration: underline
-    
-    &:hover, &:focus
-        color = !link_colour + #222222
-        text-decoration: none
-        text-shadow = !background_colour 1px 1px 6px
+  color = !link_colour
+  text-decoration: underline
+  text-shadow: none
+  
+  &:hover, &:focus
+    color = !link_colour + #222
+    text-decoration: none
+    text-shadow = !background_colour + #222 1px 1px 6px
 
 strong
-    font-weight: bold
+  font-weight: bold
 
 em
-    font-style: italic
-    
-    &.underline
-        border-bottom: 1px dashed
-        font-style: normal
+  font-style: italic
+  
+  &.underline
+    border-bottom: 1px dashed
+    font-style: normal
 
 span.ampersand
-    font-family: "Kunstler Script", "Lucida Calligraphy", "Lucida Handwriting", cursive
-    font-size: 1.2em
-    font-style: italic
+  font-family: "Kunstler Script", "Lucida Calligraphy", "Lucida Handwriting", cursive
+  font-size: 1.2em
+  font-style: italic
 
 h2, h3, h4, h5, h6
-    border-bottom = !border_colour 1px solid
-    color = !header_colour
-    font-family: Helvetica, Arial, sans-serif
-    font-size: 1.5em
-    margin: 0 0 .5em
-    text-shadow = !background_colour - #111 1px 1px 2px
+  border-bottom = !border_colour 1px solid
+  color = !header_colour
+  font-family: Helvetica, Arial, sans-serif
+  font-size: 1.5em
+  margin: 0 0 .5em
 
 h2
-    font-size: 1.75em
+  font-size: 1.75em
 
 h3, h4, h5, h6
-    color = !link_colour - #232323
-    margin: .75em 0
-    
-    & span.numbered-header
-        color = !text_colour
-        font-size: .8em
+  margin: .75em 0
+  
+  & span.numbered-header
+    color = !text_colour
+    font-size: .8em
 
 p, ul, ol, dl, label, input
-    line-height: 1.3em
-    margin: .25em 200px 1.5em 24px
+  line-height: 1.3em
+  margin: .25em 160px 1.5em 24px
 
 ul
-    margin-top: -.25em
+  margin-left: 48px
+  margin-top: -.25em
 
 li
-    list-style: square inside
-    margin: 0
+  list-style: square inside
+  margin: 0
 
 dt
-    clear: both
-    float: left
-    font-weight: bold
-    margin: 0 1em 0 0
-    width: 150px
+  clear: both
+  float: left
+  font-weight: bold
+  margin: 0 1em 0 0
+  width: 150px
 
 #intro-list
-    margin-top: -5px
+  margin-top: -5px
 
-    & li
-        margin-top: .25em
-    
-        & span
-            display: block
-            margin: 2px 0 0 .9em
+  & li
+    margin-top: .25em
+  
+    & span
+      display: block
+      margin: 2px 0 0 .9em
 
 .no-bullet
-    list-style: none outside !important
+  list-style: none outside !important
 
 .block
-    display: block
+  display: block
 
 .clear
-    clear: both
+  clear: both
 
 .hide, body.js .js-hide
-    display: none
+  display: none
 
 ul.smaller
-    margin-top: -.75em
+  margin-top: -.75em
 
 .smaller
-    font-size: .9em
+  font-size: .9em
 
 .space
-    padding: 12px 0 0
+  padding: 12px 0 0
 
 .space-bottom
-    padding: 0 0 12px
+  padding: 0 0 12px
 
 .half-space
-    padding: 6px 0 0
+  padding: 6px 0 0
 
 label
-    clear: both
-    display: block
-    line-height: 1em
-    margin-bottom: 0
-    margin-top: 3px
+  clear: both
+  display: block
+  line-height: 1em
+  margin-bottom: 0
+  margin-top: 3px
 
 label span.req
-    color: red
+  color: red
 
 label.for-checkbox, label.for-select
-    float: left
+  float: left
 
 label.for-checkbox
-    width: 205px
+  width: 205px
 
 label.for-select
-    width: 150px
+  width: 150px
 
 input
-    display: block
-    line-height: 1.2em
-    margin-bottom: 0
-    margin-top: 3px
+  display: block
+  line-height: 1.2em
+  margin-bottom: 0
+  margin-top: 3px
 
 input.checkbox
-    float: left
-    width: auto
+  float: left
+  width: auto
 
 input.submit
-    float: left
-    margin: -1px .75em 0 0
+  float: left
+  margin: -1px .75em 0 0
 
 input.text-long
-    width: 267px
+  width: 267px
 
 #page, #footer
-    margin: 0 auto
-    padding: 0 115px 12px
-    position: relative
-    width: 670px
+  margin: 0 auto
+  padding: 0 115px 12px
+  position: relative
+  width: 670px
 
 #page
-    padding-bottom: 0
+  padding-bottom: 0
 
 #app-name
-    background: transparent url('http://static.preyfetcher.com/images/logo.png') no-repeat left top
-    display: block
-    height: 140px
-    margin: 0 0 34px -10px
-    padding: 12px 0 12px
-    text-indent: -9999px
-    width: 690px
+  background: transparent url('/images/logo.png') no-repeat left top
+  display: block
+  height: 116px
+  margin: 0 0 40px -10px
+  padding: 12px 0
+  text-indent: -9999px
+  width: 690px
 
 #content
-    font-size: .95em
+  font-size: .95em
 
-#secondary-content
-    background: #708fa1
-    border: #dddddd 1px solid
-    border-left: none
-    border-right: none
-    position: absolute
-    height: 22px
-    padding: 6px 0 0
-    right: 105px
-    top: 140px
-    width: 690px
+#menu
+  background: #708fa1
+  border = !border_colour 1px solid
+  border-left: none
+  border-right: none
+  left: 0
+  position: absolute
+  height: 22px
+  padding: 6px 0 0
+  top: 140px
+  width: 100%
+  z-index: 100
+  
+  & ul
+    margin-left: auto
+    margin-right: auto
+    max-width: 675px
+  
+  & li
+    display: inline
+    list-style: none
+    margin: 0
     
-    & li
-        display: inline
-        list-style: none
-        margin: 0
+    & a.menu-item, & span.menu-item
+      background: #708fa1
+      color: #ffffff
+      display: inline
+      float: left
+      height: 20px
+      list-style: none
+      margin: -2px 0 0
+      padding: 3px 8px 5px
+      text-align: center
+      text-decoration: none
+      text-shadow = !background_colour - #111 0px 0px 9px
+      width: auto
     
-        & a.menu-item, & span.menu-item
-            background: #708fa1
-            color: #ffffff
-            display: inline
-            float: left
-            height: 20px
-            list-style: none
-            margin: -2px 0 0
-            padding: 3px 8px 5px
-            text-align: center
-            text-decoration: none
-            text-shadow = !background_colour - #111 0px 0px 9px
-            width: auto
-        
-        & a:hover, & a:focus
-            background = #708fa1 - #333333
-
-#user-info
-    position: absolute
-    right: 0
+    & a:hover, & a:focus
+      background = #708fa1 - #333333
 
 .notice
-    border: 2px solid
-    font-weight: bold
+  border: 2px solid
+  font-weight: bold
+  margin: 0 auto
+  padding: 5px
+  text-align: center
+  text-shadow: none
+  width: 90%
+  
+  & p, & ul
     margin: 0 auto
-    padding: 5px
-    text-align: center
-    text-shadow: none
-    width: 90%
+    padding: 0 12px
+  
+  & a
+    color: black !important
+    text-shadow: none !important
     
-    & p, & ul
-        margin: 0 auto
-        padding: 0 12px
+    &:hover, &:focus
+      background: white
     
-    & a
-        color: black !important
-        text-shadow: none !important
-        
-        &:hover, &:focus
-            background: white
-        
+#user-info
+  float: left
+  position: relative
+  left: 30%
+  
+  & a:hover, & a:focus
+    background = #f3f3f3 - #333333 !important
 
 #error
-    background = !error_colour + #111111
-    border-color = !error_colour - #666666
-    color = !error_colour - #666666
+  background = !error_colour + #111111
+  border-color = !error_colour - #666666
+  color = !error_colour - #666666
 
 #alert
-    background = !alert_colour + #111111
-    border-color = !alert_colour - #666666
-    color = !alert_colour - #999999
+  background = !alert_colour + #111111
+  border-color = !alert_colour - #666666
+  color = !alert_colour - #999999
 
 #notice
-    background = !notice_colour + #111111
-    border-color = !notice_colour - #666666
-    color = !notice_colour - #666666
+  background = !notice_colour + #111111
+  border-color = !notice_colour - #666666
+  color = !notice_colour - #666666
 
 #user_api_key
-    padding: 2px 2px 2px 4px
-    width: 280px
+  padding: 2px 2px 2px 4px
+  width: 280px
 
 #signup-button
-    background: url('http://static.preyfetcher.com/images/signin-twitter-new.png') no-repeat center !important
-    display: block
-    height: 24px
-    margin: 0 5px 0 auto
-    text-indent: -9999px
-    width: 151px
+  background: url('/images/signin-twitter-new.png') no-repeat center !important
+  display: block
+  height: 24px
+  margin: 0 0 0 auto
+  text-indent: -9999px
+  width: 151px
 
 #footer
-    border-top = !border_colour 1px solid
-    clear: both
-    font-size: .75em
-    margin: 72px 0 -30px -10px
-    opacity: .95
-    padding: 6px 0
-    width: 690px
-    
-    & p, & ul, & dl, & ol
-        margin-left: 10px
+  border-top = !border_colour 1px solid
+  clear: both
+  font-size: .75em
+  margin: 72px 0 -30px -10px
+  opacity: .95
+  padding: 6px 0
+  width: 690px
+  
+  & p, & ul, & dl, & ol
+    margin-left: 10px

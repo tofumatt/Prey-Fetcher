@@ -1,7 +1,7 @@
 class StaticactionsController < ApplicationController
 	# GET /
   def index
-    @title = 'iPhone + Twitter + Prey Fetcher = Yay!'
+    @title = 'Open Source Twitter Push Notifications'
   end
 
   # GET /faq

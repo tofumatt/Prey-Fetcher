@@ -1,17 +1,18 @@
 body {
-  background: #303335 url('http://static.preyfetcher.com/images/page-bg.png') repeat-y top center;
-  color: #f3f3f3;
+  background: #c2c4cc url('/images/page-bg.png') repeat-x top;
+  color: #030303;
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif;
   font-size: 1em;
-  text-shadow: #1b3240 1px 1px 3px; }
+  text-shadow: #999999 0 0 5px; }
 
 a {
-  color: #ffffaa;
-  text-decoration: underline; }
+  color: #2e6299;
+  text-decoration: underline;
+  text-shadow: none; }
   a:hover, a:focus {
-    color: #ffffcc;
+    color: #5084bb;
     text-decoration: none;
-    text-shadow: #1b3240 1px 1px 6px; }
+    text-shadow: #bbbbbb 1px 1px 6px; }
 
 strong {
   font-weight: bold; }
@@ -28,28 +29,27 @@ span.ampersand {
   font-style: italic; }
 
 h2, h3, h4, h5, h6 {
-  border-bottom: #5d7f93 1px solid;
-  color: #9fc9d0;
+  border-bottom: #030303 1px solid;
+  color: #214871;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 1.5em;
-  margin: 0 0 .5em;
-  text-shadow: #0a212f 1px 1px 2px; }
+  margin: 0 0 .5em; }
 
 h2 {
   font-size: 1.75em; }
 
 h3, h4, h5, h6 {
-  color: #dcdc87;
   margin: .75em 0; }
   h3 span.numbered-header, h4 span.numbered-header, h5 span.numbered-header, h6 span.numbered-header {
-    color: #f3f3f3;
+    color: #030303;
     font-size: .8em; }
 
 p, ul, ol, dl, label, input {
   line-height: 1.3em;
-  margin: .25em 200px 1.5em 24px; }
+  margin: .25em 160px 1.5em 24px; }
 
 ul {
+  margin-left: 48px;
   margin-top: -.25em; }
 
 li {
@@ -144,33 +144,38 @@ input.text-long {
   padding-bottom: 0; }
 
 #app-name {
-  background: transparent url('http://static.preyfetcher.com/images/logo.png') no-repeat left top;
+  background: transparent url('/images/logo.png') no-repeat left top;
   display: block;
-  height: 140px;
-  margin: 0 0 34px -10px;
-  padding: 12px 0 12px;
+  height: 116px;
+  margin: 0 0 40px -10px;
+  padding: 12px 0;
   text-indent: -9999px;
   width: 690px; }
 
 #content {
   font-size: .95em; }
 
-#secondary-content {
+#menu {
   background: #708fa1;
-  border: #dddddd 1px solid;
+  border: #030303 1px solid;
   border-left: none;
   border-right: none;
+  left: 0;
   position: absolute;
   height: 22px;
   padding: 6px 0 0;
-  right: 105px;
   top: 140px;
-  width: 690px; }
-  #secondary-content li {
+  width: 100%;
+  z-index: 100; }
+  #menu ul {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 675px; }
+  #menu li {
     display: inline;
     list-style: none;
     margin: 0; }
-    #secondary-content li a.menu-item, #secondary-content li span.menu-item {
+    #menu li a.menu-item, #menu li span.menu-item {
       background: #708fa1;
       color: #ffffff;
       display: inline;
@@ -181,14 +186,10 @@ input.text-long {
       padding: 3px 8px 5px;
       text-align: center;
       text-decoration: none;
-      text-shadow: #0a212f 0px 0px 9px;
+      text-shadow: #888888 0px 0px 9px;
       width: auto; }
-    #secondary-content li a:hover, #secondary-content li a:focus {
+    #menu li a:hover, #menu li a:focus {
       background: #3d5c6e; }
-
-#user-info {
-  position: absolute;
-  right: 0; }
 
 .notice {
   border: 2px solid;
@@ -206,6 +207,13 @@ input.text-long {
     text-shadow: none !important; }
     .notice a:hover, .notice a:focus {
       background: white; }
+
+#user-info {
+  float: left;
+  position: relative;
+  left: 30%; }
+  #user-info a:hover, #user-info a:focus {
+    background: silver !important; }
 
 #error {
   background: #ffb3b3;
@@ -227,15 +235,15 @@ input.text-long {
   width: 280px; }
 
 #signup-button {
-  background: url('http://static.preyfetcher.com/images/signin-twitter-new.png') no-repeat center !important;
+  background: url('/images/signin-twitter-new.png') no-repeat center !important;
   display: block;
   height: 24px;
-  margin: 0 5px 0 auto;
+  margin: 0 0 0 auto;
   text-indent: -9999px;
   width: 151px; }
 
 #footer {
-  border-top: #5d7f93 1px solid;
+  border-top: #030303 1px solid;
   clear: both;
   font-size: .75em;
   margin: 72px 0 -30px -10px;

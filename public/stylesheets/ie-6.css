@@ -6,7 +6,8 @@ span.ampersand {
   font-weight: normal; }
 
 #app-name {
-  margin-left: 0; }
+  margin-left: 0;
+  margin-bottom: 44px; }
 
 h2, #content {
   margin-left: 10px; }
@@ -60,15 +61,15 @@ p, ul, ol, dl, label, input {
     margin-bottom: -12px;
     padding: 0; }
 
-#secondary-content {
-  background: #708fa1;
-  border: #dddddd 1px solid;
-  border-left: none;
-  border-right: none;
-  position: absolute;
-  height: 22px;
-  right: 113px;
-  width: 692px; }
+#menu {
+  height: 0;
+  padding: 0;
+  position: absolute; }
+  #menu li a.menu-item, #menu li span.menu-item {
+    display: inline;
+    height: 0;
+    margin-top: 5px;
+    padding-bottom: 0; }
 
 #footer {
   margin: 0;

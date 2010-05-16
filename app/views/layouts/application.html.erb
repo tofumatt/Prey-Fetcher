@@ -24,6 +24,10 @@
 		<!--[if IE]><link rel="shortcut icon" href="http://static.preyfetcher.com/favicon.ico" /><![endif]-->
 	</head>
 	<body>
+		<div id="menu">
+			<%= render :partial => 'shared/menu' %>
+		</div>
+		
 		<div id="page">
 			<div id="header">
 				<h1><a href="/" id="app-name">Prey Fetcher</a></h1>
@@ -35,10 +39,6 @@
 				<% unless flash[:alert].blank? %><p id="alert" class="notice"><%= flash[:alert] %></p><% end %>
 				<% unless flash[:notice].blank? %><p id="notice" class="notice"><%= flash[:notice] %></p><% end %>
 				<%= yield %>
-			</div>
-			
-			<div id="secondary-content">
-				<%= render :partial => 'shared/menu' %>
 			</div>
 			
 			<div id="footer">
