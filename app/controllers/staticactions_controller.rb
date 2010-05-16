@@ -1,5 +1,4 @@
 class StaticactionsController < ApplicationController
-
 	# GET /
   def index
     @title = 'iPhone + Twitter + Prey Fetcher = Yay!'
@@ -14,5 +13,4 @@ class StaticactionsController < ApplicationController
   def privacy
     @title = 'Privacy Policy (a.k.a. No Snooping)!'
   end
-
 end

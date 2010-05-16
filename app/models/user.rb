@@ -50,7 +50,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def process_dms(prowl)
+  def process_dms
     # Send any DM notifications -- handle exceptions from the JSON parser in case
     # Twitter sends us back malformed JSON or (more likely) HTML when it's over capacity
     begin
@@ -68,12 +68,14 @@ class User < ActiveRecord::Base
           description = tweets.first['text']
         end
         
+        puts tweets.first['id']
+        
         # Update this users's since_id
         update_attribute('dm_since_id', tweets.first['id'])
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if self.dm_since_id != 1
-          prowl.add(
+          @@prowl.add(
             :application => APPNAME + ' DM',
             :apikey => self.prowl_api_key,
             :priority => self.dm_priority,
@@ -93,7 +95,7 @@ class User < ActiveRecord::Base
   end
   
   def check_dms
-    uri = 'https://twitter.com/direct_messages.json'
+    uri = 'https://api.twitter.com/1/direct_messages.json'
     params = {
       'count' => 11,
       'since_id' => self.dm_since_id,
@@ -117,8 +119,8 @@ class User < ActiveRecord::Base
     require 'fastprowl'
     require 'soauth'
     
-    hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
-    prowl = Prowl.new(
+    @@hydra = Typhoeus::Hydra.new(:max_concurrency => MAX_CONCURRENCY)
+    @@prowl = FastProwl.new(
       :application => APPNAME,
       :providerkey => PROWL_PROVIDER_KEY
     )
@@ -127,20 +129,20 @@ class User < ActiveRecord::Base
     # Loop through all users and queue all requests to Twitter in Hydra
     users.each do |u|
       # If the user doesn't have an API key we won't do anything
-      hydra.queue(u.check_dms) if u.enable_dms && !u.prowl_api_key.blank?
+      @@hydra.queue(u.check_dms) if u.enable_dms && !u.prowl_api_key.blank?
     end
     
     # Run all the requests
-    hydra.run
+    @@hydra.run
     
     # Loop through each user again, sending Prowl notifications if necessary
     users.each do |u|
       # Again, skip users with no key
-      u.process_dms(prowl) if u.enable_dms && !u.prowl_api_key.blank?
+      u.process_dms if u.enable_dms && !u.prowl_api_key.blank?
     end
     
     # Send all the prowl notifications
-    prowl.run
+    @@prowl.run
   end
   
   # Test each user's OAuth credentials

@@ -2,9 +2,9 @@
 # Likewise, all the methods added will be available for all controllers.
 class ApplicationController < ActionController::Base
   # Email people when there are errors
-  include ExceptionNotification::Notifiable
-  ExceptionNotification::Notifier.exception_recipients = ADMIN_EMAILS
-  ExceptionNotification::Notifier.sender_address = %Q("#{APPNAME Error}" <noreply@preyfetcher.com>)
+  #include ExceptionNotification::Notifiable
+  #ExceptionNotification::Notifier.exception_recipients = ADMIN_EMAILS
+  #ExceptionNotification::Notifier.sender_address = %Q("#{APPNAME Error}" <noreply@preyfetcher.com>)
   # Sign-in with Twitter is pretty much all taken care
   # of with this
   include Twitter::Login::Helpers
