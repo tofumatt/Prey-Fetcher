@@ -1,5 +1,6 @@
 gem 'ktheory-vlad-git'
 
+set :application, 'preyfetcher'
 set :user, 'preyfetcher'
 set :domain, "#{user}@shiva.hosts.kicksass.ca" # where to ssh
 set :deploy_to, '/home/preyfetcher/sites/preyfetcher.com/' # target directory on server
@@ -39,28 +40,33 @@ namespace :vlad do
     end
   end
   
+  desc "Update the crontab from whenever"
+  remote_task :update_crontab do
+    run "cd #{current_path} && whenever --update-crontab #{application}"
+  end
+  
   desc "Start the streaming daemon"
-  remote_task :start_stream do
+  remote_task :stream_start do
     run "#{stream_controller} start"
   end
   
   desc "Stop the streaming daemon"
-  remote_task :stop_stream do
+  remote_task :stream_stop do
     run "#{stream_controller} stop"
   end
   
   desc "Restart the streaming daemon"
-  remote_task :restart_stream do
+  remote_task :stream_restart do
     run "#{stream_controller} restart"
   end
   
   desc "Full deployment cycle: Update, migrate, restart, cleanup"
   remote_task :deploy, :roles => :app do
-    Rake::Task['vlad:stop_stream'].invoke
+    Rake::Task['vlad:stream_stop'].invoke
     Rake::Task['vlad:update'].invoke
     Rake::Task['vlad:symlink_config'].invoke
     Rake::Task['vlad:migrate'].invoke
-    Rake::Task['vlad:start_stream'].invoke
+    Rake::Task['vlad:stream_start'].invoke
     Rake::Task['vlad:start_app'].invoke
     Rake::Task['vlad:cleanup'].invoke
   end

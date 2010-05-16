@@ -19,6 +19,11 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 5.minutes do
+every 10.minutes do
   runner "User.check_twitter"
+end
+
+every 30.minutes do
+  #runner "User.update_info"
+  rake "stream:restart"
 end
