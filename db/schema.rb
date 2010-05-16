@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091230011202) do
+ActiveRecord::Schema.define(:version => 20100516012233) do
 
   create_table "notifications", :force => true do |t|
     t.integer  "twitter_user_id", :limit => 8
@@ -25,13 +25,10 @@ ActiveRecord::Schema.define(:version => 20091230011202) do
     t.string   "access_secret"
     t.integer  "mention_since_id", :limit => 8, :default => 1
     t.integer  "dm_since_id",      :limit => 8, :default => 1
-    t.integer  "retweet_since_id", :limit => 8, :default => 1
     t.boolean  "enable_mentions",               :default => true
     t.boolean  "enable_dms",                    :default => true
-    t.boolean  "enable_retweets",               :default => false
     t.integer  "mention_priority",              :default => 0
     t.integer  "dm_priority",                   :default => 0
-    t.integer  "retweet_priority",              :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
