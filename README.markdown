@@ -5,7 +5,7 @@ Prey Fetcher is a _free and open-source service_ that automatically **pushes new
 
 ## Requirements
 
-Prey Fetcher is a Rails app (written using Rails 2.3), so you'll need Ruby, Rails, and some gems to run your own version of it. You'll also need to generate your own OAuth tokens and put them in your own config file. Prey Fetcher is not currently 100% tested to run without certain settings (like the Prowl Provider Key) or even on other servers, though it runs fine in development mode on my local machines. **Being able to run your own Prey Fetcher instance, should you choose to do so, is a goal and will be coming in a future release.**
+Prey Fetcher is a Rails 2.3 app, so you'll need Ruby, Rails, and some gems to run your own version of it. You'll also need to generate your own OAuth tokens and put them in your own config file. Prey Fetcher is not currently 100% tested to run without certain settings (like the Prowl Provider Key) or even on other servers, though it runs fine in development mode on my local machines. **Being able to run your own Prey Fetcher instance, should you choose to do so, is a goal and will be coming in a future release.**
 
 ## Contributing
 
