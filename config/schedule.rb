@@ -25,5 +25,5 @@ end
 
 every 15.minutes do
   runner "User.verify_credentials"
-  rake "stream:restart"
+  command "#{RAILS_ROOT}/lib/stream_controller.rb restart"
 end
