@@ -154,7 +154,15 @@ class User < ActiveRecord::Base
         oauth = Twitter::OAuth.new(OAUTH_SETTINGS['consumer_key'], OAUTH_SETTINGS['consumer_secret'])
         oauth.authorize_from_access(u.access_key, u.access_secret)
         
-        Twitter::Base.new(oauth).verify_credentials
+        creds = Twitter::Base.new(oauth).verify_credentials
+        
+        # Update user's screen name if they've changed it (prevents
+        # users who changed their screen name from getting notifications
+        # through the Streaming API)
+        if u.twitter_username != creds['screen_name']
+          logger.info "Updating screen name for \#id #{u.id}. Changing name from @#{u.twitter_username} to @#{creds['screen_name']}"
+          u.update_attribute('twitter_username', creds['screen_name'])
+        end
       rescue Twitter::Unauthorized # Delete this user; they've revoked access
         u.delete
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response

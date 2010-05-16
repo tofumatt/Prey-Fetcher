@@ -23,7 +23,7 @@ every 10.minutes do
   runner "User.check_twitter"
 end
 
-every 30.minutes do
-  #runner "User.update_info"
+every 15.minutes do
+  runner "User.verify_credentials"
   rake "stream:restart"
 end
