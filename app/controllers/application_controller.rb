@@ -1,8 +1,12 @@
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
-  
+  # Email people when there are errors
+  include ExceptionNotification::Notifiable
+  ExceptionNotification::Notifier.exception_recipients = ADMIN_EMAILS
+  ExceptionNotification::Notifier.sender_address = %Q("#{APPNAME Error}" <noreply@preyfetcher.com>)
+  # Sign-in with Twitter is pretty much all taken care
+  # of with this
   include Twitter::Login::Helpers
   helper :all # include all helpers, all the time
   helper_method :twitter_user, :twitter_logout
@@ -10,6 +14,11 @@ class ApplicationController < ActionController::Base
 
   # Scrub sensitive parameters from your log
   filter_parameter_logging :prowl_api_key, :consumer_key, :consumer_secret, :access_key, :access_secret
+  
+  # Instance/view variables available to all controllers/views
+  def initialize
+    @notification_total = Notification.count
+  end
   
   protected
   
@@ -52,21 +61,4 @@ class ApplicationController < ActionController::Base
     @title = "Page Not Found"
     render :template => "/errors/404.html.erb", :status => 404
   end
-  
-  # private
-  # 
-  # def log_error(exception)
-  #   super
-  #   
-  #   require "prowl"
-  #   Prowl.add(
-  #     :application => APPNAME,
-  #     :providerkey => PROWL_PROVIDER_KEY,
-  #     :apikey => "",
-  #     :priority => 2,
-  #     :event => "Exception Raised!",
-  #     :description => "An exception was raised at http://preyfetcher.com. You better check it out."
-  #   )
-  # end
-  
 end
