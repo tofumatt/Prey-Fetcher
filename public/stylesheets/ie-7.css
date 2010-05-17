@@ -7,5 +7,8 @@ span.ampersand {
 label.for-checkbox {
   width: 200px; }
 
+#home-screenshot {
+  display: inline-block; }
+
 #content {
   padding-bottom: 72px; }
