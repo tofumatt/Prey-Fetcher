@@ -78,5 +78,6 @@ namespace :vlad do
     Rake::Task['vlad:stream_start'].invoke
     Rake::Task['vlad:start_app'].invoke
     Rake::Task['vlad:cleanup'].invoke
+    Rake::Task['vlad:update_assets'].invoke
   end
 end
