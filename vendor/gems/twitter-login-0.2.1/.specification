@@ -1,0 +1,105 @@
+--- !ruby/object:Gem::Specification 
+name: twitter-login
+version: !ruby/object:Gem::Version 
+  prerelease: false
+  segments: 
+  - 0
+  - 2
+  - 1
+  version: 0.2.1
+platform: ruby
+authors: 
+- "Mislav Marohni\xC4\x87"
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2010-03-09 00:00:00 -04:00
+default_executable: 
+dependencies: 
+- !ruby/object:Gem::Dependency 
+  name: twitter
+  prerelease: false
+  requirement: &id001 !ruby/object:Gem::Requirement 
+    requirements: 
+    - - ~>
+      - !ruby/object:Gem::Version 
+        segments: 
+        - 0
+        - 8
+        - 0
+        version: 0.8.0
+  type: :runtime
+  version_requirements: *id001
+- !ruby/object:Gem::Dependency 
+  name: rspec
+  prerelease: false
+  requirement: &id002 !ruby/object:Gem::Requirement 
+    requirements: 
+    - - ~>
+      - !ruby/object:Gem::Version 
+        segments: 
+        - 1
+        - 2
+        - 9
+        version: 1.2.9
+  type: :development
+  version_requirements: *id002
+- !ruby/object:Gem::Dependency 
+  name: fakeweb
+  prerelease: false
+  requirement: &id003 !ruby/object:Gem::Requirement 
+    requirements: 
+    - - ~>
+      - !ruby/object:Gem::Version 
+        segments: 
+        - 1
+        - 2
+        - 8
+        version: 1.2.8
+  type: :development
+  version_requirements: *id003
+description: Rack middleware for Sinatra, Rails, and other web frameworks that provides user login functionality through Twitter.
+email: mislav.marohnic@gmail.com
+executables: []
+
+extensions: []
+
+extra_rdoc_files: []
+
+files: 
+- lib/twitter/login.rb
+- spec/login_spec.rb
+- README.markdown
+has_rdoc: true
+homepage: http://github.com/mislav/twitter-login
+licenses: []
+
+post_install_message: 
+rdoc_options: []
+
+require_paths: 
+- lib
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      segments: 
+      - 0
+      version: "0"
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      segments: 
+      - 0
+      version: "0"
+requirements: []
+
+rubyforge_project: 
+rubygems_version: 1.3.6
+signing_key: 
+specification_version: 3
+summary: Rack middleware to provide login functionality through Twitter
+test_files: []
+
