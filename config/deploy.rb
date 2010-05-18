@@ -52,6 +52,11 @@ namespace :vlad do
     run "cd #{current_path} && whenever --update-crontab #{application}"
   end
   
+  desc "Build native gems"
+  remote_task :build_gems do
+    run "cd #{current_path} && rake gems:build:force"
+  end
+  
   desc "Start the streaming daemon"
   remote_task :stream_start do
     run "#{stream_controller} start"
