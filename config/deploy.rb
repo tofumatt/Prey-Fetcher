@@ -5,7 +5,7 @@ set :user, 'preyfetcher'
 set :domain, "#{user}@shiva.hosts.kicksass.ca" # where to ssh
 set :deploy_to, '/home/preyfetcher/sites/preyfetcher.com/' # target directory on server
 set :repository, 'git@github.com:tofumatt/Prey-Fetcher.git' # git repo to clone
-set :revision, 'origin/master' # git branch to deploy
+set :revision, '2.6' # git branch to deploy
 set :config_files, ['database.yml', 'prey_fetcher.rb']
 set :stream_controller, "#{current_path}/lib/stream_controller.rb"
 
@@ -79,6 +79,7 @@ namespace :vlad do
     Rake::Task['vlad:config_create'].invoke
     Rake::Task['vlad:symlink_config'].invoke
     Rake::Task['vlad:migrate'].invoke
+    Rake::Task['vlad:build_gems'].invoke
     Rake::Task['vlad:update_crontab'].invoke
     Rake::Task['vlad:stream_start'].invoke
     Rake::Task['vlad:start_app'].invoke
