@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
+  # Prowl priority range that Prey Fetcher supports
   PRIORITY_RANGE = -1..2
   
+  # Pretty names for properties
   HUMANIZED_ATTRIBUTES = {
     :prowl_api_key => "Prowl API Key"
   }
@@ -14,6 +16,8 @@ class User < ActiveRecord::Base
   validates_inclusion_of :dm_priority, :in => PRIORITY_RANGE
   validates_inclusion_of :mention_priority, :in => PRIORITY_RANGE
   
+  # Create a new user from session data retrieved from
+  # twitter-login/OAuth authorization
   def self.create_user_from_twitter(twitter_user, session)
     # Create a local User record if one doesn't exist already
     if !User.exists?(:twitter_user_id => twitter_user.id)
@@ -33,10 +37,12 @@ class User < ActiveRecord::Base
     user
   end
   
+  # Use our pretty names, if they exist
   def self.human_attribute_name(attr)
     HUMANIZED_ATTRIBUTES[attr.to_sym] || super
   end
   
+  # Test a user's Prowl API key via the Prowl API
   def prowl_api_key_is_valid
     require 'fastprowl'
     logger.debug Time.now.to_s
@@ -49,6 +55,7 @@ class User < ActiveRecord::Base
     end
   end
   
+  # Check Twitter for new DMs for this user using the REST API
   def check_dms
     # Send any DM notifications -- handle exceptions from the JSON parser in case
     # Twitter sends us back malformed JSON or (more likely) HTML when it's over capacity
@@ -76,9 +83,8 @@ class User < ActiveRecord::Base
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if self.dm_since_id != 1
-          FastProwl.add(
+          @@fastprowl.add(
             :application => APPNAME + ' DM',
-            :providerkey => PROWL_PROVIDER_KEY,
             :apikey => self.prowl_api_key,
             :priority => self.dm_priority,
             :event => event,
@@ -99,20 +105,25 @@ class User < ActiveRecord::Base
     end
   end
   
-  # Method called by cron to check all user accounts for new DMs,
-  # then send any notifications to Prowl
+  # Called by cron, etc. to check all user accounts for new
+  # tweets/direct messages, then send all notifications to Prowl
   def self.check_twitter
     require 'fastprowl'
     require 'twitter'
+    
+    @@fastprowl = FastProwl.new(:providerkey => PROWL_PROVIDER_KEY)
     
     # Loop through all users and queue all requests to Twitter in Hydra
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
       u.check_dms if u.enable_dms && !u.prowl_api_key.blank?
     end
+    
+    # Send all Prowl notifications
+    @@fastprowl.run
   end
   
-  # Test each user's OAuth credentials
+  # Test each user's OAuth credentials and update/verify their username
   def self.verify_credentials
     require 'twitter'
     
