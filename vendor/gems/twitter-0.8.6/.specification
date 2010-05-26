@@ -1,6 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: twitter
 version: !ruby/object:Gem::Version 
+  hash: 51
   prerelease: false
   segments: 
   - 0
@@ -22,9 +23,11 @@ dependencies:
   name: oauth
   prerelease: false
   requirement: &id001 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ~>
       - !ruby/object:Gem::Version 
+        hash: 31
         segments: 
         - 0
         - 3
@@ -36,9 +39,11 @@ dependencies:
   name: hashie
   prerelease: false
   requirement: &id002 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ~>
       - !ruby/object:Gem::Version 
+        hash: 29
         segments: 
         - 0
         - 1
@@ -50,9 +55,11 @@ dependencies:
   name: httparty
   prerelease: false
   requirement: &id003 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 15
         segments: 
         - 0
         - 5
@@ -64,9 +71,11 @@ dependencies:
   name: thoughtbot-shoulda
   prerelease: false
   requirement: &id004 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 37
         segments: 
         - 2
         - 10
@@ -78,9 +87,11 @@ dependencies:
   name: jnunemaker-matchy
   prerelease: false
   requirement: &id005 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - "="
       - !ruby/object:Gem::Version 
+        hash: 15
         segments: 
         - 0
         - 4
@@ -92,9 +103,11 @@ dependencies:
   name: mocha
   prerelease: false
   requirement: &id006 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - "="
       - !ruby/object:Gem::Version 
+        hash: 51
         segments: 
         - 0
         - 9
@@ -106,9 +119,11 @@ dependencies:
   name: fakeweb
   prerelease: false
   requirement: &id007 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 21
         segments: 
         - 1
         - 2
@@ -213,23 +228,27 @@ rdoc_options:
 require_paths: 
 - lib
 required_ruby_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 required_rubygems_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 requirements: []
 
 rubyforge_project: twitter
-rubygems_version: 1.3.6
+rubygems_version: 1.3.7
 signing_key: 
 specification_version: 3
 summary: wrapper for the twitter api

@@ -1,6 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: ruby-hmac
 version: !ruby/object:Gem::Version 
+  hash: 15
   prerelease: false
   segments: 
   - 0
@@ -22,9 +23,11 @@ dependencies:
   name: rubyforge
   prerelease: false
   requirement: &id001 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 9
         segments: 
         - 2
         - 0
@@ -36,9 +39,11 @@ dependencies:
   name: gemcutter
   prerelease: false
   requirement: &id002 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 21
         segments: 
         - 0
         - 2
@@ -50,9 +55,11 @@ dependencies:
   name: hoe
   prerelease: false
   requirement: &id003 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 27
         segments: 
         - 2
         - 5
@@ -98,23 +105,27 @@ rdoc_options:
 require_paths: 
 - lib
 required_ruby_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 required_rubygems_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 requirements: []
 
 rubyforge_project: ruby-hmac
-rubygems_version: 1.3.6
+rubygems_version: 1.3.7
 signing_key: 
 specification_version: 3
 summary: This module provides common interface to HMAC functionality

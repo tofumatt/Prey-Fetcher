@@ -1,6 +1,7 @@
 --- !ruby/object:Gem::Specification 
 name: oauth
 version: !ruby/object:Gem::Version 
+  hash: 31
   prerelease: false
   segments: 
   - 0
@@ -26,9 +27,11 @@ dependencies:
   name: ruby-hmac
   prerelease: false
   requirement: &id001 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 17
         segments: 
         - 0
         - 3
@@ -40,9 +43,11 @@ dependencies:
   name: newgem
   prerelease: false
   requirement: &id002 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 7
         segments: 
         - 1
         - 5
@@ -54,9 +59,11 @@ dependencies:
   name: actionpack
   prerelease: false
   requirement: &id003 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 3
         segments: 
         - 0
         version: "0"
@@ -66,9 +73,11 @@ dependencies:
   name: rack
   prerelease: false
   requirement: &id004 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 3
         segments: 
         - 0
         version: "0"
@@ -78,9 +87,11 @@ dependencies:
   name: hoe
   prerelease: false
   requirement: &id005 !ruby/object:Gem::Requirement 
+    none: false
     requirements: 
     - - ">="
       - !ruby/object:Gem::Version 
+        hash: 5
         segments: 
         - 2
         - 3
@@ -195,23 +206,27 @@ rdoc_options:
 require_paths: 
 - lib
 required_ruby_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 required_rubygems_version: !ruby/object:Gem::Requirement 
+  none: false
   requirements: 
   - - ">="
     - !ruby/object:Gem::Version 
+      hash: 3
       segments: 
       - 0
       version: "0"
 requirements: []
 
 rubyforge_project: oauth
-rubygems_version: 1.3.6
+rubygems_version: 1.3.7
 signing_key: 
 specification_version: 3
 summary: OAuth Core Ruby implementation
