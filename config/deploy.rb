@@ -1,11 +1,17 @@
 gem 'ktheory-vlad-git'
 
+# Load the deploy version to use from the first line of this file.
+File.readlines('./DEPLOY_VERSION').each do |line|
+  # Version (git tag) to deploy
+  DEPLOY_VERSION = line unless defined?(DEPLOY_VERSION)
+end
+
 set :application, 'preyfetcher'
 set :user, 'preyfetcher'
 set :domain, "#{user}@shiva.hosts.kicksass.ca" # where to ssh
 set :deploy_to, '/home/preyfetcher/sites/preyfetcher.com/' # target directory on server
 set :repository, 'git@github.com:tofumatt/Prey-Fetcher.git' # git repo to clone
-set :revision, '2.7.2' # git branch to deploy
+set :revision, DEPLOY_VERSION # git branch to deploy
 set :config_files, ['database.yml', 'prey_fetcher.rb']
 set :stream_controller, "#{current_path}/lib/stream_controller.rb"
 
