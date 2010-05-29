@@ -5,5 +5,6 @@ doc/api
 doc/app
 doc/plugins
 
+DEPLOY_VERSION
 config/database.yml
 config/prey_fetcher.rb
