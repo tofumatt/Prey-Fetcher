@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-  
   # Make sure the current user is logged in via Twitter
   before_filter :check_login
   
@@ -62,5 +61,4 @@ class UsersController < ApplicationController
     
     redirect_to(:root)
   end
-  
 end
