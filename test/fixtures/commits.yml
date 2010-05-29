@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  sha: MyString
+  url: MyString
+  author_name: MyString
+  author_email: MyString
+  message: MyText
+  timestamp: 2010-05-29 10:46:49
+
+two:
+  sha: MyString
+  url: MyString
+  author_name: MyString
+  author_email: MyString
+  message: MyText
+  timestamp: 2010-05-29 10:46:49

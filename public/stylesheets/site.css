@@ -1,5 +1,5 @@
 body {
-  background: #c2c4cc url('http://static.preyfetcher.com/images/page-bg.png') repeat-x top;
+  background: #c2c4cc url("http://static.preyfetcher.com/images/page-bg.png") repeat-x top;
   color: #030303;
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif;
   font-size: 1em; }
@@ -32,25 +32,25 @@ h2, h3, h4, h5, h6 {
   color: #214871;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 1.5em;
-  margin: 0 0 .5em;
+  margin: 0 0 0.5em;
   text-shadow: #999999 0 0 5px; }
 
 h2 {
   font-size: 1.75em; }
 
 h3, h4, h5, h6 {
-  margin: .75em 0; }
+  margin: 0.75em 0; }
   h3 span.numbered-header, h4 span.numbered-header, h5 span.numbered-header, h6 span.numbered-header {
     color: #030303;
-    font-size: .8em; }
+    font-size: 0.8em; }
 
-p, ul, ol, dl, label, input {
+p, ul, ol, dl, label, input, table {
   line-height: 1.3em;
-  margin: .25em 160px 1.5em 24px; }
+  margin: 0.25em 160px 1.5em 24px; }
 
 ul {
   margin-left: 48px;
-  margin-top: -.25em; }
+  margin-top: -0.25em; }
 
 li {
   list-style: square inside;
@@ -66,10 +66,10 @@ dt {
 #intro-list {
   margin-top: -5px; }
   #intro-list li {
-    margin-top: .25em; }
+    margin-top: 0.25em; }
     #intro-list li span {
       display: block;
-      margin: 2px 0 0 .9em; }
+      margin: 2px 0 0 0.9em; }
 
 .no-bullet {
   list-style: none outside !important; }
@@ -84,10 +84,10 @@ dt {
   display: none; }
 
 ul.smaller {
-  margin-top: -.75em; }
+  margin-top: -0.75em; }
 
 .smaller {
-  font-size: .9em; }
+  font-size: 0.9em; }
 
 .space {
   padding: 12px 0 0; }
@@ -129,10 +129,36 @@ input.checkbox {
 
 input.submit {
   float: left;
-  margin: -1px .75em 0 0; }
+  margin: -1px 0.75em 0 0; }
 
 input.text-long {
   width: 267px; }
+
+table {
+  margin-right: 24px; }
+
+table#commits {
+  width: 100%; }
+  table#commits th {
+    font-size: 1.2em;
+    font-weight: bold; }
+  table#commits td {
+    font-size: 0.85em; }
+  table#commits th, table#commits td {
+    display: block;
+    float: left;
+    margin: 5px; }
+  table#commits .authorname {
+    width: 55%; }
+  table#commits .datetime {
+    width: 35%; }
+  table#commits th.message {
+    display: none; }
+  table#commits .message {
+    clear: both;
+    display: block;
+    float: none;
+    padding: 0 5px 0 20px; }
 
 #page, #footer {
   margin: 0 auto;
@@ -144,7 +170,7 @@ input.text-long {
   padding-bottom: 0; }
 
 #app-name {
-  background: transparent url('http://static.preyfetcher.com/images/logo.png') no-repeat left top;
+  background: transparent url("http://static.preyfetcher.com/images/logo.png") no-repeat left top;
   display: block;
   height: 116px;
   margin: 0 0 40px -10px;
@@ -153,7 +179,7 @@ input.text-long {
   width: 690px; }
 
 #content {
-  font-size: .95em; }
+  font-size: 0.95em; }
 
 #menu {
   background: #708fa1;
@@ -170,14 +196,14 @@ input.text-long {
   #menu ul {
     margin-left: auto;
     margin-right: auto;
-    max-width: 675px; }
+    max-width: 750px; }
   #menu li {
     display: inline;
     list-style: none;
     margin: 0; }
     #menu li a.menu-item, #menu li span.menu-item {
       background: #708fa1;
-      color: #ffffff;
+      color: white;
       display: inline;
       float: left;
       height: 20px;
@@ -239,7 +265,7 @@ input.text-long {
   margin: 2px; }
 
 #signup-button {
-  background: url('http://static.preyfetcher.com/images/signin-twitter-new.png') no-repeat center !important;
+  background: url("http://static.preyfetcher.com/images/signin-twitter-new.png") no-repeat center !important;
   display: block;
   height: 24px;
   margin: 0 0 0 auto;
@@ -249,9 +275,9 @@ input.text-long {
 #footer {
   border-top: #030303 1px solid;
   clear: both;
-  font-size: .75em;
+  font-size: 0.75em;
   margin: 72px 0 -30px -10px;
-  opacity: .95;
+  opacity: 0.95;
   padding: 6px 0;
   width: 690px; }
   #footer p, #footer ul, #footer dl, #footer ol {

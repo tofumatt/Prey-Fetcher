@@ -9,7 +9,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100516012233) do
+ActiveRecord::Schema.define(:version => 20100529134649) do
+
+  create_table "commits", :force => true do |t|
+    t.string   "sha"
+    t.string   "url"
+    t.string   "author_name"
+    t.string   "author_email"
+    t.text     "message"
+    t.datetime "timestamp"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "notifications", :force => true do |t|
     t.integer  "twitter_user_id", :limit => 8
