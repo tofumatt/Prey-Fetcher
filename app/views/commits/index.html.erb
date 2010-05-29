@@ -1,24 +1,26 @@
 <p>Prey Fetcher is a stable, open source project under active development. You can see some of the recent changes committed to Prey Fetcher here, or check out the <a href="http://github.com/tofumatt/Prey-Fetcher/commits">entire changelog on GitHub</a>.</p>
 
-<h3>Most Recent Changes</h3>
+<% if @commits.length != 0 %>
+	<h3>Most Recent Changes</h3>
 
-<table id="commits">
-	<tr class="header">
-		<th class="authorname">Author</th>
-		<th class="datetime">Time of Commit</th>
-		<th class="message">Message</th>
-	</tr>
-	
-	<% @commits.each do |commit| %>
-		<tr>
-			<td class="authorname"><a href="mailto:<%= commit.author_email unless commit.author_email.nil? %>"><%=h commit.author_name %></a></td>
-			<td class="datetime"><a href="<%= commit.url %>"><%=h commit.timestamp.strftime '%B %d at %I:%M %p' %></a></td>
-			<td class="message"><%=h commit.message unless commit.message.nil? %></td>
+	<table id="commits">
+		<tr class="header">
+			<th class="authorname">Author</th>
+			<th class="datetime">Time of Commit</th>
+			<th class="message">Message</th>
 		</tr>
-	<% end %>
-</table>
+	
+		<% @commits.each do |commit| %>
+			<tr>
+				<td class="authorname"><a href="mailto:<%= commit.author_email unless commit.author_email.nil? %>"><%=h commit.author_name %></a></td>
+				<td class="datetime"><a href="<%= commit.url %>"><%=h commit.timestamp.strftime '%B %d at %I:%M %p' %></a></td>
+				<td class="message"><%=h commit.message unless commit.message.nil? %></td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>
 
-<h3>More Commits and Info</h3>
+<h3><% if @commits.length != 0 %>More <% end %>Commits and Info</h3>
 
 <p>Prey Fetcher's <a href="http://github.com/tofumatt/Prey-Fetcher/commits">entire commit history</a>, issue<a href="http://github.com/tofumatt/Prey-Fetcher/issues"> tracker</a>, and <a href="http://github.com/tofumatt/Prey-Fetcher">source code</a> is available on GitHub.</p>
 
