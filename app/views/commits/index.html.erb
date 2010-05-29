@@ -14,7 +14,7 @@
 			<tr>
 				<td class="authorname"><a href="mailto:<%= commit.author_email unless commit.author_email.nil? %>"><%=h commit.author_name %></a></td>
 				<td class="datetime"><a href="<%= commit.url %>"><%=h commit.timestamp.strftime '%B %d at %I:%M %p' %></a></td>
-				<td class="message"><%=h commit.message unless commit.message.nil? %></td>
+				<td class="message"><%=h commit.message.gsub(/^([^\n|\r\n]*)(\n|\r\n).*$/, "\\1") unless commit.message.nil? %><% if commit.message.match(/^([^\n|\r\n]*)(\n|\r\n)(.*)$/) %> <a href="<%= commit.url %>">More…</a><% end %></td>
 			</tr>
 		<% end %>
 	</table>
