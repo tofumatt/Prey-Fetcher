@@ -142,6 +142,8 @@ class User < ActiveRecord::Base
           u.update_attribute('twitter_username', creds['screen_name'])
         end
       rescue Twitter::Unauthorized # Delete this user; they've revoked access
+        logger.error Time.now.to_s + '   @' + u.twitter_username
+        logger.error 'Access revoked for @' + u.twitter_username + ". Deleting Twitter user id " + u.twitter_user_id.to_s
         u.delete
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
         logger.error Time.now.to_s + '   @' + self.twitter_username
