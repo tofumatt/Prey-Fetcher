@@ -12,3 +12,11 @@ label.for-checkbox {
 
 #content {
   padding-bottom: 72px; }
+
+table#commits tbody tr {
+  position: relative; }
+table#commits tbody td {
+  padding-bottom: 2.5em; }
+table#commits tbody td.message {
+  position: absolute;
+  top: 2em; }
