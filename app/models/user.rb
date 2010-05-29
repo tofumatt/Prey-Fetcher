@@ -140,10 +140,13 @@ class User < ActiveRecord::Base
         if u.twitter_username != creds['screen_name']
           logger.info "Updating screen name for \#id #{u.id}. Changing name from @#{u.twitter_username} to @#{creds['screen_name']}"
           u.update_attribute('twitter_username', creds['screen_name'])
+          
+          creds = nil
         end
-      rescue Twitter::Unauthorized # Delete this user; they've revoked access
+      rescue Twitter::Unauthorized => e # Delete this user; they've revoked access
         logger.error Time.now.to_s + '   @' + u.twitter_username
         logger.error 'Access revoked for @' + u.twitter_username + ". Deleting Twitter user id " + u.twitter_user_id.to_s
+        logger.error '@' + u.twitter_username + '   ' + e.to_s
         u.delete
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
         logger.error Time.now.to_s + '   @' + self.twitter_username
