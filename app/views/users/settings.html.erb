@@ -47,7 +47,7 @@
 			<%= f.check_box :enable_list, {:class => 'checkbox'} %>
 			
 			<div id="list-container" class="clear js-hide">
-				<% if @lists.size > 0 %>
+				<% if @lists and @lists.size > 0 %>
 					<div class="clear">
 						<label for="notification-list" class="for-select">List To Watch</label>
 						<select name="user[notification_list]" id="notification-list" class="select">

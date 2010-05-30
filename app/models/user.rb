@@ -18,6 +18,8 @@ class User < ActiveRecord::Base
   validate :prowl_api_key_is_valid
   validates_inclusion_of :dm_priority, :in => PRIORITY_RANGE
   validates_inclusion_of :mention_priority, :in => PRIORITY_RANGE
+  validates_inclusion_of :list_priority, :in => PRIORITY_RANGE
+  validates_presence_of :notification_list, :if => :enable_list, :message => 'must be selected. Please select a list to watch.'
   
   # Create a new user from session data retrieved from
   # twitter-login/OAuth authorization
