@@ -132,7 +132,7 @@ class User < ActiveRecord::Base
             :event => event,
             :description => direct_messages.first['text']
           )
-          Notification.new(:twitter_user_id => twitter_user_id).save
+          Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
     rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
@@ -177,7 +177,7 @@ class User < ActiveRecord::Base
             :event => event,
             :description => list_tweets.first['text']
           )
-          Notification.new(:twitter_user_id => twitter_user_id).save
+          Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
     rescue JSON::ParserError # Bad data (probably not even JSON)
