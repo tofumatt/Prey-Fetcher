@@ -1,7 +1,7 @@
 # Prey Fetcher
 ## Push your tweets to your iPhone
 
-Prey Fetcher is a _free and open-source service_ that automatically **pushes new mentions & direct messages to your iPhone**. It requires [Prowl](http://prowl.weks.net), an iPhone Growl client. Prey Fetcher uses Twitter's REST and Streaming APIs to deliver fast DM notifications and _instant_ notifications of mentions.
+Prey Fetcher is a _free and open source service_ that pushes new tweets and direct messages to your iPhone, iPod Touch, or iPad. It requires [Prowl](http://prowl.weks.net), an iPhone Growl client. Prey Fetcher uses Twitter's REST and Streaming APIs to deliver fast DM and list notifications and _instant_ notifications of mentions.
 
 ## Requirements
 
