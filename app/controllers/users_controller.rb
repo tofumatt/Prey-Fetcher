@@ -15,6 +15,7 @@ class UsersController < ApplicationController
     
     @title = 'Change Your Notification Settings'
     @user ||= User.find(:first, :conditions => { :twitter_user_id => twitter_user.id })
+    @lists = @user.lists
   end
 
   # PUT /account/settings

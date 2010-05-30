@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100529134649) do
+ActiveRecord::Schema.define(:version => 20100530222502) do
 
   create_table "commits", :force => true do |t|
     t.string   "sha"
@@ -29,19 +29,25 @@ ActiveRecord::Schema.define(:version => 20100529134649) do
   end
 
   create_table "users", :force => true do |t|
-    t.integer  "twitter_user_id",  :limit => 8
+    t.integer  "twitter_user_id",   :limit => 8
     t.string   "twitter_username"
     t.string   "prowl_api_key"
     t.string   "access_key"
     t.string   "access_secret"
-    t.integer  "mention_since_id", :limit => 8, :default => 1
-    t.integer  "dm_since_id",      :limit => 8, :default => 1
-    t.boolean  "enable_mentions",               :default => true
-    t.boolean  "enable_dms",                    :default => true
-    t.integer  "mention_priority",              :default => 0
-    t.integer  "dm_priority",                   :default => 0
+    t.integer  "mention_since_id",  :limit => 8, :default => 1
+    t.integer  "dm_since_id",       :limit => 8, :default => 1
+    t.boolean  "enable_mentions",                :default => true
+    t.boolean  "enable_dms",                     :default => true
+    t.integer  "mention_priority",               :default => 0
+    t.integer  "dm_priority",                    :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "list_since_id",     :limit => 8, :default => 1
+    t.integer  "notification_list"
+    t.boolean  "enable_list",                    :default => false
+    t.integer  "list_priority",                  :default => 0
+    t.string   "list_owner"
+    t.text     "lists_serialized"
   end
 
 end

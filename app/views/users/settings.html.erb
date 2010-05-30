@@ -12,7 +12,7 @@
 		<h3 class="clear">Twitter Options</h3>
 		
 		<div class="clear">
-			<%= f.label :enable_dms, 'Check for DMs', {:class => 'for-checkbox'} %>
+			<%= f.label :enable_dms, 'Notify on DM', {:class => 'for-checkbox'} %>
 			<%= f.check_box :enable_dms, {:class => 'checkbox'} %>
 			
 			<div id="dm-priority-container" class="clear js-hide">
@@ -27,7 +27,7 @@
 		</div>
 		
 		<div class="clear space">
-			<%= f.label :enable_mentions, 'Check for mentions', {:class => 'for-checkbox'} %>
+			<%= f.label :enable_mentions, 'Notify on mention', {:class => 'for-checkbox'} %>
 			<%= f.check_box :enable_mentions, {:class => 'checkbox'} %>
 			
 			<div id="mention-priority-container" class="clear js-hide">
@@ -41,8 +41,36 @@
 			</div>
 		</div>
 		
-		<%#= f.label :enable_retweets, 'Check for retweets', {:class => 'for-checkbox'} %>
-		<%#= f.check_box :enable_retweets, {:class => 'checkbox'} %>
+		<div class="clear space">
+			<%= f.label :enable_list, 'Watch A List', {:class => 'for-checkbox'} %>
+			<%= f.check_box :enable_list, {:class => 'checkbox'} %>
+			
+			<div id="list-container" class="clear js-hide">
+				<% if @lists.size > 0 %>
+					<div class="clear">
+						<label for="notification-list" class="for-select">List To Watch</label>
+						<select name="user[notification_list]" id="notification-list" class="select">
+							<% @lists.each do |list| %>
+								<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= h list.full_name %></option>
+							<% end %>
+						</select>
+					</div>
+					
+					<div class="clear">
+						<label for="list-priority" class="for-select">List Priority</label>
+						<select name="user[list_priority]" id="list-priority" class="select">
+							<option value="-1" <% if @user.list_priority == -1 %>selected="selected"<% end %>>Low</option>
+							<option value="0" <% if @user.list_priority == 0 %>selected="selected"<% end %>>Normal</option>
+							<option value="1" <% if @user.list_priority == 1 %>selected="selected"<% end %>>High</option>
+							<option value="2" <% if @user.list_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+						</select>
+					</div>
+				<% else %>
+					<p style="font-size: .8em;">Your account doesn't have any lists associated with it.<br />Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
+				<% end %>
+			</div>
+			
+		</div>
 		
 		<h3 class="clear space">iPhone Options</h3>
 		

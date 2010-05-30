@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
     :prowl_api_key => "Prowl API Key"
   }
   
+  # Store lists from Twitter in a serialized field
+  serialize :lists_serialized
+  
   # Setup associations based on the user's Twitter id;
   # if they ever leave the site and return, their old
   # notifications will get included in their counts
@@ -37,74 +40,6 @@ class User < ActiveRecord::Base
     user
   end
   
-  # Use our pretty names, if they exist
-  def self.human_attribute_name(attr)
-    HUMANIZED_ATTRIBUTES[attr.to_sym] || super
-  end
-  
-  # Test a user's Prowl API key via the Prowl API
-  def prowl_api_key_is_valid
-    require 'fastprowl'
-    logger.debug Time.now.to_s
-    logger.debug 'Validating a Prowl API Key...'
-    
-    if self.prowl_api_key.blank?
-      errors.add(:prowl_api_key, " is blank. You need to supply an API Key.")
-    elsif !FastProwl.verify(self.prowl_api_key)
-      errors.add(:prowl_api_key, " you submitted isn't valid.")
-    end
-  end
-  
-  # Check Twitter for new DMs for this user using the REST API
-  def check_dms
-    # Send any DM notifications -- handle exceptions from the JSON parser in case
-    # Twitter sends us back malformed JSON or (more likely) HTML when it's over capacity
-    begin
-      @oauth = Twitter::OAuth.new(OAUTH_SETTINGS['consumer_key'], OAUTH_SETTINGS['consumer_secret'])
-      @oauth.authorize_from_access(self.access_key, self.access_secret)
-      
-      @direct_messages = Twitter::Base.new(@oauth).direct_messages :count => 11, :since_id => self.dm_since_id
-      
-      if @direct_messages.size > 0
-        # The notification text depends on the number of new tweets
-        if @direct_messages.size == 1
-          event = "From @#{@direct_messages.first['sender']['screen_name']}"
-          description = @direct_messages.first['text']
-        elsif @direct_messages.size == 11
-          event = "Over 10 DMs! Latest from @#{@direct_messages.first['sender']['screen_name']}"
-          description = @direct_messages.first['text']
-        else
-          event = "#{@direct_messages.size} DMs. Latest from @#{@direct_messages.first['sender']['screen_name']}"
-          description = @direct_messages.first['text']
-        end
-        
-        # Update this users's since_id
-        update_attribute('dm_since_id', @direct_messages.first['id'])
-        
-        # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
-        if self.dm_since_id != 1
-          @@fastprowl.add(
-            :application => APPNAME + ' DM',
-            :apikey => self.prowl_api_key,
-            :priority => self.dm_priority,
-            :event => event,
-            :description => description
-          )
-          Notification.new(:twitter_user_id => self.twitter_user_id).save
-        end
-      end
-    rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
-      logger.error Time.now.to_s + '   @' + self.twitter_username
-      logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
-    rescue Timeout::Error
-      logger.error Time.now.to_s + '   @' + self.twitter_username
-      logger.error 'Twitter timed out for @' + self.twitter_username + "."
-    rescue Exception # Bad data or some other weird response
-      logger.error Time.now.to_s + '   @' + self.twitter_username
-      logger.error 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
-    end
-  end
-  
   # Called by cron, etc. to check all user accounts for new
   # tweets/direct messages, then send all notifications to Prowl
   def self.check_twitter
@@ -117,10 +52,16 @@ class User < ActiveRecord::Base
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
       u.check_dms if u.enable_dms && !u.prowl_api_key.blank?
+      u.check_lists if u.enable_list && !u.prowl_api_key.blank?
     end
     
     # Send all Prowl notifications
     @@fastprowl.run
+  end
+  
+  # Use our pretty names, if they exist
+  def self.human_attribute_name(attr)
+    HUMANIZED_ATTRIBUTES[attr.to_sym] || super
   end
   
   # Test each user's OAuth credentials and update/verify their username
@@ -158,6 +99,136 @@ class User < ActiveRecord::Base
         logger.error Time.now.to_s + '   @' + self.twitter_username
         logger.error 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
       end
+    end
+  end
+  
+  # Check Twitter for new DMs for this user using the REST API
+  def check_dms
+    # Send any DM notifications -- handle exceptions from the JSON
+    # parser in case Twitter sends us back malformed JSON or (more
+    # likely) HTML when it's over capacity
+    begin
+      direct_messages = Twitter::Base.new(oauth).direct_messages :count => 11, :since_id => dm_since_id
+      
+      if direct_messages.size > 0
+        # The notification event text depends on the number of new tweets
+        if direct_messages.size == 1
+          event = "From @#{direct_messages.first['sender']['screen_name']}"
+        elsif direct_messages.size == 11
+          event = "Over 10 DMs! Latest from @#{direct_messages.first['sender']['screen_name']}"
+        else
+          event = "#{direct_messages.size} DMs; latest from @#{direct_messages.first['sender']['screen_name']}"
+        end
+        
+        # Update this users's since_id
+        update_attribute('dm_since_id', direct_messages.first['id'])
+        
+        # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
+        if dm_since_id != 1
+          @@fastprowl.add(
+            :application => APPNAME + ' DM',
+            :apikey => prowl_api_key,
+            :priority => dm_priority,
+            :event => event,
+            :description => direct_messages.first['text']
+          )
+          Notification.new(:twitter_user_id => twitter_user_id).save
+        end
+      end
+    rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+    rescue Timeout::Error
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Twitter timed out for @' + twitter_username + "."
+    rescue Exception # Bad data or some other weird response
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+    end
+  end
+  
+  # Check Twitter for new tweets for any lists Prey Fetcher
+  # checks for this user using the REST API
+  def check_lists
+    # Send any DM notifications -- handle exceptions from the JSON
+    # parser in case Twitter sends us back malformed JSON or (more
+    # likely) HTML when it's over capacity
+    begin
+      list_tweets = Twitter::Base.new(oauth).list_timeline twitter_username, notification_list, :count => 2, :since_id => list_since_id
+      
+      if list_tweets.size > 0
+        # The notification event text depends on the number of new tweets
+        if list_tweets.size == 1
+          event = "New tweet by @#{list_tweets.first['user']['screen_name']}"
+        else
+          event = "New tweets; latest by @#{list_tweets.first['user']['screen_name']}"
+        end
+        
+        # Update this users's since_id
+        update_attribute('list_since_id', list_tweets.first['id'])
+        
+        # A since_id of 1 means the user is brand new -- we don't
+        # send notifications on the first check
+        if self.list_since_id != 1
+          @@fastprowl.add(
+            :application => APPNAME + ' List',
+            :apikey => prowl_api_key,
+            :priority => list_priority,
+            :event => event,
+            :description => list_tweets.first['text']
+          )
+          Notification.new(:twitter_user_id => twitter_user_id).save
+        end
+      end
+    rescue JSON::ParserError # Bad data (probably not even JSON)
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+    rescue Timeout::Error
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Twitter timed out for @' + twitter_username + "."
+    rescue Exception # Bad data or some other weird response
+      logger.error Time.now.to_s + '   @' + twitter_username
+      logger.error 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+    end
+  end
+  
+  # Load this users' lists from the REST API, and update their
+  # locally stored/serialized lists property
+  def load_lists
+    lists = Twitter::Base.new(oauth).lists(twitter_username).lists# + Twitter::Base.new(oauth).list_subscriptions(twitter_username).lists
+    
+    update_attribute('lists_serialized', lists)
+    
+    lists
+  end
+  
+  # Return lists this user owns, includes private lists
+  def lists(force_reload=false)
+    return load_lists if force_reload
+    
+    lists_serialized || load_lists
+  end
+  
+  # Return this user's OAuth instance
+  def oauth
+    if @oauth.nil?
+      @oauth = Twitter::OAuth.new(OAUTH_SETTINGS['consumer_key'], OAUTH_SETTINGS['consumer_secret'])
+      @oauth.authorize_from_access(self.access_key, self.access_secret)
+    end
+    
+    @oauth
+  end
+  
+  # Test a user's Prowl API key via the Prowl API
+  def prowl_api_key_is_valid
+    require 'fastprowl'
+    logger.debug Time.now.to_s
+    logger.debug 'Validating a Prowl API Key...'
+    
+    if prowl_api_key.blank?
+      errors.add(:prowl_api_key, " is blank. You need to supply an API Key.")
+    elsif !FastProwl.verify(self.prowl_api_key)
+      errors.add(:prowl_api_key, " you submitted isn't valid.")
     end
   end
 end
