@@ -57,7 +57,6 @@ EventMachine::run do
   )
   
   stream.each_item do |item|
-    # Do someting with unparsed JSON item.
     tweet = JSON.parse(item)
     
     prowl_users.each do |user|
@@ -71,18 +70,15 @@ EventMachine::run do
           :description => tweet['text']
         )
         
-        Notification.new(:twitter_user_id => user[:id]).save
+        Notification.create(:twitter_user_id => user[:id])
       end
     end
   end
   
   stream.on_error do |message|
-    # No need to worry here. It might be an issue with Twitter. 
-    # Log message for future reference. JSONStream will try to reconnect after a timeout.
   end
   
   stream.on_max_reconnects do |timeout, retries|
-    # Something is wrong on your side. Send yourself an email.
   end
   
   trap('TERM') {
