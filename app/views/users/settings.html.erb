@@ -51,6 +51,7 @@
 					<div class="clear">
 						<label for="notification-list" class="for-select">List To Watch</label>
 						<select name="user[notification_list]" id="notification-list" class="select">
+							<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
 							<% @lists.each do |list| %>
 								<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= h list.full_name %></option>
 							<% end %>

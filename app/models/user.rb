@@ -199,6 +199,15 @@ class User < ActiveRecord::Base
     
     update_attribute('lists_serialized', lists)
     
+    list_ids = []
+    lists.each do |list|
+      list_ids << list.id
+    end
+    
+    # Remove the list this user was
+    # following if it no longer exists
+    update_attribute('notification_list', nil) unless lists.size > 0 and list_ids.include? notification_list
+    
     lists
   end
   
