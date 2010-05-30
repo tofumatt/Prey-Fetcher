@@ -7,6 +7,7 @@
 		<ul class="smaller">
 			<li><em class="underline">DMs</em> &mdash; when you have new Direct Messages</li>
 			<li><em class="underline">mentions</em> &mdash; when your username appears in a tweet</li>
+			<li><em class="underline">Lists</em> &mdash; when a new tweet appears in a list you follow</li>
 		</ul>
 		
 		<h3 class="clear">Twitter Options</h3>
@@ -69,7 +70,6 @@
 					<p style="font-size: .8em;">Your account doesn't have any lists associated with it.<br />Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
 				<% end %>
 			</div>
-			
 		</div>
 		
 		<h3 class="clear space">iPhone Options</h3>
@@ -84,4 +84,15 @@
 			<%= f.submit 'Update Settings', { :class => 'submit', :method => :put } %> | <%= link_to 'Cancel', '/account', {:class => 'button'} %>
 		</div>
 	</div>
+<% end %>
+
+<h3 class="clear space">Refresh Twitter Lists</h3>
+
+<p>If you have added/removed lists from your Twitter account and they aren't showing up on this page, you can force a refresh of available Twitter lists.</p>
+
+<% form_tag('/account/refresh-lists', { :class => 'clear form', :method => :put }) do %>
+	<div>
+ 		<%= submit_tag "Refresh available lists", {:class => 'submit'} %>
+	</div>
+	<div class="block clear space"></div>
 <% end %>

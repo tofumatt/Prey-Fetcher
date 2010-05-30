@@ -62,4 +62,13 @@ class UsersController < ApplicationController
     
     redirect_to(:root)
   end
+  
+  # PUT /account/refresh-lists
+  # 
+  # Force a refresh of the currently logged-in user's available lists.
+  def reload_lists
+    User.find(:first, :conditions => { :twitter_user_id => twitter_user.id }).lists(true)
+    
+    redirect_to(:action => :settings)
+  end
 end
