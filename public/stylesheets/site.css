@@ -228,6 +228,9 @@ table#commits {
   .notice p, .notice ul {
     margin: 0 auto;
     padding: 0 12px; }
+  .notice li {
+    font-size: 0.9em;
+    text-align: left; }
   .notice a {
     color: black !important;
     text-shadow: none !important; }
