@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
     require 'fastprowl'
     require 'twitter'
     
-    @@fastprowl = FastProwl.new(:providerkey => PROWL_PROVIDER_KEY)
+    #@@fastprowl = FastProwl.new(:providerkey => PROWL_PROVIDER_KEY)
     
     # Loop through all users and queue all requests to Twitter in Hydra
     User.all.each do |u|
@@ -129,8 +129,9 @@ class User < ActiveRecord::Base
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
-          @@fastprowl.add(
+          FastProwl.add(
             :application => APPNAME + ' DM',
+            :providerkey => PROWL_PROVIDER_KEY,
             :apikey => prowl_api_key,
             :priority => dm_priority,
             :event => event,
@@ -175,8 +176,9 @@ class User < ActiveRecord::Base
         update_attribute('list_since_id', list_tweets.first['id'])
         
         # Queue up this notification
-        @@fastprowl.add(
+        FastProwl.add(
           :application => APPNAME + ' List',
+          :providerkey => PROWL_PROVIDER_KEY,
           :apikey => prowl_api_key,
           :priority => list_priority,
           :event => event,
