@@ -53,7 +53,7 @@ class User < ActiveRecord::Base
     # Loop through all users and queue all requests to Twitter in Hydra
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
-      unless u.prowl_api_key.blank?
+      unless u.prowl_api_key.nil? || u.prowl_api_key.blank?
         u.check_dms if u.enable_dms
         u.check_lists if u.enable_list
       end
