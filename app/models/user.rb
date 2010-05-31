@@ -53,8 +53,10 @@ class User < ActiveRecord::Base
     # Loop through all users and queue all requests to Twitter in Hydra
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
-      u.check_dms if u.enable_dms && !u.prowl_api_key.blank?
-      u.check_lists if u.enable_list && !u.prowl_api_key.blank?
+      unless u.prowl_api_key.blank?
+        u.check_dms if u.enable_dms
+        u.check_lists if u.enable_list
+      end
     end
     
     # Send all Prowl notifications
@@ -137,15 +139,18 @@ class User < ActiveRecord::Base
           Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
-    rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
+    rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-    rescue Timeout::Error
+      logger.error '@' + twitter_username + '   ' + e.to_s
+    rescue Timeout::Error => e
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Twitter timed out for @' + twitter_username + "."
-    rescue Exception # Bad data or some other weird response
+      logger.error '@' + twitter_username + '   ' + e.to_s
+    rescue Exception => e # Bad data or some other weird response
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      logger.error '@' + twitter_username + '   ' + e.to_s
     end
   end
   
@@ -169,28 +174,28 @@ class User < ActiveRecord::Base
         # Update this users's since_id
         update_attribute('list_since_id', list_tweets.first['id'])
         
-        # A since_id of 1 means the user is brand new -- we don't
-        # send notifications on the first check
-        if self.list_since_id != 1
-          @@fastprowl.add(
-            :application => APPNAME + ' List',
-            :apikey => prowl_api_key,
-            :priority => list_priority,
-            :event => event,
-            :description => list_tweets.first['text']
-          )
-          Notification.create(:twitter_user_id => twitter_user_id)
-        end
+        # Queue up this notification
+        @@fastprowl.add(
+          :application => APPNAME + ' List',
+          :apikey => prowl_api_key,
+          :priority => list_priority,
+          :event => event,
+          :description => list_tweets.first['text']
+        )
+        Notification.create(:twitter_user_id => twitter_user_id)
       end
-    rescue JSON::ParserError # Bad data (probably not even JSON)
+    rescue JSON::ParserError => e # Bad data (probably not even JSON)
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-    rescue Timeout::Error
+      logger.error '@' + twitter_username + '   ' + e.to_s
+    rescue Timeout::Error => e
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Twitter timed out for @' + twitter_username + "."
-    rescue Exception # Bad data or some other weird response
+      logger.error '@' + twitter_username + '   ' + e.to_s
+    rescue Exception => e # Bad data or some other weird response
       logger.error Time.now.to_s + '   @' + twitter_username
       logger.error 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      logger.error '@' + twitter_username + '   ' + e.to_s
     end
   end
   
