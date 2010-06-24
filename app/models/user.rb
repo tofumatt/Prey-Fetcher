@@ -92,7 +92,11 @@ class User < ActiveRecord::Base
         logger.error Time.now.to_s + '   @' + u.twitter_username
         logger.error 'Access revoked for @' + u.twitter_username + ". Deleting Twitter user id " + u.twitter_user_id.to_s
         logger.error '@' + u.twitter_username + '   ' + e.to_s
-        u.delete
+        
+        # Try to solve bug with @AviN456's account
+        unless u.twitter_username == 'AviN456'
+          u.delete
+        end
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
         logger.error Time.now.to_s + '   @' + self.twitter_username
         logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
