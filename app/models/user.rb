@@ -60,7 +60,7 @@ class User < ActiveRecord::Base
     end
     
     # Send all Prowl notifications
-    @@fastprowl.run
+    #@@fastprowl.run
   end
   
   # Use our pretty names, if they exist
@@ -82,7 +82,7 @@ class User < ActiveRecord::Base
         # Update user's screen name if they've changed it (prevents
         # users who changed their screen name from getting notifications
         # through the Streaming API)
-        if u.twitter_username != creds['screen_name']
+        if u.twitter_username && u.twitter_username != creds['screen_name']
           logger.info "Updating screen name for \#id #{u.id}. Changing name from @#{u.twitter_username} to @#{creds['screen_name']}"
           u.update_attribute('twitter_username', creds['screen_name'])
           
