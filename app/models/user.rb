@@ -82,7 +82,7 @@ class User < ActiveRecord::Base
         # Update user's screen name if they've changed it (prevents
         # users who changed their screen name from getting notifications
         # through the Streaming API)
-        if u.twitter_username && u.twitter_username != creds['screen_name']
+        if u && u.twitter_username && u.twitter_username != creds['screen_name']
           logger.info "Updating screen name for \#id #{u.id}. Changing name from @#{u.twitter_username} to @#{creds['screen_name']}"
           u.update_attribute('twitter_username', creds['screen_name'])
           
@@ -93,10 +93,7 @@ class User < ActiveRecord::Base
         logger.error 'Access revoked for @' + u.twitter_username + ". Deleting Twitter user id " + u.twitter_user_id.to_s
         logger.error '@' + u.twitter_username + '   ' + e.to_s
         
-        # Try to solve bug with @AviN456's account
-        unless u.twitter_username == 'AviN456'
-          u.delete
-        end
+        u.delete
       rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
         logger.error Time.now.to_s + '   @' + self.twitter_username
         logger.error 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
