@@ -1,19 +1,18 @@
+# Development mode
 require "rubygems"
-require "sinatra"
-require "haml"
-#require "sass"
-#require "json"
+require "bundler"
+Bundler.setup
+
+# Production mode (locked)
+# require ".bundle/environment"
+
+Bundler.require
 
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :root, File.dirname(__FILE__)
-set :public, 'public'
-set :views, 'views'
-
-# Let's make us some models
-require 'dm-core'
-require 'dm-timestamps'
-require 'dm-validations'
+set :public, "public"
+set :views, "views"
 
 class Commit
   include DataMapper::Resource
@@ -82,7 +81,7 @@ class User
   def prowl_api_key_is_valid?
     return [false, "You must supply a Prowl API key."] if self.prowl_api_key.nil? || self.prowl_api_key.blank?
     
-    require 'fastprowl'
+    require "fastprowl"
     #logger.debug Time.now.to_s
     #logger.debug 'Validating a Prowl API Key...'
     
@@ -94,6 +93,6 @@ class User
   end
 end
 
-get '/' do
+get "/" do
   "Push your tweets to nowhere."
 end
