@@ -1,10 +1,12 @@
 log/*.log
-db/*.sqlite3
+log/*.pid
 tmp/**/*
-doc/api
-doc/app
-doc/plugins
+thin/development_config.yml
+lib/sinatra/*.log
+lib/sinatra/dist
+lib/sinatra/book
+lib/sinatra/doc/api
+lib/sinatra/doc/*.html
 
 DEPLOY_VERSION
-config/database.yml
-config/prey_fetcher.rb
+config.yml
