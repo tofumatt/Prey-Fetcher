@@ -14,21 +14,6 @@ set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
 
-class Commit
-  include DataMapper::Resource
-  
-  property :id, Serial
-  property :sha, String, :required => true, :unique => true
-  property :url, String, :required => true
-  property :author_name, String, :required => true
-  property :author_email, String, :required => true
-  property :message, Text
-  property :timestamp, DateTime, :required => true
-  # Timestamps
-  property :created_at, DateTime
-  property :updated_at, DateTime
-end
-
 class Notification
   include DataMapper::Resource
   
