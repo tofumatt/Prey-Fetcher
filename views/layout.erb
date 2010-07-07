@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Prey Fetcher<% unless @title.nil? %> :: <%= @title %><% end %></title>
+    
+    <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
+    <link href="<%= asset "stylesheets/site.css" %>" media="screen" rel="stylesheet" type="text/css">
+    <!--[if IE 6]>
+      <link href="<%= asset "stylesheets/ie6.css" %>" media="screen" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if IE 7]>
+      <link href="<%= asset "stylesheets/ie7.css" %>" media="screen" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if IE 8]>
+      <link href="<%= asset "stylesheets/ie8.css" %>" media="screen" rel="stylesheet" type="text/css">
+    <![endif]-->
+    
+    <script src="http://www.google.com/jsapi?key=ABQIAAAAN9kqWR8Iymy3XzomcLTzURTJi1_g9C4kpJVNHDM-iHukiHJeyxS7f50NnzrBx8eVpw559uASPsfAjg"></script>
+    <script>google.load('jquery', '1.4');</script>
+    <script src="<%= asset "javascripts/jquery.preyfetcher.js" %>"></script>
+    
+    <link rel="alternate" href="http://github.com/tofumatt/Prey-Fetcher/commits.atom" title="Recent Commits to Prey-Fetcher (via GitHub)" type="application/atom+xml">
+    <link rel="icon" type="image/png" href="<%= asset "favicon.png" %>">
+    <!--[if IE]><link rel="shortcut icon" href="<%= asset "favicon.ico" %>"><![endif]-->
+  </head>
+  <body>
+    <div id="menu">
+      <ul>
+        <li><a href="/" class="menu-item">Home</a></li>
+        <li><a href="/faq" class="menu-item">FAQ</a></li>
+        <li><a href="/privacy" class="menu-item">Privacy</a></li>
+        <li><a href="/open-source" class="menu-item">Open Source</a></li>
+        <% if twitter_user.nil? %>
+          <li><a href="/login" id="signup-button">Signup now</a></li>
+        <% else %>
+          <li id="user-info"><span class="menu-item"><strong><a href="/account">@<%= twitter_user.screen_name %></a></strong> | <a href="/account/settings">Settings</a> | <a href="/logout">Logout</a></span></li>
+        <% end %>
+      </ul>
+    </div>
+    
+    <div id="page">
+      <div id="header">
+        <h1><a href="/" id="app-name">Prey Fetcher</a></h1>
+        <% unless @title.nil? %><h2><%= @title %></h2><% end %>
+      </div>
+      
+      <div id="content">
+        <%= yield %>
+      </div>
+      
+      <div id="footer">
+        <p><%= number_format(50) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.</p>
+        
+        <p>&copy; 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
+        <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
+      </div>
+    </div>
+    
+    <% if Sinatra::Application.environment == 'production' %>
+      <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+      try {
+      var pageTracker = _gat._getTracker("UA-3850161-7");
+      pageTracker._trackPageview();
+      } catch(err) {}</script>
+    <% end %>
+  </body>
+</html>

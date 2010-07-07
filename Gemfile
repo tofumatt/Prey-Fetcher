@@ -5,12 +5,14 @@ gem "json"
 
 # Sinatra
 gem "sinatra"
-gem "sinatra-config-file", :require => "sinatra/config_file"
 
 # Datamapper
 gem "dm-core"
 gem "dm-timestamps"
 gem "dm-validations"
+
+# Twitter
+gem "twitter-login", :require => "twitter/login"
 
 # Deployment
 gem "vlad", :require => false

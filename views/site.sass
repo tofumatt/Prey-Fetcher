@@ -13,20 +13,20 @@
 !preyf_colour = #154e7a
 
 body
-  background = !body_background_colour url('http://static.preyfetcher.com/images/page-bg.png') repeat-x top
-  color = !text_colour
+  background: !body_background_colour url('http://static.preyfetcher.com/images/page-bg.png') repeat-x top
+  color: !text_colour
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
   font-size: 1em
 
 a
-  color = !link_colour
+  color: !link_colour
   text-decoration: underline
   text-shadow: none
   
   &:hover, &:focus
-    color = !link_colour + #222
+    color: !link_colour + #222
     text-decoration: none
-    text-shadow = !background_colour + #222 1px 1px 6px
+    text-shadow: !background_colour + #222 1px 1px 6px
 
 strong
   font-weight: bold
@@ -44,12 +44,12 @@ span.ampersand
   font-style: italic
 
 h2, h3, h4, h5, h6
-  border-bottom = !border_colour 1px solid
-  color = !header_colour
+  border-bottom: !border_colour 1px solid
+  color: !header_colour
   font-family: Helvetica, Arial, sans-serif
   font-size: 1.5em
   margin: 0 0 .5em
-  text-shadow = !background_colour 0 0 5px
+  text-shadow: !background_colour 0 0 5px
 
 h2
   font-size: 1.75em
@@ -57,8 +57,8 @@ h2
 h3, h4, h5, h6
   margin: .75em 0
   
-  & span.numbered-header
-    color = !text_colour
+  span.numbered-header
+    color: !text_colour
     font-size: .8em
 
 p, ul, ol, dl, label, input, table
@@ -83,10 +83,10 @@ dt
 #intro-list
   margin-top: -5px
 
-  & li
+  li
     margin-top: .25em
   
-    & span
+    span
       display: block
       margin: 2px 0 0 .9em
 
@@ -209,7 +209,7 @@ table#commits
 
 #menu
   background: #708fa1
-  border = !border_colour 1px solid
+  border: !border_colour 1px solid
   border-left: none
   border-right: none
   left: 0
@@ -220,17 +220,17 @@ table#commits
   width: 100%
   z-index: 100
   
-  & ul
+  ul
     margin-left: auto
     margin-right: auto
     max-width: 750px
   
-  & li
+  li
     display: inline
     list-style: none
     margin: 0
     
-    & a.menu-item, & span.menu-item
+    a.menu-item, span.menu-item
       background: #708fa1
       color: #ffffff
       display: inline
@@ -241,11 +241,12 @@ table#commits
       padding: 3px 8px 5px
       text-align: center
       text-decoration: none
-      text-shadow = !background_colour - #111 0px 0px 9px
+      text-shadow: !background_colour - #111 0px 0px 9px
       width: auto
     
-    & a:hover, & a:focus
-      background = #708fa1 - #333333
+    a
+      &:hover, &:focus
+        background: #708fa1 - #333333
 
 .notice
   border: 2px solid
@@ -256,7 +257,7 @@ table#commits
   text-shadow: none
   width: 90%
   
-  & p, & ul
+  p, ul
     margin: 0 auto
     padding: 0 12px
   
@@ -264,7 +265,7 @@ table#commits
     font-size: .9em
     text-align: left
   
-  & a
+  a
     color: black !important
     text-shadow: none !important
     
@@ -276,23 +277,23 @@ table#commits
   position: relative
   left: 30%
   
-  & a:hover, & a:focus
-    background = #f3f3f3 - #333333 !important
+  a:hover, a:focus
+    background: #f3f3f3 - #333333 !important
 
 #error
-  background = !error_colour + #111111
-  border-color = !error_colour - #666666
-  color = !error_colour - #666666
+  background: !error_colour + #111111
+  border-color: !error_colour - #666666
+  color: !error_colour - #666666
 
 #alert
-  background = !alert_colour + #111111
-  border-color = !alert_colour - #666666
-  color = !alert_colour - #999999
+  background: !alert_colour + #111111
+  border-color: !alert_colour - #666666
+  color: !alert_colour - #999999
 
 #notice
-  background = !notice_colour + #111111
-  border-color = !notice_colour - #666666
-  color = !notice_colour - #666666
+  background: !notice_colour + #111111
+  border-color: !notice_colour - #666666
+  color: !notice_colour - #666666
 
 #user_api_key
   padding: 2px 2px 2px 4px
@@ -311,7 +312,7 @@ table#commits
   width: 151px
 
 #footer
-  border-top = !border_colour 1px solid
+  border-top: !border_colour 1px solid
   clear: both
   font-size: .75em
   margin: 72px 0 -30px -10px
@@ -319,5 +320,5 @@ table#commits
   padding: 6px 0
   width: 690px
   
-  & p, & ul, & dl, & ol
+  p, ul, dl, ol
     margin-left: 10px
