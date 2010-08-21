@@ -1,0 +1,105 @@
+<form action="/settings" method="POST">
+  <div>
+    <input type="hidden" name="_method" value="put">
+    
+  	<p>Choose the tweets you want to be notified about:</p>
+	  
+  	<ul class="smaller">
+  		<li><em class="underline">DMs</em> — when you have new Direct Messages</li>
+  		<li><em class="underline">mentions</em> — when your username appears in a tweet</li>
+  		<li><em class="underline">Lists</em> — when a new tweet appears in a list you follow</li>
+  	</ul>
+	  
+  	<h3 class="clear">Twitter Options</h3>
+	  
+  	<div class="clear">
+  		<label for="user_enable_dms" class="for-checkbox">Notify on DM</label>
+  		<input type="hidden" name="user[enable_dms]" value="0">
+  		<input type="checkbox" id="user_enable_dms" class="checkbox" name="user[enable_dms]" value="1"<% if @user.enable_dms %> checked="checked"<% end %>>
+		  
+  		<div id="dm-priority-container" class="clear js-hide">
+  			<label for="dm-priority" class="for-select">DM Priority</label>
+  			<select name="user[dm_priority]" id="dm-priority" class="select">
+  				<option value="-1"<% if @user.dm_priority == -1 %> selected="selected"<% end %>>Low</option>
+  				<option value="0"<% if @user.dm_priority == 0 %> selected="selected"<% end %>>Normal</option>
+  				<option value="1"<% if @user.dm_priority == 1 %> selected="selected"<% end %>>High</option>
+  				<option value="2"<% if @user.dm_priority == 2 %> selected="selected"<% end %>>Emergency</option>
+  			</select>
+  		</div>
+  	</div>
+	  
+  	<div class="clear space">
+  		<label for="user_enable_mentions" class="for-checkbox">Notify on mention</label>
+  		<input type="hidden" name="user[enable_mentions]" value="0">
+  		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
+		  
+  		<div id="mention-priority-container" class="clear js-hide">
+  			<label for="mention-priority" class="for-select">mention Priority</label>
+  			<select name="user[mention_priority]" id="mention-priority" class="select">
+  				<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
+  				<option value="0" <% if @user.mention_priority == 0 %>selected="selected"<% end %>>Normal</option>
+  				<option value="1" <% if @user.mention_priority == 1 %>selected="selected"<% end %>>High</option>
+  				<option value="2" <% if @user.mention_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+  			</select>
+  		</div>
+  	</div>
+	  
+  	<div class="clear space">
+  		<label for="user_enable_list" class="for-checkbox">Watch A List</label>
+  		<input type="hidden" name="user[enable_list]" value="0">
+  		<input type="checkbox" id="user_enable_list" class="checkbox" name="user[enable_list]" value="1"<% if @user.enable_list %> checked="checked"<% end %>>
+		  
+  		<div id="list-container" class="clear js-hide">
+  			<% if @user.lists and @user.lists.size > 0 %>
+  				<div class="clear">
+  					<label for="notification-list" class="for-select">List To Watch</label>
+  					<select name="user[notification_list]" id="notification-list" class="select">
+  						<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
+  						<% @user.lists.each do |list| %>
+  							<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= list.full_name %></option>
+  						<% end %>
+  					</select>
+  				</div>
+				  
+  				<div class="clear">
+  					<label for="list-priority" class="for-select">List Priority</label>
+  					<select name="user[list_priority]" id="list-priority" class="select">
+  						<option value="-1" <% if @user.list_priority == -1 %>selected="selected"<% end %>>Low</option>
+  						<option value="0" <% if @user.list_priority == 0 %>selected="selected"<% end %>>Normal</option>
+  						<option value="1" <% if @user.list_priority == 1 %>selected="selected"<% end %>>High</option>
+  						<option value="2" <% if @user.list_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+  					</select>
+  				</div>
+  		  <% else %>
+  			  <p style="font-size: .8em;">Your account doesn't have any lists associated with it.<br>Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
+  		  <% end %>
+  		</div>
+  	</div>
+	  
+  	<h3 class="clear space">iPhone Options</h3>
+	  
+  	<div class="clear">
+  		<label for="user_prowl_api_key">Prowl API Key <span class="req">*<span class="hide">Required</span></span></label>
+  		<input type="text" id="user_prowl_api_key" class="text-long" name="user[prowl_api_key]" value="<%= @user.prowl_api_key %>">
+  	</div>
+	  
+  	<div class="clear space">
+  		<label for="user_submit" class="hide">Submit Settings Change</label>
+  		<input type="submit" id="user_submit" class="submit" name="commit" value="Update Settings"> | <a href="/account" class="button">Cancel</a>
+  	</div>
+  </div>
+</form>
+
+<h3 class="clear space">Refresh Twitter Lists</h3>
+
+<p>If you have added/removed lists from your Twitter account and they aren't showing up on this page, you can force a refresh of available Twitter lists.</p>
+
+<form action="/lists" method="POST" class="clear">
+  <div>
+    <input type="hidden" name="_method" value="put">
+    
+ 		<label for="refresh_lists" class="hide">Refresh available lists from Twitter</label>
+		<input type="submit" id="refresh_lists" class="submit" name="commit" value="Refresh available lists">
+  	<div class="block clear"></div>
+  </div>
+</form>
