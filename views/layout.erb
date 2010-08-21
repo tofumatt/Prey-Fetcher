@@ -34,7 +34,7 @@
         <% if twitter_user.nil? %>
           <li><a href="/login" id="signup-button">Signup now</a></li>
         <% else %>
-          <li id="user-info"><span class="menu-item"><strong><a href="/account">@<%= twitter_user.screen_name %></a></strong> | <a href="/account/settings">Settings</a> | <a href="/logout">Logout</a></span></li>
+          <li id="user-info"><span class="menu-item"><strong><a href="/account">@<%= twitter_user.screen_name %></a></strong> | <a href="/settings">Settings</a> | <a href="/logout">Logout</a></span></li>
         <% end %>
       </ul>
     </div>
@@ -46,10 +46,18 @@
       </div>
       
       <div id="content">
+        <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
+        <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
+        <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+        
         <%= yield %>
       </div>
       
       <div id="footer">
+        <a href="http://www.pledgie.com/campaigns/10696">
+          <img alt="Click here to lend your support to: Prey-Fetcher and make a donation at www.pledgie.com!" src="http://www.pledgie.com/campaigns/10696.png?skin_name=chrome" />
+        </a>
+        
         <p><%= number_format(50) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.</p>
         
         <p>&copy; 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
