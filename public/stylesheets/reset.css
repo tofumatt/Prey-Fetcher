@@ -1,10 +1,46 @@
-html,body,section,nav,article,aside,h1,h2,h3,h4,h5,h6,hgroup,header,footer,address,p,hr,pre,blockquote,ol,ul,li,dl,dt,dd,figure,figcaption,div,a,em,strong,small,cite,q,dfn,abbr,time,code,var,samp,kbd,sub,sup,i,b,mark,ruby,rt,rp,bdo,span,br,wbr,ins,del,img,iframe,embed,object,param,video,audio,source,canvas,map,area,table,caption,colgroup,col,tbody,thead,tfoot,tr,td,th,form,fieldset,legend,label,input,button,select,datalist,optgroup,option,textarea,keygen,output,progress,meter,details,summary,command,menu{border:0;font-family:inherit;font-size:100%;font-style:inherit;font-weight:inherit;margin:0;padding:0;vertical-align:baseline;}
-body{background:white;color:black;font-size:0.625em;line-height:1;}
-ol,ul,li{list-style:none;margin:0;padding:0;}
-table{border-collapse:separate;border-spacing:0;}
-caption,th,td{text-align:left;font-weight:normal;}
-blockquote:before,blockquote:after,q:before,q:after{content:"";}
-blockquote,q{quotes:"" "";}
+a, abbr, acronym, address, applet, big, blockquote, body, caption, cite, code, dd, del, dfn, div, dl, dt, em, fieldset, form, h1, h2, h3, h4, h5, h6, html, iframe, img, ins, kbd, label, legend, li, object, ol, p, pre, q, s, samp, small, span, strike, strong, sub, sup, table, tbody, td, tfoot, th, thead, tr, tt, ul, var {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+  text-decoration: none; }
+
+body {
+  line-height: 1;
+  color: black;
+  background: white;
+  font-size: 0.625em; }
+
+ol, ul, li {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+
+table {
+  border-collapse: separate;
+  border-spacing: 0; }
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal; }
+
+blockquote:before, blockquote:after {
+  content: ""; }
+
+q:before, q:after {
+  content: ""; }
+
+blockquote, q {
+  quotes: "" ""; }
+
+small {
+  font-size: .8em; }
+
 /*** Sane defaults ***/
 b,strong{font-weight:bold;}
 i,em,cite{font-style:italic;}
