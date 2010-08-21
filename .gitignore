@@ -1,12 +1,6 @@
-log/*.log
-log/*.pid
-tmp/**/*
-thin/development_config.yml
-lib/sinatra/*.log
-lib/sinatra/dist
-lib/sinatra/book
-lib/sinatra/doc/api
-lib/sinatra/doc/*.html
+.bundle
+*.sqlite3
+*.log
 
 DEPLOY_VERSION
 config.yml
