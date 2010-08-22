@@ -9,15 +9,9 @@ asset_servers = [
 namespace :deploy do
   desc "Copy public files to asset webserver"
   task :update_assets do
-    Rake::Task['deploy:build_sass'].invoke
     asset_servers.each do |server|
       system "scp -r #{Dir.pwd}/public/* #{server[:user]}@#{server[:server]}:#{server[:path]}"
     end
-  end
-  
-  desc 'Updates stylesheets if necessary from their Sass templates.'
-  task :build_sass => :environment do
-    Sass::Plugin.update_stylesheets
   end
 end
 
