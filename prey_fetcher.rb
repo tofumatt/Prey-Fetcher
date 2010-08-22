@@ -113,17 +113,17 @@ class User
         end
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     rescue Timeout::Error => e
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Twitter timed out for @' + twitter_username + "."
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Twitter timed out for @' + twitter_username + "."
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     rescue Exception => e # Bad data or some other weird response
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     end
   end
   
@@ -159,17 +159,17 @@ class User
         Notification.create(:twitter_user_id => twitter_user_id)
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     rescue Timeout::Error => e
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Twitter timed out for @' + twitter_username + "."
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Twitter timed out for @' + twitter_username + "."
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     rescue Exception => e # Bad data or some other weird response
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
     end
   end
   
@@ -229,24 +229,24 @@ class User
       # users who changed their screen name from getting notifications
       # through the Streaming API)
       if twitter_username && twitter_username != creds['screen_name']
-        $log << "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
+        $log << "\n" + "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
     rescue Twitter::Unauthorized => e # Delete this user; they've revoked access
-      $log << Time.now.to_s + '   @' + twitter_username
-      $log << 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
-      $log << '@' + twitter_username + '   ' + e.to_s
+      $log << "\n" + Time.now.to_s + '   @' + twitter_username
+      $log << "\n" + 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
+      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
       
       destroy!
     rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
-      $log << Time.now.to_s + '   @' + self.twitter_username
-      $log << 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
+      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
+      $log << "\n" + 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
     rescue Timeout::Error
-      $log << Time.now.to_s + '   @' + self.twitter_username
-      $log << 'Twitter timed out for @' + self.twitter_username + "."
+      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
+      $log << "\n" + 'Twitter timed out for @' + self.twitter_username + "."
     rescue Exception # Bad data or some other weird response
-      $log << Time.now.to_s + '   @' + self.twitter_username
-      $log << 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
+      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
+      $log << "\n" + 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
     end
   end
 end
