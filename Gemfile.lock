@@ -1,0 +1,156 @@
+--- 
+dependencies: 
+  vlad-git: 
+    group: 
+    - :default
+    version: ">= 0"
+    require: []
+
+  dm-validations: 
+    group: 
+    - :default
+    version: ">= 0"
+  haml: 
+    group: 
+    - :default
+    version: ">= 0"
+  dm-mysql-adapter: 
+    group: 
+    - :production
+    version: ">= 0"
+  twitter-login: 
+    group: 
+    - :default
+    version: ">= 0"
+    require: 
+    - twitter/login
+  dm-aggregates: 
+    group: 
+    - :default
+    version: ">= 0"
+  dm-core: 
+    group: 
+    - :default
+    version: ">= 0"
+  dm-timestamps: 
+    group: 
+    - :default
+    version: ">= 0"
+  vlad: 
+    group: 
+    - :default
+    version: ">= 0"
+    require: []
+
+  twitter-stream: 
+    group: 
+    - :default
+    version: ">= 0"
+    require: 
+    - twitter/json_stream
+  rack-flash: 
+    group: 
+    - :default
+    version: ">= 0"
+  json: 
+    group: 
+    - :default
+    version: ">= 0"
+  sinatra: 
+    group: 
+    - :default
+    version: ">= 0"
+  dm-sqlite-adapter: 
+    group: 
+    - :development
+    - :test
+    version: ">= 0"
+  deep_merge: 
+    group: 
+    - :default
+    version: ">= 0"
+  dm-migrations: 
+    group: 
+    - :default
+    version: ">= 0"
+  fastprowl: 
+    group: 
+    - :default
+    version: ">= 0"
+specs: 
+- rake: 
+    version: 0.8.7
+- addressable: 
+    version: 2.1.2
+- crack: 
+    version: 0.1.6
+- data_objects: 
+    version: 0.10.2
+- deep_merge: 
+    version: 0.1.0
+- extlib: 
+    version: 0.9.15
+- dm-core: 
+    version: 1.0.0
+- dm-aggregates: 
+    version: 1.0.0
+- dm-do-adapter: 
+    version: 1.0.0
+- dm-migrations: 
+    version: 1.0.0
+- do_mysql: 
+    version: 0.10.2
+- dm-mysql-adapter: 
+    version: 1.0.0
+- do_sqlite3: 
+    version: 0.10.2
+- dm-sqlite-adapter: 
+    version: 1.0.0
+- dm-timestamps: 
+    version: 1.0.0
+- dm-validations: 
+    version: 1.0.0
+- eventmachine: 
+    version: 0.12.10
+- rack: 
+    version: 1.2.1
+- typhoeus: 
+    version: 0.1.28
+- fastprowl: 
+    version: "0.2"
+- haml: 
+    version: 3.0.13
+- hashie: 
+    version: 0.1.8
+- httparty: 
+    version: 0.5.2
+- json: 
+    version: 1.4.3
+- ruby-hmac: 
+    version: 0.4.0
+- oauth: 
+    version: 0.3.6
+- open4: 
+    version: 0.9.6
+- rack-flash: 
+    version: 0.1.1
+- rake-remote_task: 
+    version: 2.0.0
+- roauth: 
+    version: 0.0.3
+- sinatra: 
+    version: "1.0"
+- twitter: 
+    version: 0.8.6
+- twitter-login: 
+    version: 0.2.1
+- twitter-stream: 
+    version: 0.1.8
+- vlad: 
+    version: 2.1.0
+- vlad-git: 
+    version: 2.1.0
+hash: 0c1eb28ddeae25ef26948113c8b9d14395749955
+sources: 
+- Rubygems: 
+    uri: http://rubygems.org
