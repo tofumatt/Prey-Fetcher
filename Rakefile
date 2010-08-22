@@ -1,11 +1,25 @@
-# Load Vlad The Deployer
-# begin
-#   require 'vlad'
-#   Vlad.load :app => :passenger, :scm => :git
-# rescue LoadError
-#   # So the server doesn't fail if it doesn't have Vlad
-#   puts "No Vlad!!! :-("
-# end
+asset_servers = [
+  {
+    :user => 'preyfetcher',
+    :server => "ifrit.hosts.kicksass.ca",
+    :path => "/home/preyfetcher/sites/static.preyfetcher.com"
+  }
+]
+
+namespace :deploy do
+  desc "Copy public files to asset webserver"
+  task :update_assets do
+    Rake::Task['deploy:build_sass'].invoke
+    asset_servers.each do |server|
+      system "scp -r #{Dir.pwd}/public/* #{server[:user]}@#{server[:server]}:#{server[:path]}"
+    end
+  end
+  
+  desc 'Updates stylesheets if necessary from their Sass templates.'
+  task :build_sass => :environment do
+    Sass::Plugin.update_stylesheets
+  end
+end
 
 namespace :prey_fetcher do
   # Called by cron, etc. to check all user accounts for new
