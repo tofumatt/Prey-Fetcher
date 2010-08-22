@@ -5,7 +5,7 @@ unless ENV['RACK_ENV'] == "production"
   Bundler.setup
 else
   # Production mode (locked)
-  require ".bundle/environment"
+  require File.join(File.dirname(__FILE__), ".bundle/environment")
 end
 
 Bundler.require
@@ -255,10 +255,10 @@ configure do
   # Load app config from YAML and set it in a constant
   require "yaml"
   
-  config = YAML.load_file("config.yml")
+  config = YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
   # Local config file for development, testing, overrides
   unless Sinatra::Application.environment == :production
-    config.deep_merge!(YAML.load_file("config_local.yml")) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
+    config.deep_merge!(YAML.load_file(File.join(File.dirname(__FILE__), "config_local.yml"))) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
   end
   
   # Assemble some extra config values from those already set
@@ -292,7 +292,7 @@ helpers do
   end
 end
 
-log = File.new("#{Sinatra::Application.environment}.log", "a")
+log = File.new(File.join(File.dirname(__FILE__), "#{Sinatra::Application.environment}.log"), "a")
 STDOUT.reopen(log)
 STDERR.reopen(log)
 
