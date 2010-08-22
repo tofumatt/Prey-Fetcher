@@ -9,8 +9,29 @@ asset_servers = [
 namespace :deploy do
   desc "Copy public files to asset webserver"
   task :update_assets do
+    Rake::Task['deploy:build_sass'].invoke
     asset_servers.each do |server|
       system "scp -r #{Dir.pwd}/public/* #{server[:user]}@#{server[:server]}:#{server[:path]}"
+    end
+    Rake::Task['deploy:clear_sass'].invoke
+  end
+  
+  desc 'Updates stylesheets if necessary from their Sass templates.'
+  task :build_sass do
+    Dir['views/*.sass'].each do |file|
+      system "sass #{file} #{file.gsub(/^views\/(.*)\.sass$/, "public/stylesheets/\\1.css")}"
+    end
+  end
+  
+  desc 'Delete Sass stylesheets.'
+  task :clear_sass do
+    sass_files = []
+    Dir['views/*.sass'].each do |file|
+      sass_files << file.gsub(/^views\/(.*)\.sass$/, "public/stylesheets/\\1.css")
+    end
+    
+    sass_files.each do |file|
+      system "rm #{file}"
     end
   end
 end
