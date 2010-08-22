@@ -1,15 +1,5 @@
-<p>Interesting info about your Prey Fetcher account:</p>
+<p>You can delete your Prey Fetcher account here.</p>
 
-<h3>Notifications Sent To You</h3>
-
-<dl>
-	<dt>Total</dt>
-	<dd><%= number_format(@user.notifications.count) %></dd>
-	<dt>Past 30 days</dt>
-	<dd><%= number_format(@user.notifications.this_month) %></dd>
-</dl>
-
-<h3 class="clear">Delete Your Prey Fetcher Account</h3>
 <form action="/account" method="POST" class="clear">
 	<div>
 	  <input type="hidden" name="_method" value="delete">
