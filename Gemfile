@@ -1,5 +1,6 @@
 source "http://rubygems.org"
 
+gem "deep_merge"
 gem "fastprowl"
 gem "haml"
 gem "json"
@@ -20,6 +21,7 @@ gem "dm-sqlite-adapter", :group => [:development, :test]
 
 # Twitter
 gem "twitter-login", :require => "twitter/login"
+gem "twitter-stream", :require => "twitter/json_stream"
 
 # Deployment
 gem "vlad", :require => false

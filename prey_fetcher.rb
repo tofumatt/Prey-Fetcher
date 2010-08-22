@@ -185,7 +185,7 @@ class User
   def load_lists
     lists = Twitter::Base.new(oauth).lists(twitter_username).lists
     
-    update(:lists_serialized => lists)
+    update!(:lists_serialized => lists)
     
     list_ids = []
     lists.each do |list|
@@ -194,7 +194,7 @@ class User
     
     # Remove the list this user was
     # following if it no longer exists
-    update(:notification_list => nil) unless lists.size > 0 and list_ids.include?(notification_list)
+    update!(:notification_list => nil) unless lists.size > 0 and list_ids.include?(notification_list)
     
     lists
   end
@@ -258,7 +258,7 @@ configure do
   config = YAML.load_file("config.yml")
   # Local config file for development, testing, overrides
   unless Sinatra::Application.environment == :production
-    config.merge!(YAML.load_file("config_local.yml")) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
+    config.deep_merge!(YAML.load_file("config_local.yml")) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
   end
   
   # Assemble some extra config values from those already set
