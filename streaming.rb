@@ -1,10 +1,8 @@
 require 'rubygems'
+require 'json'
 
 # Load Prey Fetcher
 require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
-
-require 'json'
-require 'twitter/json_stream'
 
 track_string = ''
 prowl_users = []
@@ -40,7 +38,7 @@ EventMachine::run do
       if tweet['text'].index("@#{user[:username]}")
         FastProwl.add(
           :application => AppConfig['app']['name'] + ' mention',
-          :providerkey => AppConfig['app']['provider_key'],
+          :providerkey => AppConfig['app']['prowl_provider_key'],
           :apikey => user[:prowl_key],
           :priority => user[:priority],
           :event => "From @#{tweet['user']['screen_name']}",
