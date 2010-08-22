@@ -272,7 +272,7 @@ configure do
   
   # Database stuff
   unless AppConfig['database'][db_env]['adapter'] == 'sqlite3'
-    DataMapper.setup(:default, "#{AppConfig['database'][db_env]['adapter']}://#{AppConfig['database'][db_env]['username']}@#{AppConfig['database'][db_env]['password']}#{AppConfig['database'][db_env]['host']}/#{AppConfig['database'][db_env]['database']}")
+    DataMapper.setup(:default, "#{AppConfig['database'][db_env]['adapter']}://#{AppConfig['database'][db_env]['username']}:#{AppConfig['database'][db_env]['password']}@#{AppConfig['database'][db_env]['host']}/#{AppConfig['database'][db_env]['database']}")
   else
     DataMapper.setup(:default, "sqlite3:#{AppConfig['database'][db_env]['database']}")
   end
