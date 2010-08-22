@@ -28,8 +28,8 @@ class Notification
   belongs_to :user, :foreign_key => :twitter_user_id
   
   def self.this_month
-	  count(:created_at => Date.today - 30..Date.today + 1)
-	end
+    count(:created_at => Date.today - 30..Date.today + 1)
+  end
 end
 
 class User
