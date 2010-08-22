@@ -102,8 +102,8 @@ class User
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
           FastProwl.add(
-            :application => APPNAME + ' DM',
-            :providerkey => PROWL_PROVIDER_KEY,
+            :application => AppConfig['app']['name'] + ' DM',
+            :providerkey => AppConfig['app']['prowl_provider_key'],
             :apikey => prowl_api_key,
             :priority => dm_priority,
             :event => event,
@@ -149,8 +149,8 @@ class User
         
         # Queue up this notification
         FastProwl.add(
-          :application => APPNAME + ' List',
-          :providerkey => PROWL_PROVIDER_KEY,
+          :application => AppConfig['app']['name'] + ' List',
+          :providerkey => AppConfig['app']['prowl_provider_key'],
           :apikey => prowl_api_key,
           :priority => list_priority,
           :event => event,
