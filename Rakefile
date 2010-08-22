@@ -56,10 +56,6 @@ namespace :prey_fetcher do
   desc "Verify credentials for all Prey Fetcher users"
   task :verify_accounts do
     require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
-    # $log = File.new(File.join(File.dirname(__FILE__), "#{Sinatra::Application.environment}.log"), "a")
-    # STDOUT.reopen($log)
-    # STDERR.reopen($log)
-    
     # Loop through all users and check their accounts.
     User.all.each do |u|
       u.verify_credentials
