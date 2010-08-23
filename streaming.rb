@@ -35,7 +35,7 @@ EventMachine::run do
     tweet = JSON.parse(item)
     
     prowl_users.each do |user|
-      if tweet['text'].index("@#{user[:username]}")
+      if tweet['text'].downcase.index("@#{user[:username].downcase}")
         FastProwl.add(
           :application => AppConfig['app']['name'] + ' mention',
           :providerkey => AppConfig['app']['prowl_provider_key'],
