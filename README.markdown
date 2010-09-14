@@ -1,6 +1,9 @@
 # Warning
 ## Highly Experimental Development Version
-This is an attempt at rewriting Prey Fetcher to use Sinatra and DataMapper. The nature of the site is quite small and Sinatra seems a better fit for it. This does not currently work. At all. The last stable release can be found in the [rails-stable branch](http://github.com/tofumatt/Prey-Fetcher/tree/rails-stable).
+This is an attempt at rewriting Prey Fetcher to use Sinatra and DataMapper. The nature of the site is quite small and Sinatra seems a better fit for it. This does not currently work. At all.
+
+## Stable Release
+The last stable release prior to this rewrite can be found in the [rails-stable branch](http://github.com/tofumatt/Prey-Fetcher/tree/rails-stable).
 
 # License
 This program is free software; it is distributed under the [GNU Affero General Public License, Version 3](http://www.gnu.org/licenses/agpl-3.0.html).
