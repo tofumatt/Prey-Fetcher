@@ -1,4 +1,5 @@
 .bundle
+.sass-cache
 *.sqlite3
 *.log
 
