@@ -10,6 +10,8 @@ end
 
 Bundler.require
 
+require File.join(File.dirname(__FILE__), "lib", "mass_assignment")
+
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :root, File.dirname(__FILE__)
@@ -35,6 +37,19 @@ end
 class User
   include DataMapper::Resource
   include DataMapper::Validate
+  include MassAssignment
+  
+  mass_assignment :only => [
+    :prowl_api_key,
+    :enable_mentions,
+    :mention_priority,
+    :enable_dms,
+    :dm_since_id, 
+    :dm_priority,
+    :enable_list,
+    :notification_list,
+    :list_priority
+  ]
   
   property :id, Serial
   property :twitter_user_id, Integer
