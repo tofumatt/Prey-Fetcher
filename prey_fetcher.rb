@@ -75,15 +75,16 @@ class User
   # Create a new user from session data retrieved from
   # twitter-login/OAuth authorization.
   def self.create_from_twitter(twitter_user, access_key, access_token)
-    User.create!( # Fill in the params manually; we only need a few settings
-      :twitter_user_id => twitter_user.id,
-      :twitter_username => twitter_user.screen_name,
-      :access_key => access_key,
-      :access_secret => access_token,
-      # Because we ignore callbacks
-      :created_at => Time.now,
-      :updated_at => Time.now
-    )
+    user = User.new
+    
+    # Fill in the params manually; we only need a few settings
+    user.twitter_user_id = twitter_user.id,
+    user.twitter_username = twitter_user.screen_name,
+    user.access_key = access_key,
+    user.access_secret = access_token,
+    # Because we ignore callbacks
+    user.created_at = Time.now,
+    user.updated_at = Time.now
   end
   
   # Check Twitter for new DMs for this user using the REST API
@@ -105,7 +106,8 @@ class User
         end
         
         # Update this users's since_id
-        update(:dm_since_id => direct_messages.first['id'])
+        dm_since_id = direct_messages.first['id'])
+        save
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
@@ -153,7 +155,8 @@ class User
         end
         
         # Update this users's since_id
-        update(:list_since_id => list_tweets.first['id'])
+        list_since_id = list_tweets.first['id'])
+        save
         
         # Queue up this notification
         FastProwl.add(
@@ -193,7 +196,8 @@ class User
   def load_lists
     lists = Twitter::Base.new(oauth).lists(twitter_username).lists
     
-    update!(:lists_serialized => lists)
+    lists_serialized = lists
+    save!
     
     list_ids = []
     lists.each do |list|
