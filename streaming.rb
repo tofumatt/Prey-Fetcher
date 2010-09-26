@@ -55,42 +55,48 @@ EventMachine::run do
     )
     
     stream.each_item do |item|
-      tweet = JSON.parse(item)
+      begin
+        tweet = JSON.parse(item)
       
-      # Get the user this message belows to
-      user = User.first(:twitter_user_id => tweet['for_user'])
+        # Get the user this message belows to
+        user = User.first(:twitter_user_id => tweet['for_user'])
       
-      # Ignore Prowl-less users
-      next if user.prowl_api_key.nil? || user.prowl_api_key.blank?
+        # Ignore Prowl-less users
+        next if user.prowl_api_key.nil? || user.prowl_api_key.blank?
       
-      puts tweet.inspect
+        puts tweet.inspect
       
-      # Is this a direct message?
-      if user.enable_dms && tweet['message'] && tweet['message']['direct_message']
-        FastProwl.add(
-          :application => AppConfig['app']['name'] + ' DM',
-          :providerkey => AppConfig['app']['prowl_provider_key'],
-          :apikey => user.prowl_api_key,
-          :priority => user.dm_priority,
-          :event => "From @#{tweet['message']['direct_message']['sender_screen_name']}",
-          :description => tweet['message']['direct_message']['text']
-        )
+        # Is this a direct message?
+        if user.enable_dms && tweet['message'] && tweet['message']['direct_message']
+          FastProwl.add(
+            :application => AppConfig['app']['name'] + ' DM',
+            :providerkey => AppConfig['app']['prowl_provider_key'],
+            :apikey => user.prowl_api_key,
+            :priority => user.dm_priority,
+            :event => "From @#{tweet['message']['direct_message']['sender_screen_name']}",
+            :description => tweet['message']['direct_message']['text']
+          )
         
-        Notification.create(:twitter_user_id => user.id)
-      end
+          Notification.create(:twitter_user_id => user.id)
+        end
       
-      # Is this a mention?
-      if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
-        FastProwl.add(
-          :application => AppConfig['app']['name'] + ' mention',
-          :providerkey => AppConfig['app']['prowl_provider_key'],
-          :apikey => user.prowl_api_key,
-          :priority => user.mention_priority,
-          :event => "From @#{tweet['message']['user']['screen_name']}",
-          :description => tweet['message']['text']
-        )
+        # Is this a mention?
+        if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
+          FastProwl.add(
+            :application => AppConfig['app']['name'] + ' mention',
+            :providerkey => AppConfig['app']['prowl_provider_key'],
+            :apikey => user.prowl_api_key,
+            :priority => user.mention_priority,
+            :event => "From @#{tweet['message']['user']['screen_name']}",
+            :description => tweet['message']['text']
+          )
         
-        Notification.create(:twitter_user_id => user.id)
+          Notification.create(:twitter_user_id => user.id)
+        end
+      rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
+        puts Time.now.to_s + '   @' + twitter_username
+        puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+        puts '@' + twitter_username + '   ' + e.to_s
       end
     end
     
