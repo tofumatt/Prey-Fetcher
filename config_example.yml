@@ -23,3 +23,4 @@ twitter:
     consumer_secret: OAuth Secret
     access_key: Registered Site Stream User Key
     access_secret: Registered Site Stream User Secret
+  site_stream_size: 100
