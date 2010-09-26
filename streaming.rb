@@ -94,9 +94,10 @@ EventMachine::run do
           Notification.create(:twitter_user_id => user.id)
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-        puts Time.now.to_s + '   @' + twitter_username
-        puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-        puts '@' + twitter_username + '   ' + e.to_s
+        puts Time.now.to_s
+        puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
+        puts e.to_s
+        puts ''
       end
     end
     
