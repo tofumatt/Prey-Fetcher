@@ -1,12 +1,6 @@
-unless ENV['RACK_ENV'] == "production"
-  # Development mode
-  require "rubygems"
-  require "bundler"
-  Bundler.setup
-else
-  # Production mode (locked)
-  require File.join(File.dirname(__FILE__), ".bundle/environment")
-end
+require "rubygems"
+require "bundler"
+Bundler.setup
 
 Bundler.require
 
