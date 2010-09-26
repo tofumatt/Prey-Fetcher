@@ -57,15 +57,13 @@ EventMachine::run do
     stream.each_item do |item|
       begin
         tweet = JSON.parse(item)
-      
+        
         # Get the user this message belows to
         user = User.first(:twitter_user_id => tweet['for_user'])
-      
+        
         # Ignore Prowl-less users
         next if user.prowl_api_key.nil? || user.prowl_api_key.blank?
-      
-        puts tweet.inspect
-      
+        
         # Is this a direct message?
         if user.enable_dms && tweet['message'] && tweet['message']['direct_message']
           FastProwl.add(
@@ -76,12 +74,10 @@ EventMachine::run do
             :event => "From @#{tweet['message']['direct_message']['sender_screen_name']}",
             :description => tweet['message']['direct_message']['text']
           )
-        
+          
           Notification.create(:twitter_user_id => user.id)
-        end
-      
         # Is this a mention?
-        if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
+        elsif user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
           FastProwl.add(
             :application => AppConfig['app']['name'] + ' mention',
             :providerkey => AppConfig['app']['prowl_provider_key'],
@@ -90,7 +86,7 @@ EventMachine::run do
             :event => "From @#{tweet['message']['user']['screen_name']}",
             :description => tweet['message']['text']
           )
-        
+          
           Notification.create(:twitter_user_id => user.id)
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
