@@ -33,8 +33,15 @@ class User
   include DataMapper::Validate
   include MassAssignment
   
-  mass_assignment :except => [
-    :id,
+  mass_assignment :only => [
+    :prowl_api_key,
+    :enable_mentions,
+    :mention_priority,
+    :enable_dms,
+    :dm_priority,
+    :enable_list,
+    :notification_list,
+    :list_priority
   ]
   
   property :id, Serial
