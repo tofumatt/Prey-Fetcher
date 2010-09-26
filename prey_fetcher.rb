@@ -1,12 +1,6 @@
-unless ENV['RACK_ENV'] == "production"
-  # Development mode
-  require "rubygems"
-  require "bundler"
-  Bundler.setup
-else
-  # Production mode (locked)
-  require File.join(File.dirname(__FILE__), ".bundle/environment")
-end
+require "rubygems"
+require "bundler"
+Bundler.setup
 
 Bundler.require
 
@@ -307,9 +301,13 @@ helpers do
   end
 end
 
+# Setup logging...
 $log = File.new(File.join(File.dirname(__FILE__), "#{Sinatra::Application.environment}.log"), "a")
-STDOUT.reopen($log)
-STDERR.reopen($log)
+# ... but don't log certain things when developing
+if Sinatra::Application.environment == :production
+  STDOUT.reopen($log)
+  STDERR.reopen($log)
+end
 
 # We'll need sessions.
 enable :sessions
