@@ -21,6 +21,5 @@ twitter:
   oauth:
     consumer_key: OAuth Key
     consumer_secret: OAuth Secret
-  stream:
-    username: twitter_username
-    password: should be whitelisted
+    access_key: Registered Site Stream User Key
+    access_secret: Registered Site Stream User Secret
