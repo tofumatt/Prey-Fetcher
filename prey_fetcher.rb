@@ -42,7 +42,8 @@ class User
     :dm_priority,
     :enable_list,
     :notification_list,
-    :list_priority
+    :list_priority,
+    :list_since_id
   ]
   
   property :id, Serial
