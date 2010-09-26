@@ -5,7 +5,7 @@ require 'json'
 require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 
 # Patch the streaming library to use the "follow" parameter
-# instead of "track".
+# instead of "track" (required for Site Streams).
 module Twitter
   class JSONStream
     protected
