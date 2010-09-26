@@ -65,7 +65,7 @@ EventMachine::run do
         next if user.prowl_api_key.nil? || user.prowl_api_key.blank?
         
         # Is this a direct message?
-        if user.enable_dms && tweet['message'] && tweet['message']['direct_message']
+        if user.enable_dms && tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
           FastProwl.add(
             :application => AppConfig['app']['name'] + ' DM',
             :providerkey => AppConfig['app']['prowl_provider_key'],
@@ -76,8 +76,10 @@ EventMachine::run do
           )
           
           Notification.create(:twitter_user_id => user.id)
+        end
+        
         # Is this a mention?
-        elsif user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
+        if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
           FastProwl.add(
             :application => AppConfig['app']['name'] + ' mention',
             :providerkey => AppConfig['app']['prowl_provider_key'],
