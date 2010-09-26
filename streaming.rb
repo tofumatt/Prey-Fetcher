@@ -4,8 +4,8 @@ require 'json'
 # Load Prey Fetcher
 require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 
-track_string = ''
 prowl_users = []
+track_users = []
 
 User.all.each do |user|
   if user.enable_mentions
@@ -16,18 +16,21 @@ User.all.each do |user|
       :priority => user.mention_priority
     }
     
-    track_string += "@#{user.twitter_username},"
+    track_users << "@#{user.twitter_username}"
   end
 end
-
-track_string.chop!
 
 EventMachine::run do
   stream = Twitter::JSONStream.connect(
     :path    => '/1/statuses/filter.json',
-    :auth    => "#{AppConfig['twitter']['stream']['username']}:#{AppConfig['twitter']['stream']['password']}",
+    :oauth   => {
+      :consumer_key    => AppConfig['twitter']['oauth']['consumer_key'],
+      :consumer_secret => AppConfig['twitter']['oauth']['consumer_secret'],
+      :access_key      => AppConfig['twitter']['oauth']['access_key'],
+      :access_secret   => AppConfig['twitter']['oauth']['access_secret']
+    },
     :method  => 'POST',
-    :content => "track=#{track_string}",
+    :filters => track_users,
     :user_agent => AppConfig['app']['user_agent']
   )
   
