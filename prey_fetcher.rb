@@ -55,7 +55,6 @@ class User
   property :mention_priority, Integer, :default => 0
   # Direct Messages
   property :enable_dms, Boolean, :default => true
-  property :dm_since_id, Integer, :default => 1
   property :dm_priority, Integer, :default => 0
   # Lists
   property :enable_list, Boolean, :default => true
