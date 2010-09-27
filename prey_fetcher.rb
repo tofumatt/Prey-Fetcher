@@ -33,8 +33,15 @@ class User
   include DataMapper::Validate
   include MassAssignment
   
-  mass_assignment :except => [
-    :id,
+  mass_assignment :only => [
+    :prowl_api_key,
+    :enable_mentions,
+    :mention_priority,
+    :enable_dms,
+    :dm_priority,
+    :enable_list,
+    :notification_list,
+    :list_priority
   ]
   
   property :id, Serial
@@ -48,7 +55,6 @@ class User
   property :mention_priority, Integer, :default => 0
   # Direct Messages
   property :enable_dms, Boolean, :default => true
-  property :dm_since_id, Integer, :default => 1
   property :dm_priority, Integer, :default => 0
   # Lists
   property :enable_list, Boolean, :default => true
@@ -68,15 +74,16 @@ class User
   # Create a new user from session data retrieved from
   # twitter-login/OAuth authorization.
   def self.create_from_twitter(twitter_user, access_key, access_token)
-    User.create!( # Fill in the params manually; we only need a few settings
-      :twitter_user_id => twitter_user.id,
-      :twitter_username => twitter_user.screen_name,
-      :access_key => access_key,
-      :access_secret => access_token,
-      # Because we ignore callbacks
-      :created_at => Time.now,
-      :updated_at => Time.now
-    )
+    user = User.new
+    
+    # Fill in the params manually; we only need a few settings
+    user.twitter_user_id = twitter_user.id,
+    user.twitter_username = twitter_user.screen_name,
+    user.access_key = access_key,
+    user.access_secret = access_token,
+    # Because we ignore callbacks
+    user.created_at = Time.now,
+    user.updated_at = Time.now
   end
   
   # Check Twitter for new DMs for this user using the REST API
@@ -98,7 +105,8 @@ class User
         end
         
         # Update this users's since_id
-        update(:dm_since_id => direct_messages.first['id'])
+        dm_since_id = direct_messages.first['id'])
+        save
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
@@ -114,17 +122,17 @@ class User
         end
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+      puts '@' + twitter_username + '   ' + e.to_s
     rescue Timeout::Error => e
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Twitter timed out for @' + twitter_username + "."
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter timed out for @' + twitter_username + "."
+      puts '@' + twitter_username + '   ' + e.to_s
     rescue Exception => e # Bad data or some other weird response
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      puts '@' + twitter_username + '   ' + e.to_s
     end
   end
   
@@ -146,7 +154,8 @@ class User
         end
         
         # Update this users's since_id
-        update(:list_since_id => list_tweets.first['id'])
+        list_since_id = list_tweets.first['id'])
+        save
         
         # Queue up this notification
         FastProwl.add(
@@ -160,17 +169,17 @@ class User
         Notification.create(:twitter_user_id => twitter_user_id)
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+      puts '@' + twitter_username + '   ' + e.to_s
     rescue Timeout::Error => e
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Twitter timed out for @' + twitter_username + "."
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter timed out for @' + twitter_username + "."
+      puts '@' + twitter_username + '   ' + e.to_s
     rescue Exception => e # Bad data or some other weird response
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      puts '@' + twitter_username + '   ' + e.to_s
     end
   end
   
@@ -186,7 +195,8 @@ class User
   def load_lists
     lists = Twitter::Base.new(oauth).lists(twitter_username).lists
     
-    update!(:lists_serialized => lists)
+    lists_serialized = lists
+    save!
     
     list_ids = []
     lists.each do |list|
@@ -230,24 +240,24 @@ class User
       # users who changed their screen name from getting notifications
       # through the Streaming API)
       if twitter_username && twitter_username != creds['screen_name']
-        $log << "\n" + "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
+        puts "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
     rescue Twitter::Unauthorized => e # Delete this user; they've revoked access
-      $log << "\n" + Time.now.to_s + '   @' + twitter_username
-      $log << "\n" + 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
-      $log << "\n" + '@' + twitter_username + '   ' + e.to_s
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
+      puts '@' + twitter_username + '   ' + e.to_s
       
       destroy!
     rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
-      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
-      $log << "\n" + 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
+      puts Time.now.to_s + '   @' + self.twitter_username
+      puts 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
     rescue Timeout::Error
-      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
-      $log << "\n" + 'Twitter timed out for @' + self.twitter_username + "."
+      puts Time.now.to_s + '   @' + self.twitter_username
+      puts 'Twitter timed out for @' + self.twitter_username + "."
     rescue Exception # Bad data or some other weird response
-      $log << "\n" + Time.now.to_s + '   @' + self.twitter_username
-      $log << "\n" + 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
+      puts Time.now.to_s + '   @' + self.twitter_username
+      puts 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
     end
   end
 end
