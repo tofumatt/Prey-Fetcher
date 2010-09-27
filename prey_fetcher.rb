@@ -105,7 +105,7 @@ class User
         end
         
         # Update this users's since_id
-        dm_since_id = direct_messages.first['id'])
+        dm_since_id = direct_messages.first['id']
         save
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
@@ -154,7 +154,7 @@ class User
         end
         
         # Update this users's since_id
-        list_since_id = list_tweets.first['id'])
+        list_since_id = list_tweets.first['id']
         save
         
         # Queue up this notification
