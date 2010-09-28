@@ -1,19 +1,22 @@
-$body_background_colour: #c2c4cc
+$body_background_colour: #aaa
 $background_colour: #999999
 $text_colour: #030303
 $link_colour: #2e6299
 
 $border_colour: #030303
-$header_colour: #214871
+$header_colour: #712121
+$menu_colour: #444
 
 $error_colour: #f2a2a2
 $alert_colour: #f2d7a2
 $notice_colour: #a8f2a2
 
-$preyf_colour: #154e7a
+$preyf_colour: #7a1515
+
+// Remember to add http://static.preyfetcher.com to url()s come release time!
 
 body
-  background: $body_background_colour url("http://static.preyfetcher.com/images/page-bg.png") repeat-x top
+  background: $body_background_colour url(/images/page-bg.png) repeat-x top
   color: $text_colour
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
   font-size: 1em
@@ -185,7 +188,7 @@ table#commits
   padding-bottom: 0
 
 #app-name
-  background: transparent url("http://static.preyfetcher.com/images/logo.png") no-repeat left top
+  background: transparent url(/images/logo.png) no-repeat left top
   display: block
   height: 116px
   margin: 0 0 40px -10px
@@ -199,7 +202,7 @@ table#commits
   font-size: 0.95em
 
 #menu
-  background: #708fa1
+  background: $menu_colour
   border: $border_colour 1px solid
   border-left: none
   border-right: none
@@ -219,7 +222,7 @@ table#commits
     list-style: none
     margin: 0
     a.menu-item, span.menu-item
-      background: #708fa1
+      background: $menu_colour
       color: white
       display: inline
       float: left
@@ -234,9 +237,9 @@ table#commits
     a
       outline: 0
       &:hover, &:focus
-        background: #708fa1 - #333333
+        background: $menu_colour - #333333
       &:active
-        background: #708fa1 + #111111
+        background: $menu_colour + #111111
 
 .notice
   border: 2px solid
@@ -262,8 +265,12 @@ table#commits
   float: left
   position: relative
   left: 30%
-  a:hover, a:focus
-    background: #f3f3f3 - #333333 !important
+  a
+    color: white
+    &:hover, &:focus
+      background: transparent !important
+      text-decoration: none
+      text-shadow: none
 
 #error
   background: $error_colour + #111111
