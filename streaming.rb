@@ -80,8 +80,13 @@ EventMachine::run do
         
         # Is this a mention?
         if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
+          # Make sure this isn't a RT (or that they're enabled)
+          retweet = (tweet['message']['retweeted_status'] || tweet['message']['text'].index('RT ') == 0) ? true : false
+          
+          next if retweet && user.disable_retweets
+          
           FastProwl.add(
-            :application => AppConfig['app']['name'] + ' mention',
+            :application => AppConfig['app']['name'] + (retweet ? ' retweet' : ' mention'),
             :providerkey => AppConfig['app']['prowl_provider_key'],
             :apikey => user.prowl_api_key,
             :priority => user.mention_priority,
