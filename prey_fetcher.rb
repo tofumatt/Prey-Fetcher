@@ -39,6 +39,7 @@ class User
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
+  property :disable_retweets, Boolean, :default => true
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
@@ -78,6 +79,7 @@ class User
       :prowl_api_key,
       :enable_mentions,
       :mention_priority,
+      :disable_retweets,
       :enable_dms,
       :dm_priority,
       :enable_list,
