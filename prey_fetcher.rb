@@ -4,8 +4,6 @@ Bundler.setup
 
 Bundler.require
 
-require File.join(File.dirname(__FILE__), "lib", "mass_assignment")
-
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :root, File.dirname(__FILE__)
@@ -31,18 +29,6 @@ end
 class User
   include DataMapper::Resource
   include DataMapper::Validate
-  include MassAssignment
-  
-  mass_assignment :only => [
-    :prowl_api_key,
-    :enable_mentions,
-    :mention_priority,
-    :enable_dms,
-    :dm_priority,
-    :enable_list,
-    :notification_list,
-    :list_priority
-  ]
   
   property :id, Serial
   property :twitter_user_id, Integer
@@ -74,16 +60,15 @@ class User
   # Create a new user from session data retrieved from
   # twitter-login/OAuth authorization.
   def self.create_from_twitter(twitter_user, access_key, access_token)
-    user = User.new
-    
-    # Fill in the params manually; we only need a few settings
-    user.twitter_user_id = twitter_user.id,
-    user.twitter_username = twitter_user.screen_name,
-    user.access_key = access_key,
-    user.access_secret = access_token,
-    # Because we ignore callbacks
-    user.created_at = Time.now,
-    user.updated_at = Time.now
+    User.create!( # Fill in the params manually; we only need a few settings
+      :twitter_user_id => twitter_user.id,
+      :twitter_username => twitter_user.screen_name,
+      :access_key => access_key,
+      :access_secret => access_token,
+      # Because we ignore callbacks
+      :created_at => Time.now,
+      :updated_at => Time.now
+    )
   end
   
   # Return a list of values we allow routes to mass-assign
@@ -120,8 +105,7 @@ class User
         end
         
         # Update this users's since_id
-        dm_since_id = direct_messages.first['id']
-        save
+        update(:dm_since_id => direct_messages.first['id'])
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
@@ -169,8 +153,7 @@ class User
         end
         
         # Update this users's since_id
-        list_since_id = list_tweets.first['id']
-        save
+        update(:list_since_id => list_tweets.first['id'])
         
         # Queue up this notification
         FastProwl.add(
@@ -210,8 +193,7 @@ class User
   def load_lists
     lists = Twitter::Base.new(oauth).lists(twitter_username).lists
     
-    lists_serialized = lists
-    save!
+    update!(:lists_serialized => lists)
     
     list_ids = []
     lists.each do |list|
@@ -404,7 +386,14 @@ end
 # Receive new account settings.
 put "/settings" do
   @user = User.first(:twitter_user_id => twitter_user.id)
-  if @user.update(params[:user])
+  settings = {}
+  
+  # Hack to prevent mass assignment
+  User.mass_assignable.each do |a|
+    settings[a] = params[:user][a]
+  end
+  
+  if @user.update(settings)
     flash[:notice] = "Your settings have been updated."
     redirect '/settings'
   else
