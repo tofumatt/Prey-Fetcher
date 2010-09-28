@@ -86,6 +86,21 @@ class User
     user.updated_at = Time.now
   end
   
+  # Return a list of values we allow routes to mass-assign
+  # to a User.
+  def self.mass_assignable
+    [
+      :prowl_api_key,
+      :enable_mentions,
+      :mention_priority,
+      :enable_dms,
+      :dm_priority,
+      :enable_list,
+      :notification_list,
+      :list_priority
+    ]
+  end
+  
   # Check Twitter for new DMs for this user using the REST API
   def check_dms
     # Send any DM notifications -- handle exceptions from the JSON
