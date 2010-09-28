@@ -338,7 +338,7 @@ get "/" do
     end
   end
   
-  @title = "Open Source Twitter Push Notifications"
+  @title = "Instant, Open Source Twitter Notifications for iOS"
   erb :index
 end
 
@@ -362,9 +362,33 @@ end
 
 # Show account info.
 get "/account" do
-  @title = "@#{twitter_user.screen_name}'s Account"
+  @title = "Account and Notification Settings"
   @user = User.first(:twitter_user_id => twitter_user.id)
   erb :account
+end
+
+# Receive new account settings.
+put "/account" do
+  @user = User.first(:twitter_user_id => twitter_user.id)
+  settings = {}
+  
+  # Hack to prevent mass assignment
+  User.mass_assignable.each do |a|
+    settings[a] = params[:user][a]
+  end
+  
+  if @user.update(settings)
+    flash[:notice] = "Your account and notification settings have been updated."
+    redirect '/account'
+  else
+    flash.now[:alert] = "Sorry, but your account couldn't be updated.<br><ul>"
+    @user.errors.each do |e|
+      flash.now[:alert] << "<li>#{e}</li>"
+    end
+    flash.now[:alert] << "</ul>"
+    @title = "Account and Notification Settings"
+    erb :settings
+  end
 end
 
 # Show account info.
@@ -376,37 +400,6 @@ delete "/account" do
   twitter_logout
   session[:logged_in] = false
   redirect '/'
-end
-
-# Edit account settings.
-get "/settings" do
-  @title = "Change Your Notification Settings"
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  erb :settings
-end
-
-# Receive new account settings.
-put "/settings" do
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  settings = {}
-  
-  # Hack to prevent mass assignment
-  User.mass_assignable.each do |a|
-    settings[a] = params[:user][a]
-  end
-  
-  if @user.update(settings)
-    flash[:notice] = "Your settings have been updated."
-    redirect '/settings'
-  else
-    flash.now[:alert] = "Sorry, but your account couldn't be updated.<br><ul>"
-    @user.errors.each do |e|
-      flash.now[:alert] << "<li>#{e}</li>"
-    end
-    flash.now[:alert] << "</ul>"
-    @title = "Change Your Notification Settings"
-    erb :settings
-  end
 end
 
 # Put request that updates a user's lists from Twitter.

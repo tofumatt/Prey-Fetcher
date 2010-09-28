@@ -34,7 +34,7 @@
         <% if twitter_user.nil? %>
           <li><a href="/login" id="signup-button">Signup now</a></li>
         <% else %>
-          <li id="user-info"><span class="menu-item"><strong><a href="/account">@<%= twitter_user.screen_name %></a></strong> | <a href="/settings">Settings</a> | <a href="/logout">Logout</a></span></li>
+          <li id="user-info"><span class="menu-item"><a href="/account">Account <span class="ampersand">&amp;</span> Notification Settings</a> | <a href="/logout">Logout</a></span></li>
         <% end %>
       </ul>
     </div>
