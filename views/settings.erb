@@ -34,9 +34,11 @@
   		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
 		  
   		<div id="mention-priority-container" class="clear js-hide">
-  		  <label for="user_disable_retweets" class="for-checkbox">Disable Retweet notifications</label>
+  		  <label for="user_disable_retweets" class="for-checkbox">Ignore retweets</label>
   		  <input type="hidden" name="user[disable_retweets]" value="0">
     		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="1"<% if @user.disable_retweets %> checked="checked"<% end %>>
+    		
+    		<div class="clear"></div>
     		
   			<label for="mention-priority" class="for-select">mention Priority</label>
   			<select name="user[mention_priority]" id="mention-priority" class="select">
