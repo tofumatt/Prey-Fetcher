@@ -343,9 +343,15 @@ get "/" do
 end
 
 # Show the FAQ.
-get "/faq" do
-  @title = "Questions About Prey Fetcher"
+get "/about" do
+  @title = "About Prey Fetcher"
   erb :faq
+end
+
+# Show the feature list.
+get "/features" do
+  @title = "Features"
+  erb :features
 end
 
 # Show the Privacy jazz.
@@ -408,7 +414,7 @@ put "/lists" do
   unless @user.nil?
     @user.lists(true)
     flash[:notice] = "Your Twitter lists have been updated."
-    redirect '/settings'
+    redirect '/account'
   else
     flash[:error] = "No user matching your Twitter account was found."
     redirect '/'
