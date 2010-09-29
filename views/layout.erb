@@ -24,16 +24,16 @@
     <link rel="icon" type="image/png" href="<%= asset "favicon.png" %>">
     <!--[if IE]><link rel="shortcut icon" href="<%= asset "favicon.ico" %>"><![endif]-->
   </head>
-  <body>
+  <body<% unless twitter_user.nil? %> class="logged-in"<%end %>>
     <div id="menu">
       <ul>
-        <li><a href="/" class="menu-item">Home</a></li>
-        <li><a href="/faq" class="menu-item">FAQ</a></li>
+        <li><a href="/features" class="menu-item">Features</a></li>
+        <li><a href="/faq" class="menu-item">About</a></li>
         <li><a href="/privacy" class="menu-item">Privacy</a></li>
-        <li><a href="/open-source" class="menu-item">Open Source</a></li>
         <% if twitter_user.nil? %>
           <li><a href="/login" id="signup-button">Signup now</a></li>
         <% else %>
+          <li id="logged-in-as"><span class="menu-item">Logged in as&nbsp;@<%= twitter_user.screen_name %></span></li>
           <li id="user-info"><span class="menu-item"><a href="/account">Account <span class="ampersand">&amp;</span> Notification Settings</a> | <a href="/logout">Logout</a></span></li>
         <% end %>
       </ul>
