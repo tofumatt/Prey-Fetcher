@@ -190,30 +190,48 @@ input.text-long
   ul
     margin-left: auto
     margin-right: auto
-    max-width: 750px
-  li
-    display: inline
-    list-style: none
-    margin: 0
-    a.menu-item, span.menu-item
-      background: $menu_colour
-      color: #fff
+    width: 650px
+    li
       display: inline
-      float: left
-      height: 20px
       list-style: none
-      margin: -2px 0 0
-      padding: 3px 8px 5px
-      text-align: center
-      text-decoration: none
-      text-shadow: $background_colour - #111111 0px 0px 9px
-      width: auto
-    a
-      outline: 0
-      &:hover, &:focus
-        background: $menu_colour - #333333
-      &:active
-        background: $menu_colour + #111111
+      margin: 0
+      a.menu-item, span.menu-item
+        background: $menu_colour
+        color: #fff
+        display: inline
+        float: left
+        height: 20px
+        list-style: none
+        margin: -2px 0 0
+        padding: 3px 8px 5px
+        text-align: center
+        text-decoration: none
+        text-shadow: $background_colour - #111111 0px 0px 9px
+        width: auto
+        z-index: 50
+      a
+        outline: 0
+        &:hover, &:focus
+          background: $menu_colour - #333333
+        &:active
+          background: $menu_colour + #111111
+    #logged-in-as
+      font-size: .75em
+      overflow: hidden
+      position: absolute
+      right: 0
+      z-index: -1
+      span.menu-item
+        background: transparent
+        float: right
+    #user-info
+      float: right
+      a
+        color: #fff
+        &:hover, &:focus
+          background: transparent !important
+          text-decoration: none
+          text-shadow: none
 
 .notice
   border: 2px solid
@@ -234,15 +252,6 @@ input.text-long
     text-shadow: none !important
     &:hover, &:focus
       background: #fff
-
-#user-info
-  float: right
-  a
-    color: #fff
-    &:hover, &:focus
-      background: transparent !important
-      text-decoration: none
-      text-shadow: none
 
 #error
   background: $error_colour + #111111
