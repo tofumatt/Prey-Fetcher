@@ -345,7 +345,7 @@ end
 # Show the FAQ.
 get "/about" do
   @title = "About Prey Fetcher"
-  erb :faq
+  erb :about
 end
 
 # Show the feature list.
