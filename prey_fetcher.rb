@@ -338,7 +338,7 @@ get "/" do
     end
   end
   
-  @title = "Instant, Open Source Twitter Notifications for iOS"
+  @title = "Instant Twitter Notifications for iOS"
   erb :index
 end
 
