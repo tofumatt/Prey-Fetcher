@@ -30,11 +30,10 @@
         <li><a href="/features" class="menu-item">Features</a></li>
         <li><a href="/faq" class="menu-item">About</a></li>
         <li><a href="/privacy" class="menu-item">Privacy</a></li>
-        <% if twitter_user.nil? %>
+        <% unless twitter_user %>
           <li><a href="/login" id="signup-button">Signup now</a></li>
         <% else %>
-          <li id="logged-in-as"><span class="menu-item">Logged in as&nbsp;@<%= twitter_user.screen_name %></span></li>
-          <li id="user-info"><span class="menu-item"><a href="/account">Account <span class="ampersand">&amp;</span> Notification Settings</a> | <a href="/logout">Logout</a></span></li>
+          <li id="user-info"><span class="menu-item">@<%= twitter_user.screen_name %> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
         <% end %>
       </ul>
     </div>
