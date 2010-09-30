@@ -68,10 +68,5 @@ end
 
 desc "Run all Prey Fetcher tests"
 task :test do
-  require 'rake/testtask'
-  Rake::TestTask.new() do |t| # Rake::TestTask.new(:rack => "db:test:prepare") do |t|
-    t.libs << "test"
-    t.pattern = "test/*_test.rb"
-    t.verbose = false
-  end
+  system "ruby test/prey_fetcher_test.rb"
 end
