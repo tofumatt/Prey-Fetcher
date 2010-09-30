@@ -28,6 +28,19 @@ class PreyFetcherTest < Test::Unit::TestCase
     assert !last_response.ok?
   end
   
+  def test_logout_works
+    flunk 'Test is incomplete (requires sessions).'
+    
+    put '/login', {}, {:oauth_token => 'l9Ep677tgatsLlSc7PcJbMyXR41bVRwSTI1zLSrc', :oauth_verifier => '7T2JZoWeQCDAqiRnPCDuxki2LmsQAiUZ57bTSHaNbY'}
+    
+    assert session[:logged_in]
+    
+    get '/logout'
+    follow_redirect!
+    assert last_response.ok?
+    assert !session[:logged_in]
+  end
+  
   def test_logout_fails_as_anonymous
     get '/logout'
     assert !last_response.ok?
