@@ -1,9 +1,8 @@
+ENV['RACK_ENV'] = 'test'
+
 require File.join(File.dirname(__FILE__), '../', "prey_fetcher.rb")
 require 'test/unit'
 require 'rack/test'
-
-ENV['RACK_ENV'] = 'test'
-set :environment, ENV['RACK_ENV'].to_sym
 
 class PreyFetcherTest < Test::Unit::TestCase
   include Rack::Test::Methods
