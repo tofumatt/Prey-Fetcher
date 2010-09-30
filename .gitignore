@@ -2,6 +2,3 @@
 .sass-cache
 *.sqlite3
 *.log
-
-DEPLOY_VERSION
-config.yml
