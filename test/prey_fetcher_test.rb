@@ -3,6 +3,7 @@ require 'test/unit'
 require 'rack/test'
 
 ENV['RACK_ENV'] = 'test'
+set :environment, ENV['RACK_ENV'].to_sym
 
 class PreyFetcherTest < Test::Unit::TestCase
   include Rack::Test::Methods
@@ -22,6 +23,9 @@ class PreyFetcherTest < Test::Unit::TestCase
     put '/account'
     assert !last_response.ok?
     delete '/account'
+    assert !last_response.ok?
+    
+    put '/lists'
     assert !last_response.ok?
   end
   
