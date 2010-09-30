@@ -5,7 +5,7 @@ gem "fastprowl"
 gem "haml"
 gem "json"
 gem "rack-flash"
-gem "rack-test", :group => [:test]
+gem "rack-test", :require => 'rack/test', :group => [:test]
 
 # Sinatra
 gem "sinatra"
