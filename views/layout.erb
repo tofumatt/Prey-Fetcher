@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>Prey Fetcher<% unless @title.nil? %> :: <%= @title %><% end %></title>
+    <title><%= PREYFETCHER_CONFIG[:app_name] %><% unless @title.nil? %> :: <%= @title %><% end %></title>
     
     <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
     <link href="<%= asset "stylesheets/app.css" %>" media="screen" rel="stylesheet" type="text/css">
@@ -41,7 +41,7 @@
     
     <div id="page">
       <div id="header">
-        <h1><a href="/" id="app-name">Prey Fetcher</a></h1>
+        <h1><a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a></h1>
         <% unless @title.nil? %><h2><%= @title %></h2><% end %>
       </div>
       
