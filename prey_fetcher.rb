@@ -10,6 +10,7 @@ PREYFETCHER_VERSION = "3.3"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
+set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
 set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
