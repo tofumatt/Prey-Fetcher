@@ -301,7 +301,7 @@ configure do
   # Local-specific/not-git-managed config
   begin
     require File.join(File.dirname(__FILE__), "config-local.rb")
-    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL)
+    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL_RB)
   rescue LoadError # No config.rb found
     puts "No config-local.rb found; nothing exported."
   end
