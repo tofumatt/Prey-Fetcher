@@ -1,3 +1,6 @@
+# Load up Prey Fetcher
+require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
+
 asset_servers = [
   {
     :user => 'preyfetcher',
@@ -41,7 +44,6 @@ namespace :prey_fetcher do
   # tweets/direct messages, then send all notifications to Prowl.
   desc "Check Twitter for all Prey Fetcher users"
   task :check_twitter do
-    require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
     # Loop through all users and send any notifications.
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
@@ -55,7 +57,6 @@ namespace :prey_fetcher do
   # Verify all user accounts.
   desc "Verify credentials for all Prey Fetcher users"
   task :verify_accounts do
-    require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
     # Loop through all users and check their accounts.
     User.all.each do |u|
       u.verify_credentials
