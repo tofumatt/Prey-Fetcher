@@ -4,6 +4,10 @@ Bundler.setup
 
 Bundler.require
 
+# Current version number + prefix. Gets used in
+# as the User Agent in REST/Streaming requests.
+PREYFETCHER_VERSION = "3.3"
+
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :root, File.dirname(__FILE__)
@@ -112,8 +116,8 @@ class User
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
           FastProwl.add(
-            :application => AppConfig['app']['name'] + ' DM',
-            :providerkey => AppConfig['app']['prowl_provider_key'],
+            :application => PREYFETCHER_CONFIG[:app_name] + ' DM',
+            :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
             :apikey => prowl_api_key,
             :priority => dm_priority,
             :event => event,
@@ -159,8 +163,8 @@ class User
         
         # Queue up this notification
         FastProwl.add(
-          :application => AppConfig['app']['name'] + ' List',
-          :providerkey => AppConfig['app']['prowl_provider_key'],
+          :application => PREYFETCHER_CONFIG[:app_name] + ' List',
+          :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
           :apikey => prowl_api_key,
           :priority => list_priority,
           :event => event,
@@ -212,7 +216,7 @@ class User
   # Return this user's OAuth instance.
   def oauth
     if @oauth.nil?
-      @oauth = Twitter::OAuth.new(AppConfig['twitter']['oauth']['consumer_key'], AppConfig['twitter']['oauth']['consumer_secret'])
+      @oauth = Twitter::OAuth.new(PREYFETCHER_CONFIG[:twitter_consumer_key], PREYFETCHER_CONFIG[:twitter_consumer_secret])
       @oauth.authorize_from_access(access_key, access_secret)
     end
     
@@ -262,38 +266,78 @@ class User
 end
 
 configure do
-  # Load app config from YAML and set it in a constant
-  require "yaml"
+  # Default values to store in our CONFIG hash
+  config_defaults = {
+    # Regular app config
+    :app_asset_domain => '0.0.0.0:4567',
+    :app_domain => '0.0.0.0:4567',
+    :app_name => 'Prey Fetcher',
+    :app_prowl_provider_key => nil,
+    
+    # Assume development; use SQLite3
+    :db_adapter => 'sqlite3',
+    :db_host => nil,
+    :db_database => 'development.sqlite3',
+    :db_username => nil,
+    :db_password => nil,
+    
+    # Twitter configs
+    :twitter_consumer_key => '',
+    :twitter_consumer_secret => '',
+    :twitter_access_key => '',
+    :twitter_access_secret => '',
+    :twitter_site_stream_size => 100
+  }
   
-  config = YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
-  # Local config file for development, testing, overrides
-  unless Sinatra::Application.environment == :production
-    config.deep_merge!(YAML.load_file(File.join(File.dirname(__FILE__), "config_local.yml"))) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
+  # Grab stuff from config.rb, if it exists
+  begin
+    require File.join(File.dirname(__FILE__), "config.rb")
+    config_defaults.merge!(PREYFETCHER_CONFIG_RB)
+  rescue LoadError # No config.rb found
+    puts "No config.rb found; continuing on using Prey Fetcher defaults."
+  end
+  
+  # Same deal with config-production.rb
+  if Sinatra::Application.environment == :production
+    begin
+      require File.join(File.dirname(__FILE__), "config-production.rb")
+      config_defaults.merge!(PREYFETCHER_CONFIG_PRODUCTION_RB)
+    rescue LoadError # No config-production.rb found
+      puts "No config-production.rb found; continuing on using Prey Fetcher defaults."
+    end
+  end
+  
+  # Store our config stuff in this hash temporarily
+  config = {}
+  
+  # Set our config keys based on environmental variables.
+  # If they aren't present, fallback to config.rb/defaults.
+  config_defaults.each do |key, default|
+    from_env = ENV["PREYFETCHER_#{key.to_s.upcase}"]
+    config[key] = (from_env) ? from_env : default
   end
   
   # Assemble some extra config values from those already set
-  config['app']['url'] = "http://#{config['app']['domain']}"
-  config['app']['user_agent'] = "#{config['app']['name']} #{config['app']['version']} (#{config['app']['url']})"
+  config[:app_url] = "http://#{config[:app_domain]}"
+  config[:app_version] = PREYFETCHER_VERSION
+  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
   
-  # Put it in a constant so it's not tampered with
-  AppConfig = config
-  
-  db_env = Sinatra::Application.environment.to_s
+  # Put it in a constant so it's not tampered with and so
+  # it's globally accessible
+  PREYFETCHER_CONFIG = config
   
   # Database stuff
-  unless AppConfig['database'][db_env]['adapter'] == 'sqlite3'
-    DataMapper.setup(:default, "#{AppConfig['database'][db_env]['adapter']}://#{AppConfig['database'][db_env]['username']}:#{AppConfig['database'][db_env]['password']}@#{AppConfig['database'][db_env]['host']}/#{AppConfig['database'][db_env]['database']}")
+  unless PREYFETCHER_CONFIG[:db_adapter] == 'sqlite3'
+    DataMapper.setup(:default, "#{PREYFETCHER_CONFIG[:db_adapter]}://#{PREYFETCHER_CONFIG[:db_username]}:#{PREYFETCHER_CONFIG[:db_password]}@#{PREYFETCHER_CONFIG[:db_host]}/#{PREYFETCHER_CONFIG[:db_database]}")
   else
-    DataMapper.setup(:default, "sqlite3:#{AppConfig['database'][db_env]['database']}")
+    DataMapper.setup(:default, "sqlite3:#{PREYFETCHER_CONFIG[:db_database]}")
   end
-  
-  #DataMapper.auto_migrate!
 end
 
 helpers do
   # Return a link to an asset file on another domain.
   def asset(file)
-    "http://#{AppConfig['app']['asset_domain']}/#{file}"
+    "http://#{PREYFETCHER_CONFIG[:app_asset_domain]}/#{file}"
   end
   
   # Return a number as a string with commas.
@@ -318,8 +362,8 @@ use Rack::Flash, :sweep => true
 
 # Load the Twitter middleware.
 use Twitter::Login,
-  :consumer_key => AppConfig['twitter']['oauth']['consumer_key'],
-  :secret => AppConfig['twitter']['oauth']['consumer_secret']
+  :consumer_key => PREYFETCHER_CONFIG[:twitter_consumer_key],
+  :secret => PREYFETCHER_CONFIG[:twitter_consumer_secret]
 helpers Twitter::Login::Helpers
 
 # Index action -- show the homepage.
