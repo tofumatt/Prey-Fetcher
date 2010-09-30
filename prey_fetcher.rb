@@ -298,6 +298,14 @@ configure do
     puts "No config.rb found; continuing on using Prey Fetcher defaults."
   end
   
+  # Local-specific/not-git-managed config
+  begin
+    require File.join(File.dirname(__FILE__), "config-local.rb")
+    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL)
+  rescue LoadError # No config.rb found
+    puts "No config-local.rb found; nothing exported."
+  end
+  
   # Same deal with config-production.rb
   if Sinatra::Application.environment == :production
     begin
