@@ -448,6 +448,8 @@ end
 
 # Delete user account
 delete "/account" do
+  redirect '/' unless twitter_user
+  
   @user = User.first(:twitter_user_id => twitter_user.id)
   @user.destroy!
   
