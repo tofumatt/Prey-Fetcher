@@ -406,6 +406,7 @@ end
 
 # Show account info.
 get "/account" do
+  redirect '/' unless twitter_user
   @title = "@#{twitter_user.screen_name}'s Account"
   @user = User.first(:twitter_user_id => twitter_user.id)
   erb :account
@@ -413,6 +414,8 @@ end
 
 # Show account info.
 delete "/account" do
+  redirect '/' unless twitter_user
+  
   @user = User.first(:twitter_user_id => twitter_user.id)
   @user.destroy!
   
@@ -424,6 +427,8 @@ end
 
 # Edit account settings.
 get "/settings" do
+  redirect '/' unless twitter_user
+  
   @title = "Change Your Notification Settings"
   @user = User.first(:twitter_user_id => twitter_user.id)
   erb :settings
@@ -431,6 +436,8 @@ end
 
 # Receive new account settings.
 put "/settings" do
+  redirect '/' unless twitter_user
+  
   @user = User.first(:twitter_user_id => twitter_user.id)
   settings = {}
   
@@ -456,7 +463,7 @@ end
 # Put request that updates a user's lists from Twitter.
 put "/lists" do
   @user = User.first(:twitter_user_id => twitter_user.id)
-  unless @user.nil?
+  if @user
     @user.lists(true)
     flash[:notice] = "Your Twitter lists have been updated."
     redirect '/settings'
@@ -468,9 +475,12 @@ end
 
 # Logout and remove any session data.
 get "/logout" do
+  redirect '/' unless twitter_user
+  
   flash[:notice] = "Logged @#{twitter_user.screen_name} out of Prey Fetcher."
   twitter_logout
   session[:logged_in] = false
+  
   redirect '/'
 end
 
