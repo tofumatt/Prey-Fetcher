@@ -42,6 +42,8 @@ GEM
     rack (1.2.1)
     rack-flash (0.1.1)
       rack
+    rack-test (0.5.6)
+      rack (>= 1.0)
     roauth (0.0.3)
     sinatra (1.0)
       rack (>= 1.0)
@@ -74,6 +76,7 @@ DEPENDENCIES
   haml
   json
   rack-flash
+  rack-test
   sinatra
   twitter-login
   twitter-stream
