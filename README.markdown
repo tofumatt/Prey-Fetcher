@@ -22,9 +22,7 @@ Prey Fetcher does basically everything _I_ want it to do already, but I want to 
 You can [donate money via PayPal](http://pledgie.com/campaigns/10696) (via [Pledgie](http://pledgie.com/), also on the [repository home page](http://github.com/tofumatt/Prey-Fetcher)). Or you can donate some time (by coding), or resources (if you want to host Prey Fetcher for free).
 
 # License
-This program is free software; it is distributed under the [GNU Affero General Public License, Version 3](http://www.gnu.org/licenses/agpl-3.0.html).
-
-This means that you can distribute/use modified and/or unmodified versions however you like, but you have to make the source code available if you modify it and run it on your own server somewhere. I'm fine with multiple Prey Fetcher instances (even if other ones cost money), but the goal is to get any improvements to the code base back to everyone, including me (so I can use them at [preyfetcher.com](http://preyfetcher.com), if I want).
+This program is free software; it is distributed under an [MIT License](http://github.com/tofumatt/Prey-Fetcher/blob/master/LICENSE.txt).
 
 ---
 
