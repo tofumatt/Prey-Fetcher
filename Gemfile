@@ -1,6 +1,5 @@
 source "http://rubygems.org"
 
-gem "deep_merge"
 gem "fastprowl"
 gem "haml"
 gem "json"
