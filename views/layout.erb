@@ -25,7 +25,7 @@
     <link rel="icon" type="image/png" href="<%= asset "favicon.png" %>">
     <!--[if IE]><link rel="shortcut icon" href="<%= asset "favicon.ico" %>"><![endif]-->
   </head>
-  <body<% unless twitter_user.nil? %> class="logged-in"<%end %>>
+  <body class="<% if twitter_user %>logged-in<%end %> <% if request.path_info == '/' %>homepage<% end %>">
     <div id="header">
       <a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a>
     </div>
