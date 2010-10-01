@@ -58,6 +58,7 @@ h1, h2, h3, h4, h5, h6
 
 h1
   font-size: 1.75em
+  margin: 0 0 .25em
   text-align: center
 
 h2, h3, h4, h5, h6
@@ -88,7 +89,11 @@ p.quote, blockquote
   background: url(/images/hanging-quotes.png) right top no-repeat
 
 blockquote, q
+  color: $text_colour + #232323
   font-style: italic
+
+cite
+  font-style: normal
 
 #intro-list
   margin-top: -5px
@@ -212,6 +217,10 @@ input.text-long
   width: $page_width + 20px
   &:active
     outline: 0
+body.homepage #app-name
+  margin-bottom: 0
+body.homepage #header
+  border-bottom: $border_colour 1px solid
 
 #content
   font-size: 0.95em
@@ -263,6 +272,8 @@ input.text-long
           background: transparent !important
           text-decoration: none
           text-shadow: none
+body.homepage #menu
+  display: none
 
 .notice
   border: 2px solid
@@ -357,4 +368,4 @@ input.text-long
 
 #homepage-iphone
   float: right
-  margin: -10px 0 0 40px
+  margin: 0 0 0 40px
