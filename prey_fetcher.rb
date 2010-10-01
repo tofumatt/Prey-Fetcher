@@ -387,7 +387,7 @@ get "/" do
     if User.count(:twitter_user_id => twitter_user.id) == 0
       @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br><a href=\"#user_prowl_api_key\">Enter your Prowl API key</a> to enable notifications."
-      redirect '/settings'
+      redirect '/account'
     end
   end
   
@@ -450,7 +450,7 @@ put "/account" do
     end
     flash.now[:alert] << "</ul>"
     @title = "Account and Notification Settings"
-    erb :settings
+    erb :account
   end
 end
 
