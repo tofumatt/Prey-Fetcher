@@ -15,6 +15,7 @@
     <!--[if IE 8]>
       <link href="<%= asset "stylesheets/ie8.css" %>" media="screen" rel="stylesheet" type="text/css">
     <![endif]-->
+    <link href="<%= asset "stylesheets/print.css" %>" media="print" rel="stylesheet" type="text/css">
     
     <script src="http://www.google.com/jsapi?key=ABQIAAAAN9kqWR8Iymy3XzomcLTzURTJi1_g9C4kpJVNHDM-iHukiHJeyxS7f50NnzrBx8eVpw559uASPsfAjg"></script>
     <script>google.load('jquery', '1.4');</script>
@@ -25,6 +26,10 @@
     <!--[if IE]><link rel="shortcut icon" href="<%= asset "favicon.ico" %>"><![endif]-->
   </head>
   <body<% unless twitter_user.nil? %> class="logged-in"<%end %>>
+    <div id="header">
+      <a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a>
+    </div>
+    
     <div id="menu">
       <ul>
         <li><a href="/features" class="menu-item">Features</a></li>
@@ -38,28 +43,35 @@
       </ul>
     </div>
     
-    <div id="page">
-      <div id="header">
-        <h1><a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a></h1>
-        <% unless @title.nil? %><h2><%= @title %></h2><% end %>
-      </div>
-      
-      <div id="content">
-        <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
-        <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
-        <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+    <div id="container">
+      <div id="page">
+        <% unless @title.nil? %><h1><%= @title %></h1><% end %>
         
-        <%= yield %>
+        <div id="content">
+          <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
+          <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
+          <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+          
+          <%= yield %>
+          
+          <div class="clear"></div>
+        </div>
+        
+        <div class="clear"></div>
       </div>
       
-      <div id="footer">
+      <div class="clear"></div>
+    </div>
+    
+    <div id="footer">
+      <div id="footer-inner">
         <a href="http://www.pledgie.com/campaigns/10696" id="pledgie-link">
           <img alt="Click here to lend your support to: Prey-Fetcher and make a donation at www.pledgie.com!" src="http://www.pledgie.com/campaigns/10696.png?skin_name=chrome" />
         </a>
         
         <p><%= number_format(Notification.count) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.</p>
         
-        <p>&copy; 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
+        <p>© 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
         <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
       </div>
     </div>

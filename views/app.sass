@@ -13,18 +13,21 @@ $notice_colour: #a8f2a2
 
 $preyf_colour: #7a1515
 
+$page_width: 670px
+
 // Remember to add http://static.preyfetcher.com to url()s come release time!
 
 body
-  background: $body_background_colour url(/images/page-bg.png) repeat-x top
+  background: $header_colour url(/images/page-bg.png) repeat-x top
   color: $text_colour
-  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
-  font-size: 1em
+  font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
+  font-size: 1.1em
+  line-height: 1.6em
 
 a
   color: $link_colour
   text-decoration: underline
-  text-shadow: none
+  text-shadow: $body_background_colour 1px 1px 6px
   &:hover, &:focus
     color: $link_colour + #222222
     text-decoration: none
@@ -45,7 +48,7 @@ span.ampersand
   font-size: 1.2em
   font-style: italic
 
-h2, h3, h4, h5, h6
+h1, h2, h3, h4, h5, h6
   border-bottom: $border_colour 1px solid
   color: $header_colour
   font-family: Helvetica, Arial, sans-serif
@@ -53,10 +56,11 @@ h2, h3, h4, h5, h6
   margin: 0 0 0.5em
   text-shadow: $background_colour 0 0 5px
 
-h2
+h1
   font-size: 1.75em
+  text-align: center
 
-h3, h4, h5, h6
+h2, h3, h4, h5, h6
   margin: 0.75em 0
   span.numbered-header
     color: $text_colour
@@ -67,8 +71,7 @@ p, ul, ol, dl, label, input, table
   margin: 0.25em 160px 1.5em 24px
 
 ul
-  margin-left: 48px
-  margin-top: -0.25em
+  margin-left: 1.5em
 
 li
   list-style: square inside
@@ -80,6 +83,12 @@ dt
   font-weight: bold
   margin: 0 1em 0 0
   width: 150px
+
+p.quote, blockquote
+  background: url(/images/hanging-quotes.png) right top no-repeat
+
+blockquote, q
+  font-style: italic
 
 #intro-list
   margin-top: -5px
@@ -115,6 +124,37 @@ ul.smaller
 
 .half-space
   padding: 6px 0 0
+
+.justify
+  text-align: justify
+
+.box-shadow
+  box-shadow: 3px 3px 6px #000
+  -moz-box-shadow: 3px 3px 6px #000
+  -webkit-box-shadow: 3px 3px 6px #000
+
+.box-shadow-soft
+  box-shadow: 0 1px 6px #ccc
+  -moz-box-shadow: 0 1px 6px #ccc
+  -webkit-box-shadow: 0 1px 6px #ccc
+
+.button
+  background: rgba(242, 242, 242, 0.9) url(/images/button-bg.png) bottom repeat-x
+  border: 1px solid $border_colour + #555
+  border-radius: 10px
+  -moz-border-radius: 10px
+  -webkit-border-radius: 10px
+  color: #444
+  cursor: pointer
+  font-size: 1.2em
+  font-weight: bold
+  margin: 7px 0
+  padding: 7px 15px
+  text-decoration: none
+  text-shadow: 0 1px 0 #fff
+
+//.button-green
+//  background-color: rgba(202, 242, 202, 0.9)
 
 label
   clear: both
@@ -152,23 +192,24 @@ input.submit
 input.text-long
   width: 267px
 
-#page, #footer
-  margin: 0 auto
-  padding: 0 115px 12px
-  position: relative
-  width: 670px
+#container
+  background: $body_background_colour
 
 #page
-  padding-bottom: 0
+  margin: 0 auto
+  padding: 10px 115px 20px
+  position: relative
+  width: $page_width
 
 #app-name
   background: transparent url(/images/logo.png) no-repeat left top
   display: block
   height: 116px
-  margin: 0 0 40px -10px
+  margin: 0 auto 30px
   padding: 12px 0
+  position: relative
   text-indent: -9999px
-  width: 690px
+  width: $page_width + 20px
   &:active
     outline: 0
 
@@ -188,8 +229,7 @@ input.text-long
   width: 100%
   z-index: 100
   ul
-    margin-left: auto
-    margin-right: auto
+    margin: -4px auto 0
     width: 650px
     li
       display: inline
@@ -276,16 +316,45 @@ input.text-long
   width: 151px
 
 #footer
+  background: $header_colour
   border-top: $border_colour 1px solid
   clear: both
+  color: #999
   font-size: 0.75em
-  margin: 72px 0 -30px -10px
-  opacity: 0.95
+  margin: -25px 0 0
   padding: 6px 0
-  width: 690px
+  width: auto
+  text-shadow: .1em .1em 3px $header_colour - #fff
+  a
+    color: #bbb
+    text-decoration: underline
+    text-shadow: .1em .1em 3px $header_colour - #fff
+    &:hover, &:focus
+      text-decoration: none
   p, ul, dl, ol
     margin-left: 10px
+  &-inner
+    margin: 0 auto
+    width: $page_width + 20px
 
 #pledgie-link
   float: right
-  margin: 0 10px 0 0
+  margin: 0 20px 0 0
+
+/** Homepage */
+
+#homepage-intro
+  h2
+    line-height: 1.1em
+    font-size: 1.1em
+    margin: .75em 0 .25em
+  p
+    margin: 0 0 1em
+    &.small
+      font-size: .9em
+    &.quote
+      background-position: 300px 0
+
+#homepage-iphone
+  float: right
+  margin: -10px 0 0 40px
