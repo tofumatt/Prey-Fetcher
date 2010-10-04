@@ -44,10 +44,12 @@ class User
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
+  property :mention_since_id, Integer, :default => 0
   property :disable_retweets, Boolean, :default => true
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
+  property :dm_since_id, Integer, :default => 0
   # Lists
   property :enable_list, Boolean, :default => true
   property :notification_list, Integer
@@ -117,7 +119,7 @@ class User
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
           FastProwl.add(
-            :application => PREYFETCHER_CONFIG[:app_name] + ' DM',
+            :application => 'Twitter DM',
             :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
             :apikey => prowl_api_key,
             :priority => dm_priority,
@@ -154,9 +156,9 @@ class User
       if list_tweets.size > 0
         # The notification event text depends on the number of new tweets
         if list_tweets.size == 1
-          event = "New tweet by @#{list_tweets.first['user']['screen_name']}"
+          event = "by @#{list_tweets.first['user']['screen_name']}"
         else
-          event = "New tweets; latest by @#{list_tweets.first['user']['screen_name']}"
+          event = "Latest by @#{list_tweets.first['user']['screen_name']}"
         end
         
         # Update this users's since_id
@@ -164,7 +166,7 @@ class User
         
         # Queue up this notification
         FastProwl.add(
-          :application => PREYFETCHER_CONFIG[:app_name] + ' List',
+          :application => 'Twitter List',
           :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
           :apikey => prowl_api_key,
           :priority => list_priority,
