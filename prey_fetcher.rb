@@ -382,7 +382,7 @@ get "/" do
   # Index page is the entry point after login/signup
   if twitter_user
     unless session[:logged_in]
-      flash.now[:notice] = "Logged into Prey Fetcher as @#{twitter_user.screen_name}."
+      flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
       session[:logged_in] = true
     end
     
@@ -413,7 +413,7 @@ end
 
 # Show the Privacy jazz.
 get "/privacy" do
-  @title = "Promise To Not Be Evil"
+  @title = "Privacy"
   erb :privacy
 end
 
@@ -465,7 +465,7 @@ delete "/account" do
   @user = User.first(:twitter_user_id => twitter_user.id)
   @user.destroy!
   
-  flash[:notice] = "Your Prey Fetcher account has been deleted. Sorry to see you go!"
+  flash[:notice] = "Your Prey Fetcher account (for <span class=\"underline\">@#{twitter_user.screen_name}</span>) has been deleted.<br />Sorry to see you go!"
   twitter_logout
   session[:logged_in] = false
   redirect '/'
@@ -488,7 +488,7 @@ end
 get "/logout" do
   redirect '/' unless twitter_user
   
-  flash[:notice] = "Logged @#{twitter_user.screen_name} out of Prey Fetcher."
+  flash[:notice] = "Logged <span class=\"underline\">@#{twitter_user.screen_name}</span> out of Prey Fetcher."
   twitter_logout
   session[:logged_in] = false
   
