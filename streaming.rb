@@ -75,6 +75,10 @@ EventMachine::run do
             :description => tweet['message']['direct_message']['text']
           )
           
+          # Update the last DM id to prevent the REST backup check from
+          # re-sending tweets.
+          update(:dm_since_id => tweet['message']['direct_message']['id'])
+          
           Notification.create(:twitter_user_id => user.id)
         end
         
@@ -93,6 +97,10 @@ EventMachine::run do
             :event => "From @#{tweet['message']['user']['screen_name']}",
             :description => tweet['message']['text']
           )
+          
+          # Update the last mention id to prevent the REST backup check from
+          # re-sending tweets.
+          update(:mention_since_id => tweet['message']['id])
           
           Notification.create(:twitter_user_id => user.id)
         end
