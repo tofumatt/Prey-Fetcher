@@ -44,10 +44,12 @@ class User
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
+  property :mention_since_id, Integer, :default => 0
   property :disable_retweets, Boolean, :default => true
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
+  property :dm_since_id, Integer, :default => 0
   # Lists
   property :enable_list, Boolean, :default => true
   property :notification_list, Integer
