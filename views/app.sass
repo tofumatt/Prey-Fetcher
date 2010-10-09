@@ -22,16 +22,16 @@ body
   font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
   font-size: 1.1em
   line-height: 1.6em
-  text-shadow: #bbbbbb 1px 1px 2px
+  text-shadow: #777 1px 1px 1px
 
 a
   color: $link_colour
   text-decoration: underline
   text-shadow: $body_background_colour 1px 1px 6px
   &:hover, &:focus
-    color: $link_colour + #222222
+    color: $link_colour + #222
     text-decoration: none
-    text-shadow: $background_colour + #222222 1px 1px 6px
+    text-shadow: $background_colour + #222 1px 1px 6px
 
 strong
   font-weight: bold
@@ -54,7 +54,7 @@ h1, h2, h3, h4, h5, h6
   font-family: Helvetica, Arial, sans-serif
   font-size: 1.5em
   margin: 0 0 0.5em
-  text-shadow: $background_colour 0 0 5px
+  text-shadow: #777 0 0 5px
 
 h1
   font-size: 1.75em
@@ -88,6 +88,7 @@ dt
 
 p.quote, blockquote
   background: url(../images/hanging-quotes.png) right top no-repeat
+  text-shadow: #999 1px 1px 2px
 
 blockquote, q
   color: $text_colour + #232323
@@ -294,19 +295,19 @@ body.homepage #menu
       background: #fff
 
 #error
-  background: $error_colour + #111111
-  border-color: $error_colour - #666666
-  color: $error_colour - #666666
+  background: $error_colour + #111
+  border-color: $error_colour - #666
+  color: $error_colour - #666
 
 #alert
-  background: $alert_colour + #111111
-  border-color: $alert_colour - #666666
-  color: $alert_colour - #999999
+  background: $alert_colour + #111
+  border-color: $alert_colour - #666
+  color: $alert_colour - #999
 
 #notice
-  background: $notice_colour + #111111
-  border-color: $notice_colour - #666666
-  color: $notice_colour - #666666
+  background: $notice_colour + #111
+  border-color: $notice_colour - #666
+  color: $notice_colour - #666
 
 #user_api_key
   padding: 2px 2px 2px 4px
