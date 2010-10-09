@@ -21,14 +21,8 @@
 
 <p>Use the app name "Prey Fetcher" to redirect all notifications from Prey Fetcher to <a href="http://forums.cocoaforge.com/viewtopic.php?f=45&amp;t=20704">any app Prowl supports</a>. You can also use "Prey Fetcher DM" specifically for DM notifications or "Prey Fetcher mention" for mentions — in case, for example, you only want DMs to open your Twitter app.</p>
 
-<hr>
+<h3>Multiple Twitter Accounts? No problem!</h3>
 
-<h3>What does Prey Fetcher do?</h3>
+<p>You can use Prey Fetcher for as many Twitter accounts as you like. Each Twitter account maps to a Prey Fetcher account, so you'll have to sign up/authorize each Twitter account you want to use separately.</p>
 
-<p>Prey Fetcher connects to realtime data provided by <a href="http://twitter.com">Twitter</a> to notify you of new mentions, retweets, and direct messages. Prey Fetcher also lets you know whenever a new tweet appears in a list you create. You can use any of these features in any combination you like, all for free.</p>
-
-<h3>Why Is Prey Fetcher Free?</h3>
-
-<p>Because <a href="http://lonelyvegan.com">Matt</a> really wanted to get notified of new tweets on his iPhone. He figured he might as well make it free for anyone in the same boat.</p>
-
-<p>Prey Fetcher has been around since August 2009 — and it shouldn't be going anywhere as long as tweets still need to make it to people's iPhones.</p>
+<p><% if twitter_user.nil? %>Logout<% else %><a href="/logout">Logout</a><% end %> of Prey Fetcher <em>and</em> <a href="http://twitter.com/logout">logout from twitter.com</a>, then use the "<% if twitter_user.nil? %><a href="/login">Sign in with Twitter</a><% else %>Sign in with Twitter<% end %>" link to authorize each account you want to use. You can use the same Prowl API key for each Prey Fetcher account so all notifications will go to the same device(s).</p>
