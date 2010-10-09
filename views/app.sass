@@ -16,14 +16,13 @@ $preyf_colour: #7a1515
 
 $page_width: 670px
 
-// Remember to add http://static.preyfetcher.com to url()s come release time!
-
 body
-  background: $footer_colour url(/images/page-bg.png) repeat-x top
+  background: $footer_colour url(../images/page-bg.png) repeat-x top
   color: $text_colour
   font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
   font-size: 1.1em
   line-height: 1.6em
+  text-shadow: #bbbbbb 1px 1px 2px
 
 a
   color: $link_colour
@@ -88,7 +87,7 @@ dt
   width: 150px
 
 p.quote, blockquote
-  background: url(/images/hanging-quotes.png) right top no-repeat
+  background: url(../images/hanging-quotes.png) right top no-repeat
 
 blockquote, q
   color: $text_colour + #232323
@@ -146,7 +145,7 @@ ul.smaller
   -webkit-box-shadow: 0 1px 6px #ccc
 
 .button
-  background: rgba(242, 242, 242, 0.9) url(/images/button-bg.png) bottom repeat-x
+  background: rgba(242, 242, 242, 0.9) url(../images/button-bg.png) bottom repeat-x
   border: 1px solid $border_colour + #555
   border-radius: 10px
   -moz-border-radius: 10px
@@ -197,7 +196,7 @@ input.text-long
   width: 267px
 
 #container
-  background: $body_background_colour
+  background: $body_background_colour url(../images/container-bg.png)
 
 #page
   margin: 0 auto
@@ -206,7 +205,7 @@ input.text-long
   width: $page_width
 
 #app-name
-  background: transparent url(/images/logo.png) no-repeat left top
+  background: transparent url(../images/logo.png) no-repeat left top
   display: block
   height: 116px
   margin: 0 auto 30px
