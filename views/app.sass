@@ -145,24 +145,42 @@ ul.smaller
   -moz-box-shadow: 0 1px 6px #ccc
   -webkit-box-shadow: 0 1px 6px #ccc
 
+.box-shadow-blur
+  box-shadow: 0 0 4px #030303
+  -moz-box-shadow: 0 0 4px #030303
+  -webkit-box-shadow: 0 0 4px #030303
+
 .button
-  background: url(../images/button-bg.png) 0 0 repeat-x
-  border: 1px solid $border_colour + #555
-  border-radius: 10px
-  -moz-border-radius: 10px
-  -webkit-border-radius: 10px
-  color: #444
-  cursor: pointer
-  font-size: 1.2em
-  font-weight: bold
-  margin: 7px 0
-  padding: 7px 15px
-  text-decoration: none
-  text-shadow: 0 1px 0 #fff
+  &, &:hover, &:focus
+    background: url(../images/button-bg.png) left bottom repeat-x
+    border: 1px solid #373737
+    border-radius: 10px
+    -moz-border-radius: 10px
+    -webkit-border-radius: 10px
+    color: #252525
+    cursor: pointer
+    font-size: 1.2em
+    font-weight: bold
+    margin: 7px 0
+    padding: 7px 15px
+    text-decoration: none
+    text-shadow: 0 0 3px rgba(0, 0, 0, .15) !important
+  &:hover, &:focus
+    text-shadow: 0 0 6px rgba(200, 200, 200, 1) !important
+  &:active
+    color: rgba(121, 172, 242, .75) !important
+    text-shadow: 0 0 6px rgba(0, 0, 0, 1) !important
 // height: 28px
 
 body.homepage #signup-button
-  background-image: url(../images/signup-button-bg.png)
+  background-color: #1adf36
+  background-color: #1abcdf
+  color: rgba(243, 243, 243, .95)
+  text-shadow: 0 0 3px rgba(153, 46, 46, 1) !important
+  &:hover, &:focus
+    text-shadow: 0 0 6px rgba(76.5, 23, 23, 1) !important
+  &:active
+    text-shadow: 0 0 6px rgba(38.25, 11.5, 11.5, 1) !important
 
 label
   clear: both
@@ -322,7 +340,7 @@ body.homepage #menu
   margin: 2px
 
 #menu #signup-button
-  background: url("http://static.preyfetcher.com/images/signin-twitter-new.png") no-repeat center !important
+  background: url(../images/signin-twitter-new.png) no-repeat center !important
   display: block
   height: 24px
   margin: 0 0 0 auto
