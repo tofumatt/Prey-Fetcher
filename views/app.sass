@@ -222,8 +222,8 @@ input.text-long
   background: $body_background_colour url(../images/container-bg.png)
 
 #page
-  margin: 0 auto
-  padding: 10px 115px 25px
+  margin: 0 auto 25px
+  padding: 10px 115px 0
   position: relative
   width: $page_width
 
@@ -370,6 +370,30 @@ body.homepage #menu
     width: $page_width + 20px
   *:last-child
     margin-bottom: 0
+  #footer-nav
+    float: right
+    margin: 0
+    width: 333px
+    li
+      display: inline
+      list-style: none
+      a
+        border-left: 1px solid #777
+        color: #5c9bf2
+        float: left
+        padding: 0 10px 0 12px
+        text-decoration: none
+        text-shadow: 0 0 6px #030303
+        &.first
+          border: 0
+          margin-left: 37px
+          padding-left: 6px
+        &.last
+          padding-right: 5px
+        &:hover, &:focus
+          text-shadow: 0 0 6px #aaa !important
+        &:active
+          text-shadow: 0 0 3px #030303 !important
 
 #pledgie-link
   float: right
