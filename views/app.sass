@@ -1,31 +1,37 @@
-$body_background_colour: #c2c4cc
+$body_background_colour: #aaa
 $background_colour: #999999
 $text_colour: #030303
 $link_colour: #2e6299
 
 $border_colour: #030303
-$header_colour: #214871
+$header_colour: #712121
+$menu_colour: #444
+$footer_colour: #5d0808
 
 $error_colour: #f2a2a2
 $alert_colour: #f2d7a2
 $notice_colour: #a8f2a2
 
-$preyf_colour: #154e7a
+$preyf_colour: #7a1515
+
+$page_width: 670px
 
 body
-  background: $body_background_colour url("http://static.preyfetcher.com/images/page-bg.png") repeat-x top
+  background: $footer_colour url(../images/page-bg.png) repeat-x top
   color: $text_colour
-  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
-  font-size: 1em
+  font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
+  font-size: 1.1em
+  line-height: 1.6em
+  text-shadow: #777 1px 1px 1px
 
 a
   color: $link_colour
   text-decoration: underline
-  text-shadow: none
+  text-shadow: $body_background_colour 1px 1px 6px
   &:hover, &:focus
-    color: $link_colour + #222222
+    color: $link_colour + #222
     text-decoration: none
-    text-shadow: $background_colour + #222222 1px 1px 6px
+    text-shadow: $background_colour + #222 1px 1px 6px
 
 strong
   font-weight: bold
@@ -42,30 +48,32 @@ span.ampersand
   font-size: 1.2em
   font-style: italic
 
-h2, h3, h4, h5, h6
+h1, h2, h3, h4, h5, h6
   border-bottom: $border_colour 1px solid
   color: $header_colour
   font-family: Helvetica, Arial, sans-serif
   font-size: 1.5em
-  margin: 0 0 0.5em
-  text-shadow: $background_colour 0 0 5px
+  margin: 0 0 .5em
+  text-shadow: #777 0 0 5px
 
-h2
+h1
   font-size: 1.75em
+  margin: 0 0 .25em
+  padding: 0 0 .1em
+  text-align: center
 
-h3, h4, h5, h6
-  margin: 0.75em 0
+h2, h3, h4, h5, h6
+  margin: .75em 0
   span.numbered-header
     color: $text_colour
-    font-size: 0.8em
+    font-size: .8em
 
 p, ul, ol, dl, label, input, table
   line-height: 1.3em
-  margin: 0.25em 160px 1.5em 24px
+  margin: .25em 120px 1.5em 24px
 
 ul
-  margin-left: 48px
-  margin-top: -0.25em
+  margin-left: 1.5em
 
 li
   list-style: square inside
@@ -78,13 +86,24 @@ dt
   margin: 0 1em 0 0
   width: 150px
 
+p.quote, blockquote
+  background: url(../images/hanging-quotes.png) right top no-repeat
+  text-shadow: #999 1px 1px 2px
+
+blockquote, q
+  color: $text_colour + #232323
+  font-style: italic
+
+cite
+  font-style: normal
+
 #intro-list
   margin-top: -5px
   li
-    margin-top: 0.25em
+    margin-top: .25em
     span
       display: block
-      margin: 2px 0 0 0.9em
+      margin: 2px 0 0 .9em
 
 .no-bullet
   list-style: none outside !important
@@ -102,7 +121,7 @@ ul.smaller
   margin-top: -0.75em
 
 .smaller
-  font-size: 0.9em
+  font-size: .9em
 
 .space
   padding: 12px 0 0
@@ -113,6 +132,60 @@ ul.smaller
 .half-space
   padding: 6px 0 0
 
+.justify
+  text-align: justify
+
+.box-shadow
+  box-shadow: 3px 3px 6px #000
+  -moz-box-shadow: 3px 3px 6px #000
+  -webkit-box-shadow: 3px 3px 6px #000
+
+.box-shadow-soft
+  box-shadow: 0 1px 6px #ccc
+  -moz-box-shadow: 0 1px 6px #ccc
+  -webkit-box-shadow: 0 1px 6px #ccc
+
+.box-shadow-blur
+  box-shadow: 0 0 4px #030303
+  -moz-box-shadow: 0 0 4px #030303
+  -webkit-box-shadow: 0 0 4px #030303
+
+.button
+  &, &:hover, &:focus
+    background: url(../images/button-bg.png) left bottom repeat-x
+    border: 1px solid #373737
+    border-radius: 10px
+    -moz-border-radius: 10px
+    -webkit-border-radius: 10px
+    color: #252525
+    cursor: pointer
+    font-size: 1.2em
+    font-weight: bold
+    margin: 7px 0
+    padding: 7px 15px
+    text-decoration: none
+    text-shadow: 0 0 3px rgba(0, 0, 0, .15) !important
+  &:hover, &:focus
+    text-shadow: 0 0 6px rgba(200, 200, 200, 1) !important
+  &:active
+    color: rgba(121, 172, 242, .75) !important
+    text-shadow: 0 0 6px rgba(0, 0, 0, 1) !important
+// height: 28px
+
+body.homepage #signup-button
+  background-color: #1adf36
+  background-color: #1abcdf
+  color: rgba(243, 243, 243, .95)
+  margin: 0 0 0 28px
+  text-shadow: 0 0 3px rgba(153, 46, 46, 1) !important
+  &:hover, &:focus
+    text-shadow: 0 0 6px rgba(76.5, 23, 23, 1) !important
+  &:active
+    text-shadow: 0 0 6px rgba(38.25, 11.5, 11.5, 1) !important
+  span
+    background: url(../images/twitter-t.png) left center no-repeat
+    padding-left: 23px
+  
 label
   clear: both
   display: block
@@ -144,62 +217,47 @@ input.checkbox
 
 input.submit
   float: left
-  margin: -1px 0.75em 0 0
+  margin: -1px .75em 0 0
 
 input.text-long
   width: 267px
 
-table
-  margin-right: 24px
+#container
+  background: $body_background_colour url(../images/container-bg.png)
+  
+  .last-in-container
+    padding: 0 0 25px
 
-table#commits
-  width: 100%
-  th
-    font-size: 1.2em
-    font-weight: bold
-  td
-    font-size: 0.85em
-  th, td
-    display: block
-    float: left
-    margin: 5px
-  .authorname
-    width: 55%
-  .datetime
-    width: 35%
-  th.message
-    display: none
-  .message
-    clear: both
-    display: block
-    float: none
-    padding: 0 5px 0 20px
-
-#page, #footer
-  margin: 0 auto
-  padding: 0 115px 12px
-  position: relative
-  width: 670px
-
+body.homepage #container .last-in-container
+  padding: 0
+  
 #page
-  padding-bottom: 0
+  margin: 0 auto 25px
+  padding: 10px 115px 0
+  position: relative
+  width: $page_width
 
 #app-name
-  background: transparent url("http://static.preyfetcher.com/images/logo.png") no-repeat left top
+  background: transparent url(../images/logo.png) no-repeat left top
   display: block
   height: 116px
-  margin: 0 0 40px -10px
+  margin: 0 auto 30px
   padding: 12px 0
+  position: relative
   text-indent: -9999px
-  width: 690px
+  width: $page_width + 20px
   &:active
     outline: 0
+body.homepage #app-name
+  margin-bottom: 0
+body.homepage #header
+  border-bottom: $border_colour 1px solid
 
 #content
-  font-size: 0.95em
+  font-size: .95em
 
 #menu
-  background: #708fa1
+  background: $menu_colour
   border: $border_colour 1px solid
   border-left: none
   border-right: none
@@ -211,38 +269,48 @@ table#commits
   width: 100%
   z-index: 100
   ul
-    margin-left: auto
-    margin-right: auto
-    max-width: 750px
-  li
-    display: inline
-    list-style: none
-    margin: 0
-    a.menu-item, span.menu-item
-      background: #708fa1
-      color: white
+    margin: -4px auto 0
+    width: 650px
+    li
       display: inline
-      float: left
-      height: 20px
       list-style: none
-      margin: -2px 0 0
-      padding: 3px 8px 5px
-      text-align: center
-      text-decoration: none
-      text-shadow: $background_colour - #111111 0px 0px 9px
-      width: auto
-    a
-      outline: 0
-      &:hover, &:focus
-        background: #708fa1 - #333333
-      &:active
-        background: #708fa1 + #111111
+      margin: 0
+      a.menu-item, span.menu-item
+        background: $menu_colour
+        color: #fff
+        display: inline
+        float: left
+        height: 20px
+        list-style: none
+        margin: -2px 0 0
+        padding: 3px 8px 5px
+        text-align: center
+        text-decoration: none
+        text-shadow: $background_colour - #111 0 0 9px
+        width: auto
+        z-index: 50
+      a
+        outline: 0
+        &:hover, &:focus, &.active
+          background: $menu_colour - #333
+        &:active
+          background: $menu_colour + #111
+    #user-info
+      float: right
+      a
+        color: #fff
+        &:hover, &:focus
+          background: transparent !important
+          text-decoration: none
+          text-shadow: none
+body.homepage #menu
+  display: none
 
 .notice
   border: 2px solid
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Helvetica, Arial, sans-serif
   font-weight: bold
   margin: 0 auto 10px
-  padding: 5px
   text-align: center
   text-shadow: none
   width: 90%
@@ -250,35 +318,28 @@ table#commits
     margin: 0 auto
     padding: 0 12px
   li
-    font-size: 0.9em
+    font-size: .9em
     text-align: left
   a
-    color: black !important
+    color: #000 !important
     text-shadow: none !important
     &:hover, &:focus
-      background: white
-
-#user-info
-  float: left
-  position: relative
-  left: 30%
-  a:hover, a:focus
-    background: #f3f3f3 - #333333 !important
+      background: #fff
 
 #error
-  background: $error_colour + #111111
-  border-color: $error_colour - #666666
-  color: $error_colour - #666666
+  background: $error_colour + #111
+  border-color: $error_colour - #666
+  color: $error_colour - #666
 
 #alert
-  background: $alert_colour + #111111
-  border-color: $alert_colour - #666666
-  color: $alert_colour - #999999
+  background: $alert_colour + #111
+  border-color: $alert_colour - #666
+  color: $alert_colour - #999
 
 #notice
-  background: $notice_colour + #111111
-  border-color: $notice_colour - #666666
-  color: $notice_colour - #666666
+  background: $notice_colour + #111
+  border-color: $notice_colour - #666
+  color: $notice_colour - #666
 
 #user_api_key
   padding: 2px 2px 2px 4px
@@ -288,8 +349,8 @@ table#commits
   float: right
   margin: 2px
 
-#signup-button
-  background: url("http://static.preyfetcher.com/images/signin-twitter-new.png") no-repeat center !important
+#menu #signup-button
+  background: url(../images/sign-in-with-twitter.png) no-repeat center !important
   display: block
   height: 24px
   margin: 0 0 0 auto
@@ -297,16 +358,71 @@ table#commits
   width: 151px
 
 #footer
+  background: $footer_colour
   border-top: $border_colour 1px solid
   clear: both
-  font-size: 0.75em
-  margin: 72px 0 -30px -10px
-  opacity: 0.95
+  color: #999
+  font-size: .75em
+  margin: -25px 0 0
   padding: 6px 0
-  width: 690px
+  width: auto
+  text-shadow: .1em .1em 3px $header_colour - #fff
+  a
+    color: #bbb
+    text-decoration: underline
+    text-shadow: .1em .1em 3px $header_colour - #fff
+    &:hover, &:focus
+      text-decoration: none
   p, ul, dl, ol
     margin-left: 10px
+  &-inner
+    margin: 0 auto
+    width: $page_width + 20px
+  *:last-child
+    margin-bottom: 0
+  #footer-nav
+    float: right
+    margin: 0
+    width: 333px
+    li
+      display: inline
+      list-style: none
+      a
+        border-left: 1px solid #777
+        color: #5c9bf2
+        float: left
+        padding: 0 10px 0 12px
+        text-decoration: none
+        text-shadow: 0 0 6px #030303
+        &.first
+          border: 0
+          margin-left: 31px
+          padding-left: 6px
+        &.last
+          padding-right: 5px
+        &:hover, &:focus
+          text-shadow: 0 0 6px #aaa !important
+        &:active
+          text-shadow: 0 0 3px #030303 !important
 
 #pledgie-link
   float: right
-  margin: 0 10px 0 0
+  margin: 0 20px 0 0
+
+/** Homepage */
+
+#homepage-intro
+  h2
+    line-height: 1.1em
+    font-size: 1.1em
+    margin: .75em 0 .25em
+  p
+    margin: 0 0 1em
+    &.small
+      font-size: .9em
+    &.quote
+      background-position: 300px 0
+
+#homepage-iphone
+  float: right
+  margin: 0 0 0 40px

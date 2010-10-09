@@ -2,4 +2,5 @@
 .sass-cache
 *.sqlite3
 *.log
+
 config-local.rb

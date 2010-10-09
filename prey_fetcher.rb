@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "3.3"
+PREYFETCHER_VERSION = "4.0-dev"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -300,6 +300,14 @@ configure do
     puts "No config.rb found; continuing on using Prey Fetcher defaults."
   end
   
+  # Local-specific/not-git-managed config
+  begin
+    require File.join(File.dirname(__FILE__), "config-local.rb")
+    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL_RB)
+  rescue LoadError # No config.rb found
+    puts "No config-local.rb found; nothing exported."
+  end
+  
   # Same deal with config-production.rb
   if Sinatra::Application.environment == :production
     begin
@@ -374,30 +382,38 @@ get "/" do
   # Index page is the entry point after login/signup
   if twitter_user
     unless session[:logged_in]
-      flash.now[:notice] = "Logged into Prey Fetcher as @#{twitter_user.screen_name}."
+      flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
       session[:logged_in] = true
     end
     
     if User.count(:twitter_user_id => twitter_user.id) == 0
       @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br><a href=\"#user_prowl_api_key\">Enter your Prowl API key</a> to enable notifications."
-      redirect '/settings'
     end
+    
+    # The homepage is useless to logged-in users; show them their account instead
+    redirect '/account'
   end
   
-  @title = "Open Source Twitter Push Notifications"
+  @title = "Instant Twitter Notifications for iOS"
   erb :index
 end
 
 # Show the FAQ.
-get "/faq" do
-  @title = "Questions About Prey Fetcher"
-  erb :faq
+get "/about" do
+  @title = "About Prey Fetcher"
+  erb :about
+end
+
+# Show the feature list.
+get "/features" do
+  @title = "Features"
+  erb :features
 end
 
 # Show the Privacy jazz.
 get "/privacy" do
-  @title = "Promise To Not Be Evil"
+  @title = "Privacy"
   erb :privacy
 end
 
@@ -410,35 +426,14 @@ end
 # Show account info.
 get "/account" do
   redirect '/' unless twitter_user
-  @title = "@#{twitter_user.screen_name}'s Account"
+  
+  @title = "Account and Notification Settings"
   @user = User.first(:twitter_user_id => twitter_user.id)
   erb :account
 end
 
-# Show account info.
-delete "/account" do
-  redirect '/' unless twitter_user
-  
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  @user.destroy!
-  
-  flash[:notice] = "Your Prey Fetcher account has been deleted. Sorry to see you go!"
-  twitter_logout
-  session[:logged_in] = false
-  redirect '/'
-end
-
-# Edit account settings.
-get "/settings" do
-  redirect '/' unless twitter_user
-  
-  @title = "Change Your Notification Settings"
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  erb :settings
-end
-
 # Receive new account settings.
-put "/settings" do
+put "/account" do
   redirect '/' unless twitter_user
   
   @user = User.first(:twitter_user_id => twitter_user.id)
@@ -450,17 +445,30 @@ put "/settings" do
   end
   
   if @user.update(settings)
-    flash[:notice] = "Your settings have been updated."
-    redirect '/settings'
+    flash[:notice] = "Your account and notification settings have been updated."
+    redirect '/account'
   else
     flash.now[:alert] = "Sorry, but your account couldn't be updated.<br><ul>"
     @user.errors.each do |e|
       flash.now[:alert] << "<li>#{e}</li>"
     end
     flash.now[:alert] << "</ul>"
-    @title = "Change Your Notification Settings"
-    erb :settings
+    @title = "Account and Notification Settings"
+    erb :account
   end
+end
+
+# Delete user account
+delete "/account" do
+  redirect '/' unless twitter_user
+  
+  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user.destroy!
+  
+  flash[:notice] = "Your Prey Fetcher account (for <span class=\"underline\">@#{twitter_user.screen_name}</span>) has been deleted.<br />Sorry to see you go!"
+  twitter_logout
+  session[:logged_in] = false
+  redirect '/'
 end
 
 # Put request that updates a user's lists from Twitter.
@@ -469,7 +477,7 @@ put "/lists" do
   if @user
     @user.lists(true)
     flash[:notice] = "Your Twitter lists have been updated."
-    redirect '/settings'
+    redirect '/account'
   else
     flash[:error] = "No user matching your Twitter account was found."
     redirect '/'
@@ -480,7 +488,7 @@ end
 get "/logout" do
   redirect '/' unless twitter_user
   
-  flash[:notice] = "Logged @#{twitter_user.screen_name} out of Prey Fetcher."
+  flash[:notice] = "Logged <span class=\"underline\">@#{twitter_user.screen_name}</span> out of Prey Fetcher."
   twitter_logout
   session[:logged_in] = false
   

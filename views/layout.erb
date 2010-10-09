@@ -6,9 +6,6 @@
     
     <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
     <link href="<%= asset "stylesheets/app.css" %>" media="screen" rel="stylesheet" type="text/css">
-    <!--[if IE 6]>
-      <link href="<%= asset "stylesheets/ie6.css" %>" media="screen" rel="stylesheet" type="text/css">
-    <![endif]-->
     <!--[if IE 7]>
       <link href="<%= asset "stylesheets/ie7.css" %>" media="screen" rel="stylesheet" type="text/css">
     <![endif]-->
@@ -24,44 +21,64 @@
     <link rel="icon" type="image/png" href="<%= asset "favicon.png" %>">
     <!--[if IE]><link rel="shortcut icon" href="<%= asset "favicon.ico" %>"><![endif]-->
   </head>
-  <body>
+  <body class="<% if twitter_user %>logged-in<%end %> <% if request.path_info == '/' %>homepage<% else %><%= request.path_info.slice(1..-1) %><% end %>">
+    <div id="header">
+      <a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a>
+    </div>
+    
     <div id="menu">
       <ul>
-        <li><a href="/" class="menu-item">Home</a></li>
-        <li><a href="/faq" class="menu-item">FAQ</a></li>
-        <li><a href="/privacy" class="menu-item">Privacy</a></li>
-        <li><a href="/open-source" class="menu-item">Open Source</a></li>
-        <% if twitter_user.nil? %>
+        <li><a href="/features" class="<%= request.path_info.slice(1..-1) == 'features' ? 'active ' : '' %>menu-item">Features</a></li>
+        <li><a href="/about" class="<%= request.path_info.slice(1..-1) == 'about' ? 'active ' : '' %>menu-item">About</a></li>
+        <li><a href="/privacy" class="<%= request.path_info.slice(1..-1) == 'privacy' ? 'active ' : '' %>menu-item">Privacy</a></li>
+        <% unless twitter_user %>
           <li><a href="/login" id="signup-button">Signup now</a></li>
         <% else %>
-          <li id="user-info"><span class="menu-item"><strong><a href="/account">@<%= twitter_user.screen_name %></a></strong> | <a href="/settings">Settings</a> | <a href="/logout">Logout</a></span></li>
+          <li id="user-info"><span class="menu-item">@<%= twitter_user.screen_name %> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
         <% end %>
       </ul>
     </div>
     
-    <div id="page">
-      <div id="header">
-        <h1><a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a></h1>
-        <% unless @title.nil? %><h2><%= @title %></h2><% end %>
-      </div>
-      
-      <div id="content">
-        <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
-        <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
-        <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+    <div id="container">
+      <div id="page">
+        <% unless @title.nil? %><h1><%= @title %></h1><% end %>
         
-        <%= yield %>
+        <div id="content">
+          <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
+          <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
+          <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+          
+          <%= yield %>
+          
+          <div class="clear"></div>
+        </div>
+        
+        <div class="clear"></div>
       </div>
       
-      <div id="footer">
+      <div class="clear last-in-container"></div>
+    </div>
+    
+    <div id="footer">
+      <div id="footer-inner">
         <a href="http://www.pledgie.com/campaigns/10696" id="pledgie-link">
-          <img alt="Click here to lend your support to: Prey-Fetcher and make a donation at www.pledgie.com!" src="http://www.pledgie.com/campaigns/10696.png?skin_name=chrome" />
+          <img alt="Make a donation to Prey Fetcher at www.pledgie.com!" src="http://www.pledgie.com/campaigns/10696.png?skin_name=chrome" />
         </a>
         
-        <p><%= number_format(Notification.count) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.</p>
+        <p><%= number_format(Notification.count) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.<br>
+        Powered by <a href="http://twitter.com">Twitter's Streaming APIs</a>.</p>
         
-        <p>&copy; 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
-        <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
+        <nav>
+          <ul id="footer-nav">
+            <li><a href="/features" class="first">Features</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/open-source" class="last">Open Source</a></li>
+          </ul>
+        </nav>
+        
+        <p>© 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
+        <a href="/open-source">MIT-licensed</a>. <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
       </div>
     </div>
     
