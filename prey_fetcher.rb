@@ -101,29 +101,20 @@ class User
     # parser in case Twitter sends us back malformed JSON or (more
     # likely) HTML when it's over capacity
     begin
-      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 11, :since_id => dm_since_id)
+      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 1, :since_id => dm_since_id)
       
       if direct_messages.size > 0
-        # The notification event text depends on the number of new tweets
-        if direct_messages.size == 1
-          event = "From @#{direct_messages.first['sender']['screen_name']}"
-        elsif direct_messages.size == 11
-          event = "Over 10 DMs! Latest from @#{direct_messages.first['sender']['screen_name']}"
-        else
-          event = "#{direct_messages.size} DMs; latest from @#{direct_messages.first['sender']['screen_name']}"
-        end
-        
         # Update this users's since_id
         update(:dm_since_id => direct_messages.first['id'])
         
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
           FastProwl.add(
-            :application => 'Twitter DM',
+            :application => "#{PREYFETCHER_CONFIG[:app_prowl_app_name]} DM",
             :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
             :apikey => prowl_api_key,
             :priority => dm_priority,
-            :event => event,
+            :event => "From @#{direct_messages.first['sender']['screen_name']}",
             :description => direct_messages.first['text']
           )
           Notification.create(:twitter_user_id => twitter_user_id)
@@ -275,6 +266,7 @@ configure do
     :app_asset_domain => '0.0.0.0:4567',
     :app_domain => '0.0.0.0:4567',
     :app_name => 'Prey Fetcher',
+    :app_prowl_app_name => 'Prey Fetcher',
     :app_prowl_provider_key => nil,
     
     # Assume development; use SQLite3
