@@ -212,7 +212,7 @@ class User
     update(:mention_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => dm_priority,

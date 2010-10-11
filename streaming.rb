@@ -66,20 +66,11 @@ EventMachine::run do
         
         # Is this a direct message?
         if user.enable_dms && tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
-          FastProwl.add(
-            :application => 'Twitter DM',
-            :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-            :apikey => user.prowl_api_key,
-            :priority => user.dm_priority,
-            :event => "From @#{tweet['message']['direct_message']['sender_screen_name']}",
-            :description => tweet['message']['direct_message']['text']
+          user.send_dm(
+            :id => tweet['message']['direct_message']['id'],
+            :from => tweet['message']['direct_message']['sender_screen_name'],
+            :text => tweet['message']['direct_message']['text']
           )
-          
-          # Update the last DM id to prevent the REST backup check from
-          # re-sending tweets.
-          update(:dm_since_id => tweet['message']['direct_message']['id'])
-          
-          Notification.create(:twitter_user_id => user.id)
         end
         
         # Is this a mention?
@@ -89,20 +80,12 @@ EventMachine::run do
           
           next if retweet && user.disable_retweets
           
-          FastProwl.add(
-            :application => "Twitter " + (retweet ? 'retweet' : 'mention'),
-            :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-            :apikey => user.prowl_api_key,
-            :priority => user.mention_priority,
-            :event => "From @#{tweet['message']['user']['screen_name']}",
-            :description => tweet['message']['text']
+          user.send_mention(
+            :id => tweet['message']['id'],
+            :from => tweet['message']['user']['screen_name'],
+            :text => tweet['message']['text'],
+            :retweet => retweet
           )
-          
-          # Update the last mention id to prevent the REST backup check from
-          # re-sending tweets.
-          update(:mention_since_id => tweet['message']['id])
-          
-          Notification.create(:twitter_user_id => user.id)
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
         puts "STREAMING ERROR: " + Time.now.to_s
