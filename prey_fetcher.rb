@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.0-dev"
+PREYFETCHER_VERSION = "4.0"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -101,32 +101,16 @@ class User
     # parser in case Twitter sends us back malformed JSON or (more
     # likely) HTML when it's over capacity
     begin
-      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 11, :since_id => dm_since_id)
+      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 1, :since_id => dm_since_id)
       
       if direct_messages.size > 0
-        # The notification event text depends on the number of new tweets
-        if direct_messages.size == 1
-          event = "From @#{direct_messages.first['sender']['screen_name']}"
-        elsif direct_messages.size == 11
-          event = "Over 10 DMs! Latest from @#{direct_messages.first['sender']['screen_name']}"
-        else
-          event = "#{direct_messages.size} DMs; latest from @#{direct_messages.first['sender']['screen_name']}"
-        end
-        
-        # Update this users's since_id
-        update(:dm_since_id => direct_messages.first['id'])
-        
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
-          FastProwl.add(
-            :application => 'Twitter DM',
-            :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-            :apikey => prowl_api_key,
-            :priority => dm_priority,
-            :event => event,
-            :description => direct_messages.first['text']
+          send_dm(
+            :id => direct_messages.first['id'],
+            :from => direct_messages.first['sender']['screen_name'],
+            :text => direct_messages.first['text']
           )
-          Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
@@ -154,26 +138,11 @@ class User
       list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list, :count => 2, :since_id => list_since_id)
       
       if list_tweets.size > 0
-        # The notification event text depends on the number of new tweets
-        if list_tweets.size == 1
-          event = "by @#{list_tweets.first['user']['screen_name']}"
-        else
-          event = "Latest by @#{list_tweets.first['user']['screen_name']}"
-        end
-        
-        # Update this users's since_id
-        update(:list_since_id => list_tweets.first['id'])
-        
-        # Queue up this notification
-        FastProwl.add(
-          :application => 'Twitter List',
-          :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-          :apikey => prowl_api_key,
-          :priority => list_priority,
-          :event => event,
-          :description => list_tweets.first['text']
+        send_list(
+          :id => list_tweets.first['id'],
+          :from => list_tweets.first['user']['screen_name'],
+          :text => list_tweets.first['text']
         )
-        Notification.create(:twitter_user_id => twitter_user_id)
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
       puts Time.now.to_s + '   @' + twitter_username
@@ -237,6 +206,55 @@ class User
     end
   end
   
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a DM notification to Prowl for this user.
+  def send_dm(tweet)
+    # Update this users's since_id
+    update(:dm_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a List notification to Prowl for this user.
+  def send_list(tweet)
+    # Update this users's since_id
+    update(:list_since_id => tweet[:id])
+    
+    # Queue up this notification
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} List",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => list_priority,
+      :event => "by @#{tweet[:from]}",
+      :description => tweet[:body]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
   # Test this user's OAuth credentials and update/verify their username.
   def verify_credentials
     begin
@@ -275,6 +293,7 @@ configure do
     :app_asset_domain => '0.0.0.0:4567',
     :app_domain => '0.0.0.0:4567',
     :app_name => 'Prey Fetcher',
+    :app_prowl_appname => 'Prey Fetcher',
     :app_prowl_provider_key => nil,
     
     # Assume development; use SQLite3
