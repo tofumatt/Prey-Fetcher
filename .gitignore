@@ -3,5 +3,4 @@
 *.sqlite3
 *.log
 
-DEPLOY_VERSION
-config.yml
+config-local.rb

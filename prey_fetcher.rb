@@ -4,8 +4,13 @@ Bundler.setup
 
 Bundler.require
 
+# Current version number + prefix. Gets used in
+# as the User Agent in REST/Streaming requests.
+PREYFETCHER_VERSION = "4.0"
+
 # Set Sinatra's variables
 set :app_file, __FILE__
+set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
 set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
@@ -39,10 +44,12 @@ class User
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
+  property :mention_since_id, Integer, :default => 0
   property :disable_retweets, Boolean, :default => true
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
+  property :dm_since_id, Integer, :default => 0
   # Lists
   property :enable_list, Boolean, :default => true
   property :notification_list, Integer
@@ -94,32 +101,16 @@ class User
     # parser in case Twitter sends us back malformed JSON or (more
     # likely) HTML when it's over capacity
     begin
-      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 11, :since_id => dm_since_id)
+      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 1, :since_id => dm_since_id)
       
       if direct_messages.size > 0
-        # The notification event text depends on the number of new tweets
-        if direct_messages.size == 1
-          event = "From @#{direct_messages.first['sender']['screen_name']}"
-        elsif direct_messages.size == 11
-          event = "Over 10 DMs! Latest from @#{direct_messages.first['sender']['screen_name']}"
-        else
-          event = "#{direct_messages.size} DMs; latest from @#{direct_messages.first['sender']['screen_name']}"
-        end
-        
-        # Update this users's since_id
-        update(:dm_since_id => direct_messages.first['id'])
-        
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
-          FastProwl.add(
-            :application => AppConfig['app']['name'] + ' DM',
-            :providerkey => AppConfig['app']['prowl_provider_key'],
-            :apikey => prowl_api_key,
-            :priority => dm_priority,
-            :event => event,
-            :description => direct_messages.first['text']
+          send_dm(
+            :id => direct_messages.first['id'],
+            :from => direct_messages.first['sender']['screen_name'],
+            :text => direct_messages.first['text']
           )
-          Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
@@ -147,26 +138,11 @@ class User
       list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list, :count => 2, :since_id => list_since_id)
       
       if list_tweets.size > 0
-        # The notification event text depends on the number of new tweets
-        if list_tweets.size == 1
-          event = "New tweet by @#{list_tweets.first['user']['screen_name']}"
-        else
-          event = "New tweets; latest by @#{list_tweets.first['user']['screen_name']}"
-        end
-        
-        # Update this users's since_id
-        update(:list_since_id => list_tweets.first['id'])
-        
-        # Queue up this notification
-        FastProwl.add(
-          :application => AppConfig['app']['name'] + ' List',
-          :providerkey => AppConfig['app']['prowl_provider_key'],
-          :apikey => prowl_api_key,
-          :priority => list_priority,
-          :event => event,
-          :description => list_tweets.first['text']
+        send_list(
+          :id => list_tweets.first['id'],
+          :from => list_tweets.first['user']['screen_name'],
+          :text => list_tweets.first['text']
         )
-        Notification.create(:twitter_user_id => twitter_user_id)
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
       puts Time.now.to_s + '   @' + twitter_username
@@ -212,7 +188,7 @@ class User
   # Return this user's OAuth instance.
   def oauth
     if @oauth.nil?
-      @oauth = Twitter::OAuth.new(AppConfig['twitter']['oauth']['consumer_key'], AppConfig['twitter']['oauth']['consumer_secret'])
+      @oauth = Twitter::OAuth.new(PREYFETCHER_CONFIG[:twitter_consumer_key], PREYFETCHER_CONFIG[:twitter_consumer_secret])
       @oauth.authorize_from_access(access_key, access_secret)
     end
     
@@ -228,6 +204,55 @@ class User
     else
       [false, "The Prowl API key you supplied was invalid."]
     end
+  end
+  
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a DM notification to Prowl for this user.
+  def send_dm(tweet)
+    # Update this users's since_id
+    update(:dm_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a List notification to Prowl for this user.
+  def send_list(tweet)
+    # Update this users's since_id
+    update(:list_since_id => tweet[:id])
+    
+    # Queue up this notification
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} List",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => list_priority,
+      :event => "by @#{tweet[:from]}",
+      :description => tweet[:body]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
   end
   
   # Test this user's OAuth credentials and update/verify their username.
@@ -262,38 +287,87 @@ class User
 end
 
 configure do
-  # Load app config from YAML and set it in a constant
-  require "yaml"
+  # Default values to store in our CONFIG hash
+  config_defaults = {
+    # Regular app config
+    :app_asset_domain => '0.0.0.0:4567',
+    :app_domain => '0.0.0.0:4567',
+    :app_name => 'Prey Fetcher',
+    :app_prowl_appname => 'Prey Fetcher',
+    :app_prowl_provider_key => nil,
+    
+    # Assume development; use SQLite3
+    :db_adapter => 'sqlite3',
+    :db_host => nil,
+    :db_database => 'development.sqlite3',
+    :db_username => nil,
+    :db_password => nil,
+    
+    # Twitter configs
+    :twitter_consumer_key => '',
+    :twitter_consumer_secret => '',
+    :twitter_access_key => '',
+    :twitter_access_secret => '',
+    :twitter_site_stream_size => 100
+  }
   
-  config = YAML.load_file(File.join(File.dirname(__FILE__), "config.yml"))
-  # Local config file for development, testing, overrides
-  unless Sinatra::Application.environment == :production
-    config.deep_merge!(YAML.load_file(File.join(File.dirname(__FILE__), "config_local.yml"))) if File.exist?(File.join(File.dirname(__FILE__), "config_local.yml"))
+  # Grab stuff from config.rb, if it exists
+  begin
+    require File.join(File.dirname(__FILE__), "config.rb")
+    config_defaults.merge!(PREYFETCHER_CONFIG_RB)
+  rescue LoadError # No config.rb found
+    puts "No config.rb found; continuing on using Prey Fetcher defaults."
+  end
+  
+  # Local-specific/not-git-managed config
+  begin
+    require File.join(File.dirname(__FILE__), "config-local.rb")
+    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL_RB)
+  rescue LoadError # No config.rb found
+    puts "No config-local.rb found; nothing exported."
+  end
+  
+  # Same deal with config-production.rb
+  if Sinatra::Application.environment == :production
+    begin
+      require File.join(File.dirname(__FILE__), "config-production.rb")
+      config_defaults.merge!(PREYFETCHER_CONFIG_PRODUCTION_RB)
+    rescue LoadError # No config-production.rb found
+      puts "No config-production.rb found; continuing on using Prey Fetcher defaults."
+    end
+  end
+  
+  # Store our config stuff in this hash temporarily
+  config = {}
+  
+  # Set our config keys based on environmental variables.
+  # If they aren't present, fallback to config.rb/defaults.
+  config_defaults.each do |key, default|
+    from_env = ENV["PREYFETCHER_#{key.to_s.upcase}"]
+    config[key] = (from_env) ? from_env : default
   end
   
   # Assemble some extra config values from those already set
-  config['app']['url'] = "http://#{config['app']['domain']}"
-  config['app']['user_agent'] = "#{config['app']['name']} #{config['app']['version']} (#{config['app']['url']})"
+  config[:app_url] = "http://#{config[:app_domain]}"
+  config[:app_version] = PREYFETCHER_VERSION
+  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
   
-  # Put it in a constant so it's not tampered with
-  AppConfig = config
-  
-  db_env = Sinatra::Application.environment.to_s
+  # Put it in a constant so it's not tampered with and so
+  # it's globally accessible
+  PREYFETCHER_CONFIG = config
   
   # Database stuff
-  unless AppConfig['database'][db_env]['adapter'] == 'sqlite3'
-    DataMapper.setup(:default, "#{AppConfig['database'][db_env]['adapter']}://#{AppConfig['database'][db_env]['username']}:#{AppConfig['database'][db_env]['password']}@#{AppConfig['database'][db_env]['host']}/#{AppConfig['database'][db_env]['database']}")
+  unless PREYFETCHER_CONFIG[:db_adapter] == 'sqlite3'
+    DataMapper.setup(:default, "#{PREYFETCHER_CONFIG[:db_adapter]}://#{PREYFETCHER_CONFIG[:db_username]}:#{PREYFETCHER_CONFIG[:db_password]}@#{PREYFETCHER_CONFIG[:db_host]}/#{PREYFETCHER_CONFIG[:db_database]}")
   else
-    DataMapper.setup(:default, "sqlite3:#{AppConfig['database'][db_env]['database']}")
+    DataMapper.setup(:default, "sqlite3:#{PREYFETCHER_CONFIG[:db_database]}")
   end
-  
-  #DataMapper.auto_migrate!
 end
 
 helpers do
   # Return a link to an asset file on another domain.
   def asset(file)
-    "http://#{AppConfig['app']['asset_domain']}/#{file}"
+    "http://#{PREYFETCHER_CONFIG[:app_asset_domain]}/#{file}"
   end
   
   # Return a number as a string with commas.
@@ -318,8 +392,8 @@ use Rack::Flash, :sweep => true
 
 # Load the Twitter middleware.
 use Twitter::Login,
-  :consumer_key => AppConfig['twitter']['oauth']['consumer_key'],
-  :secret => AppConfig['twitter']['oauth']['consumer_secret']
+  :consumer_key => PREYFETCHER_CONFIG[:twitter_consumer_key],
+  :secret => PREYFETCHER_CONFIG[:twitter_consumer_secret]
 helpers Twitter::Login::Helpers
 
 # Index action -- show the homepage.
@@ -327,30 +401,38 @@ get "/" do
   # Index page is the entry point after login/signup
   if twitter_user
     unless session[:logged_in]
-      flash.now[:notice] = "Logged into Prey Fetcher as @#{twitter_user.screen_name}."
+      flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
       session[:logged_in] = true
     end
     
     if User.count(:twitter_user_id => twitter_user.id) == 0
       @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br><a href=\"#user_prowl_api_key\">Enter your Prowl API key</a> to enable notifications."
-      redirect '/settings'
     end
+    
+    # The homepage is useless to logged-in users; show them their account instead
+    redirect '/account'
   end
   
-  @title = "Open Source Twitter Push Notifications"
+  @title = "Instant Twitter Notifications for iOS"
   erb :index
 end
 
 # Show the FAQ.
-get "/faq" do
-  @title = "Questions About Prey Fetcher"
-  erb :faq
+get "/about" do
+  @title = "About Prey Fetcher"
+  erb :about
+end
+
+# Show the feature list.
+get "/features" do
+  @title = "Features"
+  erb :features
 end
 
 # Show the Privacy jazz.
 get "/privacy" do
-  @title = "Promise To Not Be Evil"
+  @title = "Privacy"
   erb :privacy
 end
 
@@ -362,31 +444,17 @@ end
 
 # Show account info.
 get "/account" do
-  @title = "@#{twitter_user.screen_name}'s Account"
+  redirect '/' unless twitter_user
+  
+  @title = "Account and Notification Settings"
   @user = User.first(:twitter_user_id => twitter_user.id)
   erb :account
 end
 
-# Show account info.
-delete "/account" do
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  @user.destroy!
-  
-  flash[:notice] = "Your Prey Fetcher account has been deleted. Sorry to see you go!"
-  twitter_logout
-  session[:logged_in] = false
-  redirect '/'
-end
-
-# Edit account settings.
-get "/settings" do
-  @title = "Change Your Notification Settings"
-  @user = User.first(:twitter_user_id => twitter_user.id)
-  erb :settings
-end
-
 # Receive new account settings.
-put "/settings" do
+put "/account" do
+  redirect '/' unless twitter_user
+  
   @user = User.first(:twitter_user_id => twitter_user.id)
   settings = {}
   
@@ -396,26 +464,39 @@ put "/settings" do
   end
   
   if @user.update(settings)
-    flash[:notice] = "Your settings have been updated."
-    redirect '/settings'
+    flash[:notice] = "Your account and notification settings have been updated."
+    redirect '/account'
   else
     flash.now[:alert] = "Sorry, but your account couldn't be updated.<br><ul>"
     @user.errors.each do |e|
       flash.now[:alert] << "<li>#{e}</li>"
     end
     flash.now[:alert] << "</ul>"
-    @title = "Change Your Notification Settings"
-    erb :settings
+    @title = "Account and Notification Settings"
+    erb :account
   end
+end
+
+# Delete user account
+delete "/account" do
+  redirect '/' unless twitter_user
+  
+  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user.destroy!
+  
+  flash[:notice] = "Your Prey Fetcher account (for <span class=\"underline\">@#{twitter_user.screen_name}</span>) has been deleted.<br />Sorry to see you go!"
+  twitter_logout
+  session[:logged_in] = false
+  redirect '/'
 end
 
 # Put request that updates a user's lists from Twitter.
 put "/lists" do
   @user = User.first(:twitter_user_id => twitter_user.id)
-  unless @user.nil?
+  if @user
     @user.lists(true)
     flash[:notice] = "Your Twitter lists have been updated."
-    redirect '/settings'
+    redirect '/account'
   else
     flash[:error] = "No user matching your Twitter account was found."
     redirect '/'
@@ -424,9 +505,12 @@ end
 
 # Logout and remove any session data.
 get "/logout" do
-  flash[:notice] = "Logged @#{twitter_user.screen_name} out of Prey Fetcher."
+  redirect '/' unless twitter_user
+  
+  flash[:notice] = "Logged <span class=\"underline\">@#{twitter_user.screen_name}</span> out of Prey Fetcher."
   twitter_logout
   session[:logged_in] = false
+  
   redirect '/'
 end
 

@@ -31,7 +31,7 @@ User.all.each do |user|
   # Add this user id to the current group and increnment our counters
   track_users[user_group] << user.twitter_user_id
   user_group_i += 1
-  if user_group_i >= AppConfig['twitter']['site_stream_size']
+  if user_group_i >= PREYFETCHER_CONFIG[:twitter_site_stream_size]
     user_group += 1
     user_group_i = 1
   end
@@ -44,14 +44,14 @@ EventMachine::run do
       :host    => 'betastream.twitter.com',
       :path    => '/2b/site.json',
       :oauth   => {
-        :consumer_key    => AppConfig['twitter']['oauth']['consumer_key'],
-        :consumer_secret => AppConfig['twitter']['oauth']['consumer_secret'],
-        :access_key      => AppConfig['twitter']['oauth']['access_key'],
-        :access_secret   => AppConfig['twitter']['oauth']['access_secret']
+        :consumer_key    => PREYFETCHER_CONFIG[:twitter_consumer_key],
+        :consumer_secret => PREYFETCHER_CONFIG[:twitter_consumer_secret],
+        :access_key      => PREYFETCHER_CONFIG[:twitter_access_key],
+        :access_secret   => PREYFETCHER_CONFIG[:twitter_access_secret]
       },
       :method  => 'POST',
       :filters => users_group,
-      :user_agent => AppConfig['app']['user_agent']
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent]
     )
     
     stream.each_item do |item|
@@ -66,16 +66,11 @@ EventMachine::run do
         
         # Is this a direct message?
         if user.enable_dms && tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
-          FastProwl.add(
-            :application => AppConfig['app']['name'] + ' DM',
-            :providerkey => AppConfig['app']['prowl_provider_key'],
-            :apikey => user.prowl_api_key,
-            :priority => user.dm_priority,
-            :event => "From @#{tweet['message']['direct_message']['sender_screen_name']}",
-            :description => tweet['message']['direct_message']['text']
+          user.send_dm(
+            :id => tweet['message']['direct_message']['id'],
+            :from => tweet['message']['direct_message']['sender_screen_name'],
+            :text => tweet['message']['direct_message']['text']
           )
-          
-          Notification.create(:twitter_user_id => user.id)
         end
         
         # Is this a mention?
@@ -85,21 +80,17 @@ EventMachine::run do
           
           next if retweet && user.disable_retweets
           
-          FastProwl.add(
-            :application => AppConfig['app']['name'] + (retweet ? ' retweet' : ' mention'),
-            :providerkey => AppConfig['app']['prowl_provider_key'],
-            :apikey => user.prowl_api_key,
-            :priority => user.mention_priority,
-            :event => "From @#{tweet['message']['user']['screen_name']}",
-            :description => tweet['message']['text']
+          user.send_mention(
+            :id => tweet['message']['id'],
+            :from => tweet['message']['user']['screen_name'],
+            :text => tweet['message']['text'],
+            :retweet => retweet
           )
-          
-          Notification.create(:twitter_user_id => user.id)
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-        puts Time.now.to_s
-        puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
-        puts e.to_s
+        puts "STREAMING ERROR: " + Time.now.to_s
+        puts "STREAMING ERROR: " + "Twitter was over capacity? Couldn't make a usable array from JSON data."
+        puts "STREAMING ERROR: " + e.to_s
         puts ''
       end
     end
