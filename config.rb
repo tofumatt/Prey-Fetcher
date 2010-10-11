@@ -4,6 +4,7 @@ PREYFETCHER_CONFIG_RB = {
   # :app_asset_domain => 'static.preyfetcher.com',
   # :app_domain => 'preyfetcher.com',
   # :app_name => 'Prey Fetcher',
+  # :app_prowl_appname => 'Prey Fetcher',
   # :app_prowl_provider_key => '',
   
   # Assign your own database info here

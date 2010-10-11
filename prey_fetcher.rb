@@ -110,7 +110,7 @@ class User
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
           FastProwl.add(
-            :application => "#{PREYFETCHER_CONFIG[:app_prowl_app_name]} DM",
+            :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
             :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
             :apikey => prowl_api_key,
             :priority => dm_priority,
@@ -266,7 +266,7 @@ configure do
     :app_asset_domain => '0.0.0.0:4567',
     :app_domain => '0.0.0.0:4567',
     :app_name => 'Prey Fetcher',
-    :app_prowl_app_name => 'Prey Fetcher',
+    :app_prowl_appname => 'Prey Fetcher',
     :app_prowl_provider_key => nil,
     
     # Assume development; use SQLite3
