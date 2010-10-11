@@ -104,20 +104,13 @@ class User
       direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 1, :since_id => dm_since_id)
       
       if direct_messages.size > 0
-        # Update this users's since_id
-        update(:dm_since_id => direct_messages.first['id'])
-        
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
         if dm_since_id != 1
-          FastProwl.add(
-            :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
-            :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-            :apikey => prowl_api_key,
-            :priority => dm_priority,
-            :event => "From @#{direct_messages.first['sender']['screen_name']}",
-            :description => direct_messages.first['text']
+          send_dm(
+            :id => direct_messages.first['id'],
+            :from => direct_messages.first['sender']['screen_name'],
+            :text => direct_messages.first['text']
           )
-          Notification.create(:twitter_user_id => twitter_user_id)
         end
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
@@ -145,26 +138,11 @@ class User
       list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list, :count => 2, :since_id => list_since_id)
       
       if list_tweets.size > 0
-        # The notification event text depends on the number of new tweets
-        if list_tweets.size == 1
-          event = "by @#{list_tweets.first['user']['screen_name']}"
-        else
-          event = "Latest by @#{list_tweets.first['user']['screen_name']}"
-        end
-        
-        # Update this users's since_id
-        update(:list_since_id => list_tweets.first['id'])
-        
-        # Queue up this notification
-        FastProwl.add(
-          :application => 'Twitter List',
-          :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-          :apikey => prowl_api_key,
-          :priority => list_priority,
-          :event => event,
-          :description => list_tweets.first['text']
+        send_list(
+          :id => list_tweets.first['id'],
+          :from => list_tweets.first['user']['screen_name'],
+          :text => list_tweets.first['text']
         )
-        Notification.create(:twitter_user_id => twitter_user_id)
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
       puts Time.now.to_s + '   @' + twitter_username
@@ -226,6 +204,55 @@ class User
     else
       [false, "The Prowl API key you supplied was invalid."]
     end
+  end
+  
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a DM notification to Prowl for this user.
+  def send_dm(tweet)
+    # Update this users's since_id
+    update(:dm_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => dm_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a List notification to Prowl for this user.
+  def send_list(tweet)
+    # Update this users's since_id
+    update(:list_since_id => tweet[:id])
+    
+    # Queue up this notification
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} List",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => list_priority,
+      :event => "by @#{tweet[:from]}",
+      :description => tweet[:body]
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
   end
   
   # Test this user's OAuth credentials and update/verify their username.
