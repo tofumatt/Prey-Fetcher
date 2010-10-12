@@ -215,7 +215,7 @@ class User
       :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
-      :priority => dm_priority,
+      :priority => mention_priority,
       :event => "From @#{tweet[:from]}",
       :description => tweet[:text]
     )
