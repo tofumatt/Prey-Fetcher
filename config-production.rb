@@ -16,9 +16,9 @@ PREYFETCHER_CONFIG_PRODUCTION_RB = {
   # :db_password => '',
   
   # Twitter configs
-  :twitter_consumer_key => '',
-  :twitter_consumer_secret => '',
-  :twitter_access_key => '',
-  :twitter_access_secret => '',
+  # :twitter_consumer_key => '',
+  # :twitter_consumer_secret => '',
+  # :twitter_access_key => '',
+  # :twitter_access_secret => '',
   :twitter_site_stream_size => 100
 }
