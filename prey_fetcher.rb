@@ -250,7 +250,7 @@ class User
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
-      :description => tweet[:body]
+      :description => tweet[:text]
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
