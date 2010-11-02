@@ -44,12 +44,12 @@ class User
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
-  property :mention_since_id, Integer, :default => 0
+  property :mention_since_id, Integer, :default => 1
   property :disable_retweets, Boolean, :default => true
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
-  property :dm_since_id, Integer, :default => 0
+  property :dm_since_id, Integer, :default => 1
   # Lists
   property :enable_list, Boolean, :default => true
   property :notification_list, Integer
@@ -77,6 +77,35 @@ class User
       :created_at => Time.now,
       :updated_at => Time.now
     )
+    
+    # Load the user from the DB and try to set their since_ids
+    user = User.first(:twitter_user_id => twitter_user.id)
+    
+    # If we can't get the data, it's OK. But it's nicer to set
+    # this stuff on account creation.
+    begin
+      direct_messages = Twitter::Base.new(user.oauth).direct_messages(
+        :count => 1
+      )
+      user.update!(:dm_since_id => direct_messages.first['id']) if direct_messages.size > 0
+      
+      mentions = Twitter::Base.new(user.oauth).mentions(
+        :count => 1
+      )
+      user.update!(:mention_since_id => mentions.first['id']) if mentions.size > 0
+    rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
+      puts Time.now.to_s + '   @' + user.twitter_username
+      puts 'Twitter was over capacity for @' + user.twitter_username + "? Couldn't make a usable array from JSON data."
+      puts '@' + user.twitter_username + '   ' + e.to_s
+    rescue Timeout::Error => e
+      puts Time.now.to_s + '   @' + user.twitter_username
+      puts 'Twitter timed out for @' + user.twitter_username + "."
+      puts '@' + user.twitter_username + '   ' + e.to_s
+    rescue Exception => e # Bad data or some other weird response
+      puts Time.now.to_s + '   @' + user.twitter_username
+      puts 'Error getting data for @' + user.twitter_username + '. Twitter probably returned bad data.'
+      puts '@' + user.twitter_username + '   ' + e.to_s
+    end
   end
   
   # Return a list of values we allow routes to mass-assign
@@ -101,7 +130,10 @@ class User
     # parser in case Twitter sends us back malformed JSON or (more
     # likely) HTML when it's over capacity
     begin
-      direct_messages = Twitter::Base.new(oauth).direct_messages(:count => 1, :since_id => dm_since_id)
+      direct_messages = Twitter::Base.new(oauth).direct_messages(
+        :count => 1,
+        :since_id => dm_since_id
+      )
       
       if direct_messages.size > 0
         # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
@@ -135,13 +167,58 @@ class User
     # parser in case Twitter sends us back malformed JSON or (more
     # likely) HTML when it's over capacity
     begin
-      list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list, :count => 2, :since_id => list_since_id)
+      list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list,
+        :count => 1,
+        :since_id => list_since_id
+      )
       
       if list_tweets.size > 0
         send_list(
           :id => list_tweets.first['id'],
           :from => list_tweets.first['user']['screen_name'],
           :text => list_tweets.first['text']
+        )
+      end
+    rescue JSON::ParserError => e # Bad data (probably not even JSON)
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
+      puts '@' + twitter_username + '   ' + e.to_s
+    rescue Timeout::Error => e
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Twitter timed out for @' + twitter_username + "."
+      puts '@' + twitter_username + '   ' + e.to_s
+    rescue Exception => e # Bad data or some other weird response
+      puts Time.now.to_s + '   @' + twitter_username
+      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
+      puts '@' + twitter_username + '   ' + e.to_s
+    end
+  end
+  
+  # Look for the most recent mention. If we missed more than one
+  # for some reason, it just gets ignored.
+  def check_mentions
+    # Send any mention notifications -- handle exceptions from the JSON
+    # parser in case Twitter sends us back malformed JSON or (more
+    # likely) HTML when it's over capacity
+    begin
+      mentions = Twitter::Base.new(oauth).mentions(
+        :count => 1,
+        :include_entities => 1,
+        :include_rts => (disable_retweets) ? 0 : 1,
+        :since_id => mention_since_id
+      )
+      
+      if mentions.size > 0
+        # Make sure this isn't a RT (or that they're enabled)
+        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].index('RT ') == 0) ? true : false
+        
+        return if retweet && disable_retweets
+        
+        send_mention(
+          :id => mentions.first['id'],
+          :from => mentions.first['user']['screen_name'],
+          :text => mentions.first['text'],
+          :retweet => retweet
         )
       end
     rescue JSON::ParserError => e # Bad data (probably not even JSON)
