@@ -10,10 +10,10 @@ PREYFETCHER_CONFIG_PRODUCTION_RB = {
   
   # Assign your own database info here
   :db_adapter => 'mysql',
-  :db_host => 'localhost',
+  # :db_host => 'localhost',
   :db_database => 'preyfetcher',
   :db_username => 'preyfetcher',
-  :db_password => '',
+  # :db_password => '',
   
   # Twitter configs
   :twitter_consumer_key => '',
