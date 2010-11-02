@@ -84,14 +84,10 @@ class User
     # If we can't get the data, it's OK. But it's nicer to set
     # this stuff on account creation.
     begin
-      direct_messages = Twitter::Base.new(user.oauth).direct_messages(
-        :count => 1
-      )
+      direct_messages = Twitter::Base.new(user.oauth).direct_messages(:count => 1)
       user.update!(:dm_since_id => direct_messages.first['id']) if direct_messages.size > 0
       
-      mentions = Twitter::Base.new(user.oauth).mentions(
-        :count => 1
-      )
+      mentions = Twitter::Base.new(user.oauth).mentions(:count => 1)
       user.update!(:mention_since_id => mentions.first['id']) if mentions.size > 0
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
       puts Time.now.to_s + '   @' + user.twitter_username
