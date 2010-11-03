@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.1.1"
+PREYFETCHER_VERSION = "4.1.2"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -535,6 +535,9 @@ put "/account" do
   User.mass_assignable.each do |a|
     settings[a] = params[:user][a]
   end
+  
+  # Hotfix for list bug
+  settings.delete(:notification_list) if settings[:notification_list] && settings[:notification_list].blank?
   
   if @user.update(settings)
     flash[:notice] = "Your account and notification settings have been updated."
