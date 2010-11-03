@@ -536,6 +536,9 @@ put "/account" do
     settings[a] = params[:user][a]
   end
   
+  # Hotfix for list bug
+  settings.delete(:notification_list) if settings[:notification_list] && settings[:notification_list].blank?
+  
   if @user.update(settings)
     flash[:notice] = "Your account and notification settings have been updated."
     redirect '/account'
