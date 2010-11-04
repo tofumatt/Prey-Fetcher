@@ -52,7 +52,6 @@ namespace :prey_fetcher do
       unless u.nil? || u.prowl_api_key.nil? || u.prowl_api_key.blank?
         u.check_dms if u.enable_dms
         u.check_lists if u.enable_list
-        u.check_mentions if u.enable_mentions
       end
     end
   end
