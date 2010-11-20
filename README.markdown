@@ -1,4 +1,4 @@
-# ![Image of the Prey Fetcher zebra (yes, it's a zebra!)](http://github.com/tofumatt/Prey-Fetcher/raw/master/public/images/prey-fetcher.png) Prey Fetcher #
+# ![Image of the Prey Fetcher zebra (yes, it's a zebra!)](https://github.com/tofumatt/Prey-Fetcher/raw/master/public/images/prey-fetcher.png) Prey Fetcher #
 
 ## Push your tweets to your iPhone ##
 
