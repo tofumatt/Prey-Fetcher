@@ -15,6 +15,14 @@ set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
 
+# Monkey patch String to allow unescaped Twitter strings
+class String
+  # Return a string with &lt; and &gt; HTML entities converted to < and >
+  def unescaped
+    self.gsub('&lt;', '<').gsub('&gt;', '>')
+  end
+end
+
 class Notification
   include DataMapper::Resource
   
@@ -290,7 +298,7 @@ class User
       :apikey => prowl_api_key,
       :priority => mention_priority,
       :event => "From @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
@@ -306,7 +314,7 @@ class User
       :apikey => prowl_api_key,
       :priority => dm_priority,
       :event => "From @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
@@ -323,7 +331,7 @@ class User
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
