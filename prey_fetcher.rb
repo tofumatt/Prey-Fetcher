@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.1.3"
+PREYFETCHER_VERSION = "4.1.4"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -14,6 +14,14 @@ set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
 set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
+
+# Monkey patch String to allow unescaped Twitter strings
+class String
+  # Return a string with &lt; and &gt; HTML entities converted to < and >
+  def unescaped
+    self.gsub('&lt;', '<').gsub('&gt;', '>')
+  end
+end
 
 class Notification
   include DataMapper::Resource
@@ -290,7 +298,7 @@ class User
       :apikey => prowl_api_key,
       :priority => mention_priority,
       :event => "From @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
@@ -306,7 +314,7 @@ class User
       :apikey => prowl_api_key,
       :priority => dm_priority,
       :event => "From @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
@@ -323,7 +331,7 @@ class User
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
-      :description => tweet[:text]
+      :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
   end
