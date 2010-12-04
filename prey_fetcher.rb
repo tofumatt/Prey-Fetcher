@@ -17,6 +17,11 @@ set :views, "views"
 
 # Monkey patch String to allow unescaped Twitter strings
 class String
+  # Return true if this text string looks like a retweet
+  def retweet?
+    self.index('RT ') == 0
+  end
+  
   # Return a string with &lt; and &gt; HTML entities converted to < and >
   def unescaped
     self.gsub('&lt;', '<').gsub('&gt;', '>')
@@ -82,7 +87,10 @@ class User
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
-  property :disable_retweets, Boolean, :default => true
+  # Retweets
+  property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
+  property :retweet_priority, Integer, :default => 0
+  property :retweet_since_id, Integer, :default => 1
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
@@ -137,6 +145,7 @@ class User
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
+      :retweet_priority,
       :enable_dms,
       :dm_priority,
       :enable_list,
@@ -192,24 +201,27 @@ class User
       mentions = Twitter::Base.new(oauth).mentions(
         :count => 1,
         :include_entities => 1,
-        :include_rts => (disable_retweets) ? 0 : 1,
+        :include_rts => 0,
         :since_id => mention_since_id
       )
       
       if mentions.size > 0
-        # Make sure this isn't a RT (or that they're enabled)
-        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].index('RT ') == 0) ? true : false
-        
-        return if retweet && disable_retweets
+        # Make sure this isn't an old-style RT
+        return if mentions.first['text'].retweet?
         
         user.send_mention(
           :id => mentions.first['id'],
           :from => mentions.first['user']['screen_name'],
-          :text => mentions.first['text'],
-          :retweet => retweet
+          :text => mentions.first['text']
         )
       end
     end
+  end
+  
+  # Return the opposite of "disable_retweets"; here for convenience, as Matt
+  # stupidly classes retweets as a subset of mentions at first.
+  def enable_retweets
+    !disable_retweets
   end
   
   # Return lists this user owns, includes private lists.
@@ -259,22 +271,6 @@ class User
     end
   end
   
-  # Send a mention notification to Prowl for this user.
-  def send_mention(tweet)
-    # Update this users's since_id
-    update(:mention_since_id => tweet[:id])
-    
-    FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-      :apikey => prowl_api_key,
-      :priority => mention_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
-    )
-    Notification.create(:twitter_user_id => twitter_user_id)
-  end
-  
   # Send a DM notification to Prowl for this user.
   def send_dm(tweet)
     # Update this users's since_id
@@ -303,6 +299,38 @@ class User
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => mention_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a retweet notification to Prowl for this user.
+  def send_retweet(tweet)
+    # Update this users's since_id
+    update(:retweet_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} retweet",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => retweet_priority,
+      :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)

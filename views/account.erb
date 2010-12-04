@@ -34,12 +34,6 @@
   		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
 		  
   		<div id="mention-priority-container" class="clear js-hide">
-  		  <label for="user_disable_retweets" class="for-checkbox">Ignore retweets</label>
-  		  <input type="hidden" name="user[disable_retweets]" value="0">
-    		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="1"<% if @user.disable_retweets %> checked="checked"<% end %>>
-    		
-    		<div class="clear"></div>
-    		
   			<label for="mention-priority" class="for-select">mention Priority</label>
   			<select name="user[mention_priority]" id="mention-priority" class="select">
   				<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
@@ -49,6 +43,22 @@
   			</select>
   		</div>
   	</div>
+  	
+  	<div class="clear space">
+  	  <label for="user_disable_retweets" class="for-checkbox">Notify when retweeted</label>
+		  <input type="hidden" name="user[disable_retweets]" value="1">
+  		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="0"<% if !@user.disable_retweets %> checked="checked"<% end %>>
+      
+      <div id="retweet-priority-container" class="clear js-hide">
+  			<label for="retweet-priority" class="for-select">Retweet Priority</label>
+  			<select name="user[retweet_priority]" id="retweet-priority" class="select">
+  				<option value="-1"<% if @user.retweet_priority == -1 %> selected="selected"<% end %>>Low</option>
+  				<option value="0"<% if @user.retweet_priority == 0 %> selected="selected"<% end %>>Normal</option>
+  				<option value="1"<% if @user.retweet_priority == 1 %> selected="selected"<% end %>>High</option>
+  				<option value="2"<% if @user.retweet_priority == 2 %> selected="selected"<% end %>>Emergency</option>
+  			</select>
+  		</div>
+		</div>
 	  
   	<div class="clear space">
   		<label for="user_enable_list" class="for-checkbox">Watch A List</label>
