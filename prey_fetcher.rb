@@ -145,6 +145,7 @@ class User
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
+      :retweet_priority,
       :enable_dms,
       :dm_priority,
       :enable_list,
