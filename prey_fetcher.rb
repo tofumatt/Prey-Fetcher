@@ -310,7 +310,7 @@ class User
   
   # Test this user's OAuth credentials and update/verify their username.
   def verify_credentials
-    begin
+    PreyFetcher.protect_from_twitter do
       creds = Twitter::Base.new(oauth).verify_credentials
       
       # Update user's screen name if they've changed it (prevents
@@ -320,21 +320,6 @@ class User
         puts "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
-    rescue Twitter::Unauthorized => e # Delete this user; they've revoked access
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
-      puts '@' + twitter_username + '   ' + e.to_s
-      
-      destroy!
-    rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
-    rescue Timeout::Error
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Twitter timed out for @' + self.twitter_username + "."
-    rescue Exception # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
     end
   end
 end
