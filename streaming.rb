@@ -78,18 +78,16 @@ EventMachine::run do
           user.send_mention(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
-            :text => tweet['message']['text'],
-            :retweet => false
+            :text => tweet['message']['text']
           )
         end
         
         # Is this a retweet?
         if !user.disable_retweets && tweet['message'] && (tweet['message']['retweeted_status'] || (tweet['message']['text'] && tweet['message']['text'].retweet?))
-          user.send_mention(
+          user.send_retweet(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
-            :text => tweet['message']['text'],
-            :retweet => true
+            :text => tweet['message']['text']
           )
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
