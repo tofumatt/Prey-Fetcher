@@ -25,6 +25,8 @@ end
 
 # House internal methods and junk inside our own namespace
 class PreyFetcher
+  # Protect code run inside this method (as a block) from common
+  # exceptions we run into doing Twitter REST API requests.
   def self.protect_from_twitter
     # Do something with Twitter API response -- handle exceptions
     # from the JSON parser in case Twitter sends us back malformed
