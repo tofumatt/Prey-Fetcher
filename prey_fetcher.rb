@@ -87,7 +87,10 @@ class User
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
-  property :disable_retweets, Boolean, :default => true
+  # Retweets
+  property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
+  property :retweet_priority, Integer, :default => 0
+  property :retweet_since_id, Integer, :default => 1
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
@@ -215,6 +218,12 @@ class User
         )
       end
     end
+  end
+  
+  # Return the opposite of "disable_retweets"; here for convenience, as Matt
+  # stupidly classes retweets as a subset of mentions at first.
+  def enable_retweets
+    !disable_retweets
   end
   
   # Return lists this user owns, includes private lists.
