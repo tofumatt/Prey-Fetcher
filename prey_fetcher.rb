@@ -59,8 +59,15 @@ end
 class Notification
   include DataMapper::Resource
   
+  # Constants representing the type of notification delivered.
+  TYPE_DM = 1
+  TYPE_LIST = 2
+  TYPE_MENTION = 3
+  TYPE_RETWEET = 4
+  
   property :id, Serial
   property :twitter_user_id, Integer
+  property :type, Integer
   # Timestamps
   property :created_at, DateTime
   property :updated_at, DateTime
@@ -284,7 +291,7 @@ class User
       :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_DM)
   end
   
   # Send a List notification to Prowl for this user.
@@ -301,7 +308,7 @@ class User
       :event => "by @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_LIST)
   end
   
   # Send a mention notification to Prowl for this user.
@@ -317,7 +324,7 @@ class User
       :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_MENTION)
   end
   
   # Send a retweet notification to Prowl for this user.
@@ -333,7 +340,7 @@ class User
       :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_RETWEET)
   end
   
   # Test this user's OAuth credentials and update/verify their username.
