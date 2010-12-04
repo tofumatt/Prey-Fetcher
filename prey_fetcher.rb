@@ -203,7 +203,7 @@ class User
       
       if mentions.size > 0
         # Make sure this isn't a RT (or that they're enabled)
-        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].index('RT ') == 0) ? true : false
+        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].retweet?) ? true : false
         
         return if retweet && disable_retweets
         
