@@ -20,7 +20,7 @@ Prey Fetcher is, and will always be, a totally free service for users. I run it 
 
 Prey Fetcher does basically everything _I_ want it to do already, but I want to add features for others. Because I work on it in my spare time and most new features will require more API polling and thus more resources, donations are greatly appreciated.
 
-You can [donate money via PayPal](http://pledgie.com/campaigns/10696) (via [Pledgie](http://pledgie.com/), also on the [repository home page](http://github.com/tofumatt/Prey-Fetcher)). Or you can donate some time (by coding), or resources (if you want to host Prey Fetcher for free).
+You can [donate money via PayPal](http://pledgie.com/campaigns/10696) (via [Pledgie](http://pledgie.com/)). Or you can donate some time (by coding), or resources (if you want to host Prey Fetcher for free).
 
 # License #
 This program is free software; it is distributed under an [MIT License](http://github.com/tofumatt/Prey-Fetcher/blob/master/LICENSE.txt).

@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.1.4"
+PREYFETCHER_VERSION = "4.2"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -17,17 +17,57 @@ set :views, "views"
 
 # Monkey patch String to allow unescaped Twitter strings
 class String
+  # Return true if this text string looks like a retweet
+  def retweet?
+    self.index('RT ') == 0
+  end
+  
   # Return a string with &lt; and &gt; HTML entities converted to < and >
   def unescaped
     self.gsub('&lt;', '<').gsub('&gt;', '>')
   end
 end
 
+# House internal methods and junk inside our own namespace
+class PreyFetcher
+  # Protect code run inside this method (as a block) from common
+  # exceptions we run into doing Twitter REST API requests.
+  def self.protect_from_twitter
+    # Do something with Twitter API response -- handle exceptions
+    # from the JSON parser in case Twitter sends us back malformed
+    # JSON or (more likely) HTML when it's over capacity/down.
+    begin
+      yield
+    rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
+      puts Time.now.to_s
+      puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
+      puts e.to_s
+    rescue Timeout::Error => e
+      puts Time.now.to_s
+      puts "Twitter timed out."
+      puts e.to_s
+    rescue Exception => e # Bad data or some other weird response
+      puts Time.now.to_s
+      puts "Error getting data. Twitter probably returned bad data."
+      puts e.to_s
+    end
+  end
+end
+
+# Record of when a notification, including the user record it relates
+# to, when it was sent, and the item associated with it.
 class Notification
   include DataMapper::Resource
   
+  # Constants representing the type of notification delivered.
+  TYPE_DM = 1
+  TYPE_LIST = 2
+  TYPE_MENTION = 3
+  TYPE_RETWEET = 4
+  
   property :id, Serial
   property :twitter_user_id, Integer
+  property :type, Integer
   # Timestamps
   property :created_at, DateTime
   property :updated_at, DateTime
@@ -39,6 +79,7 @@ class Notification
   end
 end
 
+# A user on the site with a Prowl API Key, Twitter credentials, and settings.
 class User
   include DataMapper::Resource
   include DataMapper::Validate
@@ -53,7 +94,10 @@ class User
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
-  property :disable_retweets, Boolean, :default => true
+  # Retweets
+  property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
+  property :retweet_priority, Integer, :default => 0
+  property :retweet_since_id, Integer, :default => 1
   # Direct Messages
   property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
@@ -91,24 +135,12 @@ class User
     
     # If we can't get the data, it's OK. But it's nicer to set
     # this stuff on account creation.
-    begin
+    PreyFetcher.protect_from_twitter do
       direct_messages = Twitter::Base.new(user.oauth).direct_messages(:count => 1)
       user.update!(:dm_since_id => direct_messages.first['id']) if direct_messages.size > 0
       
       mentions = Twitter::Base.new(user.oauth).mentions(:count => 1)
       user.update!(:mention_since_id => mentions.first['id']) if mentions.size > 0
-    rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s + '   @' + user.twitter_username
-      puts 'Twitter was over capacity for @' + user.twitter_username + "? Couldn't make a usable array from JSON data."
-      puts '@' + user.twitter_username + '   ' + e.to_s
-    rescue Timeout::Error => e
-      puts Time.now.to_s + '   @' + user.twitter_username
-      puts 'Twitter timed out for @' + user.twitter_username + "."
-      puts '@' + user.twitter_username + '   ' + e.to_s
-    rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + user.twitter_username
-      puts 'Error getting data for @' + user.twitter_username + '. Twitter probably returned bad data.'
-      puts '@' + user.twitter_username + '   ' + e.to_s
     end
   end
   
@@ -120,6 +152,7 @@ class User
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
+      :retweet_priority,
       :enable_dms,
       :dm_priority,
       :enable_list,
@@ -130,10 +163,7 @@ class User
   
   # Check Twitter for new DMs for this user using the REST API
   def check_dms
-    # Send any DM notifications -- handle exceptions from the JSON
-    # parser in case Twitter sends us back malformed JSON or (more
-    # likely) HTML when it's over capacity
-    begin
+    PreyFetcher.protect_from_twitter do
       direct_messages = Twitter::Base.new(oauth).direct_messages(
         :count => 1,
         :since_id => dm_since_id
@@ -149,28 +179,13 @@ class User
           )
         end
       end
-    rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Timeout::Error => e
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter timed out for @' + twitter_username + "."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      puts '@' + twitter_username + '   ' + e.to_s
     end
   end
   
   # Check Twitter for new tweets for any lists Prey Fetcher
   # checks for this user using the REST API.
   def check_lists
-    # Send any list notifications -- handle exceptions from the JSON
-    # parser in case Twitter sends us back malformed JSON or (more
-    # likely) HTML when it's over capacity
-    begin
+    PreyFetcher.protect_from_twitter do
       list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list,
         :count => 1,
         :since_id => list_since_id
@@ -183,61 +198,37 @@ class User
           :text => list_tweets.first['text']
         )
       end
-    rescue JSON::ParserError => e # Bad data (probably not even JSON)
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Timeout::Error => e
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter timed out for @' + twitter_username + "."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      puts '@' + twitter_username + '   ' + e.to_s
     end
   end
   
   # Look for the most recent mention. If we missed more than one
   # for some reason, it just gets ignored.
   def check_mentions
-    # Send any mention notifications -- handle exceptions from the JSON
-    # parser in case Twitter sends us back malformed JSON or (more
-    # likely) HTML when it's over capacity
-    begin
+    PreyFetcher.protect_from_twitter do
       mentions = Twitter::Base.new(oauth).mentions(
         :count => 1,
         :include_entities => 1,
-        :include_rts => (disable_retweets) ? 0 : 1,
+        :include_rts => 0,
         :since_id => mention_since_id
       )
       
       if mentions.size > 0
-        # Make sure this isn't a RT (or that they're enabled)
-        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].index('RT ') == 0) ? true : false
+        # Make sure this isn't an old-style RT
+        return if mentions.first['text'].retweet?
         
-        return if retweet && disable_retweets
-        
-        send_mention(
+        user.send_mention(
           :id => mentions.first['id'],
           :from => mentions.first['user']['screen_name'],
-          :text => mentions.first['text'],
-          :retweet => retweet
+          :text => mentions.first['text']
         )
       end
-    rescue JSON::ParserError => e # Bad data (probably not even JSON)
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter was over capacity for @' + twitter_username + "? Couldn't make a usable array from JSON data."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Timeout::Error => e
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Twitter timed out for @' + twitter_username + "."
-      puts '@' + twitter_username + '   ' + e.to_s
-    rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Error getting data for @' + twitter_username + '. Twitter probably returned bad data.'
-      puts '@' + twitter_username + '   ' + e.to_s
     end
+  end
+  
+  # Return the opposite of "disable_retweets"; here for convenience, as Matt
+  # stupidly classes retweets as a subset of mentions at first.
+  def enable_retweets
+    !disable_retweets
   end
   
   # Return lists this user owns, includes private lists.
@@ -287,22 +278,6 @@ class User
     end
   end
   
-  # Send a mention notification to Prowl for this user.
-  def send_mention(tweet)
-    # Update this users's since_id
-    update(:mention_since_id => tweet[:id])
-    
-    FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-      :apikey => prowl_api_key,
-      :priority => mention_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
-    )
-    Notification.create(:twitter_user_id => twitter_user_id)
-  end
-  
   # Send a DM notification to Prowl for this user.
   def send_dm(tweet)
     # Update this users's since_id
@@ -316,7 +291,7 @@ class User
       :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_DM)
   end
   
   # Send a List notification to Prowl for this user.
@@ -333,12 +308,44 @@ class User
       :event => "by @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
-    Notification.create(:twitter_user_id => twitter_user_id)
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_LIST)
+  end
+  
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => mention_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_MENTION)
+  end
+  
+  # Send a retweet notification to Prowl for this user.
+  def send_retweet(tweet)
+    # Update this users's since_id
+    update(:retweet_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} retweet",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => retweet_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_RETWEET)
   end
   
   # Test this user's OAuth credentials and update/verify their username.
   def verify_credentials
-    begin
+    PreyFetcher.protect_from_twitter do
       creds = Twitter::Base.new(oauth).verify_credentials
       
       # Update user's screen name if they've changed it (prevents
@@ -348,21 +355,6 @@ class User
         puts "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
-    rescue Twitter::Unauthorized => e # Delete this user; they've revoked access
-      puts Time.now.to_s + '   @' + twitter_username
-      puts 'Access revoked for @' + twitter_username + ". Deleting Twitter user id " + twitter_user_id.to_s
-      puts '@' + twitter_username + '   ' + e.to_s
-      
-      destroy!
-    rescue JSON::ParserError # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Twitter was over capacity for @' + self.twitter_username + "? Couldn't make a usable array from JSON data."
-    rescue Timeout::Error
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Twitter timed out for @' + self.twitter_username + "."
-    rescue Exception # Bad data or some other weird response
-      puts Time.now.to_s + '   @' + self.twitter_username
-      puts 'Error getting data for @' + self.twitter_username + '. Twitter probably returned bad data.'
     end
   end
 end

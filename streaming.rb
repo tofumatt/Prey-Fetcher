@@ -9,7 +9,7 @@ require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 module Twitter
   class JSONStream
     protected
-      # Normalized query hash of escaped string keys and escaped string values
+      # Normalized query hash of escaped string keys and escaped string values.
       # nil values are skipped. Uses "follow" instead of "track" in JSONStream.
       def params
         {'follow' => escape(@options[:filters].join(","))}
@@ -73,18 +73,21 @@ EventMachine::run do
           )
         end
         
-        # Is this a mention?
-        if user.enable_mentions && tweet['message'] && tweet['message']['text'] && tweet['message']['text'].downcase.index("@#{user.twitter_username.downcase}") && tweet['message']['user']['screen_name']
-          # Make sure this isn't a RT (or that they're enabled)
-          retweet = (tweet['message']['retweeted_status'] || tweet['message']['text'].index('RT ') == 0) ? true : false
-          
-          next if retweet && user.disable_retweets
-          
+        # Is this a mention? (Make sure it's not an old-style RT by checking for RT substring)
+        if user.enable_mentions && tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
           user.send_mention(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
-            :text => tweet['message']['text'],
-            :retweet => retweet
+            :text => tweet['message']['text']
+          )
+        end
+        
+        # Is this a retweet?
+        if user.enable_retweets && tweet['message'] && (tweet['message']['retweeted_status'] || (tweet['message']['text'] && tweet['message']['text'].retweet?))
+          user.send_retweet(
+            :id => tweet['message']['id'],
+            :from => tweet['message']['user']['screen_name'],
+            :text => tweet['message']['text']
           )
         end
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
