@@ -83,7 +83,7 @@ EventMachine::run do
         end
         
         # Is this a retweet?
-        if user.enable_retweets && tweet['message'] && (tweet['message']['retweeted_status'] || (tweet['message']['text'] && tweet['message']['text'].retweet?))
+        if user.enable_retweets && tweet['message'] && ((tweet['message']['retweeted_status'] && tweet['message']['retweeted_status']['user']['id'] != user.id) || (tweet['message']['text'] && tweet['message']['text'].retweet?))
           user.send_retweet(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
