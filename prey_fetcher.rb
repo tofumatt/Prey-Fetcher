@@ -17,6 +17,11 @@ set :views, "views"
 
 # Monkey patch String to allow unescaped Twitter strings
 class String
+  # Return true if this text string looks like a retweet
+  def retweet?
+    self.index('RT ') == 0
+  end
+  
   # Return a string with &lt; and &gt; HTML entities converted to < and >
   def unescaped
     self.gsub('&lt;', '<').gsub('&gt;', '>')
