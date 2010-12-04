@@ -259,22 +259,6 @@ class User
     end
   end
   
-  # Send a mention notification to Prowl for this user.
-  def send_mention(tweet)
-    # Update this users's since_id
-    update(:mention_since_id => tweet[:id])
-    
-    FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} " + (tweet[:retweet] ? 'retweet' : 'mention'),
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
-      :apikey => prowl_api_key,
-      :priority => mention_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
-    )
-    Notification.create(:twitter_user_id => twitter_user_id)
-  end
-  
   # Send a DM notification to Prowl for this user.
   def send_dm(tweet)
     # Update this users's since_id
@@ -303,6 +287,38 @@ class User
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a mention notification to Prowl for this user.
+  def send_mention(tweet)
+    # Update this users's since_id
+    update(:mention_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => mention_priority,
+      :event => "From @#{tweet[:from]}",
+      :description => tweet[:text].unescaped
+    )
+    Notification.create(:twitter_user_id => twitter_user_id)
+  end
+  
+  # Send a retweet notification to Prowl for this user.
+  def send_retweet(tweet)
+    # Update this users's since_id
+    update(:retweet_since_id => tweet[:id])
+    
+    FastProwl.add(
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} retweet",
+      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :apikey => prowl_api_key,
+      :priority => mention_priority,
+      :event => "From @#{tweet[:from]}",
       :description => tweet[:text].unescaped
     )
     Notification.create(:twitter_user_id => twitter_user_id)
