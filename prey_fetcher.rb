@@ -200,21 +200,18 @@ class User
       mentions = Twitter::Base.new(oauth).mentions(
         :count => 1,
         :include_entities => 1,
-        :include_rts => (disable_retweets) ? 0 : 1,
+        :include_rts => 0,
         :since_id => mention_since_id
       )
       
       if mentions.size > 0
-        # Make sure this isn't a RT (or that they're enabled)
-        retweet = (mentions.first['retweeted_status'] || mentions.first['text'].retweet?) ? true : false
-        
-        return if retweet && disable_retweets
+        # Make sure this isn't an old-style RT
+        return if mentions.first['text'].retweet?
         
         user.send_mention(
           :id => mentions.first['id'],
           :from => mentions.first['user']['screen_name'],
-          :text => mentions.first['text'],
-          :retweet => retweet
+          :text => mentions.first['text']
         )
       end
     end
