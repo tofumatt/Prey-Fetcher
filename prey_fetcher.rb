@@ -4,35 +4,15 @@ Bundler.setup
 
 Bundler.require
 
-# Current version number + prefix. Gets used in
-# as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.2"
-
-# Set Sinatra's variables
-set :app_file, __FILE__
-set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
-set :root, File.dirname(__FILE__)
-set :public, "public"
-set :views, "views"
-
-# Monkey patch String to allow unescaped Twitter strings
-class String
-  # Return true if this text string looks like a retweet
-  def retweet?
-    self.index('RT ') == 0
-  end
-  
-  # Return a string with &lt; and &gt; HTML entities converted to < and >
-  def unescaped
-    self.gsub('&lt;', '<').gsub('&gt;', '>')
-  end
-end
-
 # House internal methods and junk inside our own namespace
-class PreyFetcher
+module PreyFetcher
+  # Current version number + prefix. Gets used in
+  # as the User Agent in REST/Streaming requests.
+  VERSION = "4.2"
+  
   # Protect code run inside this method (as a block) from common
   # exceptions we run into doing Twitter REST API requests.
-  def self.protect_from_twitter
+  def protect_from_twitter
     # Do something with Twitter API response -- handle exceptions
     # from the JSON parser in case Twitter sends us back malformed
     # JSON or (more likely) HTML when it's over capacity/down.
@@ -51,6 +31,26 @@ class PreyFetcher
       puts "Error getting data. Twitter probably returned bad data."
       puts e.to_s
     end
+  end
+end
+
+# Set Sinatra's variables
+set :app_file, __FILE__
+set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
+set :root, File.dirname(__FILE__)
+set :public, "public"
+set :views, "views"
+
+# Monkey patch String to allow unescaped Twitter strings
+class String
+  # Return true if this text string looks like a retweet
+  def retweet?
+    self.index('RT ') == 0
+  end
+  
+  # Return a string with &lt; and &gt; HTML entities converted to < and >
+  def unescaped
+    self.gsub('&lt;', '<').gsub('&gt;', '>')
   end
 end
 
@@ -135,7 +135,7 @@ class User
     
     # If we can't get the data, it's OK. But it's nicer to set
     # this stuff on account creation.
-    PreyFetcher.protect_from_twitter do
+    PreyFetcher::protect_from_twitter do
       direct_messages = Twitter::Base.new(user.oauth).direct_messages(:count => 1)
       user.update!(:dm_since_id => direct_messages.first['id']) if direct_messages.size > 0
       
@@ -163,7 +163,7 @@ class User
   
   # Check Twitter for new DMs for this user using the REST API
   def check_dms
-    PreyFetcher.protect_from_twitter do
+    PreyFetcher::protect_from_twitter do
       direct_messages = Twitter::Base.new(oauth).direct_messages(
         :count => 1,
         :since_id => dm_since_id
@@ -185,7 +185,7 @@ class User
   # Check Twitter for new tweets for any lists Prey Fetcher
   # checks for this user using the REST API.
   def check_lists
-    PreyFetcher.protect_from_twitter do
+    PreyFetcher::protect_from_twitter do
       list_tweets = Twitter::Base.new(oauth).list_timeline(twitter_username, notification_list,
         :count => 1,
         :since_id => list_since_id
@@ -204,7 +204,7 @@ class User
   # Look for the most recent mention. If we missed more than one
   # for some reason, it just gets ignored.
   def check_mentions
-    PreyFetcher.protect_from_twitter do
+    PreyFetcher::protect_from_twitter do
       mentions = Twitter::Base.new(oauth).mentions(
         :count => 1,
         :include_entities => 1,
@@ -345,7 +345,7 @@ class User
   
   # Test this user's OAuth credentials and update/verify their username.
   def verify_credentials
-    PreyFetcher.protect_from_twitter do
+    PreyFetcher::protect_from_twitter do
       creds = Twitter::Base.new(oauth).verify_credentials
       
       # Update user's screen name if they've changed it (prevents
