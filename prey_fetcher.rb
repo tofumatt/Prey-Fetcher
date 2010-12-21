@@ -6,13 +6,22 @@ Bundler.require
 
 # House internal methods and junk inside our own namespace
 module PreyFetcher
+  # Houses app config options loaded from defaults, environment variables,
+  # and various cascading config files.
+  @@_config = nil
+  
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
   VERSION = "4.2"
   
+  # Return a requested config value or nil if the value is nil/doesn't exist.
+  def self.config(option)
+    !@@_config[option].nil? ? @@_config[option] : nil
+  end
+  
   # Protect code run inside this method (as a block) from common
   # exceptions we run into doing Twitter REST API requests.
-  def protect_from_twitter
+  def self.protect_from_twitter
     # Do something with Twitter API response -- handle exceptions
     # from the JSON parser in case Twitter sends us back malformed
     # JSON or (more likely) HTML when it's over capacity/down.
@@ -31,6 +40,12 @@ module PreyFetcher
       puts "Error getting data. Twitter probably returned bad data."
       puts e.to_s
     end
+  end
+  
+  # Assign configuration to Prey Fetcher from a hash. Config should not be modified
+  # after it is set.
+  def self.set_config!(config)
+    @@_config = config unless @@_config
   end
 end
 
@@ -241,18 +256,20 @@ class User
   # Load this users' lists from the REST API, and update their
   # locally stored/serialized lists property.
   def load_lists
-    lists = Twitter::Base.new(oauth).lists(twitter_username).lists
-    
-    update!(:lists_serialized => lists)
-    
-    list_ids = []
-    lists.each do |list|
-      list_ids << list.id
+    PreyFetcher::protect_from_twitter do
+      lists = Twitter::Base.new(oauth).lists(twitter_username).lists
+      
+      update!(:lists_serialized => lists)
+      
+      list_ids = []
+      lists.each do |list|
+        list_ids << list.id
+      end
+      
+      # Remove the list this user was
+      # following if it no longer exists
+      update!(:notification_list => nil) unless lists.size > 0 and list_ids.include?(notification_list)
     end
-    
-    # Remove the list this user was
-    # following if it no longer exists
-    update!(:notification_list => nil) unless lists.size > 0 and list_ids.include?(notification_list)
     
     lists
   end
@@ -260,7 +277,7 @@ class User
   # Return this user's OAuth instance.
   def oauth
     if @oauth.nil?
-      @oauth = Twitter::OAuth.new(PREYFETCHER_CONFIG[:twitter_consumer_key], PREYFETCHER_CONFIG[:twitter_consumer_secret])
+      @oauth = Twitter::OAuth.new(PreyFetcher::config(:twitter_consumer_key), PreyFetcher::config(:twitter_consumer_secret))
       @oauth.authorize_from_access(access_key, access_secret)
     end
     
@@ -284,8 +301,8 @@ class User
     update(:dm_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :application => "#{PreyFetcher::config(:app_prowl_appname)} DM",
+      :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => dm_priority,
       :event => "From @#{tweet[:from]}",
@@ -301,8 +318,8 @@ class User
     
     # Queue up this notification
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} List",
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :application => "#{PreyFetcher::config(:app_prowl_appname)} List",
+      :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => list_priority,
       :event => "by @#{tweet[:from]}",
@@ -317,8 +334,8 @@ class User
     update(:mention_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :application => "#{PreyFetcher::config(:app_prowl_appname)} mention",
+      :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => mention_priority,
       :event => "From @#{tweet[:from]}",
@@ -333,8 +350,8 @@ class User
     update(:retweet_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} retweet",
-      :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+      :application => "#{PreyFetcher::config(:app_prowl_appname)} retweet",
+      :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => retweet_priority,
       :event => "From @#{tweet[:from]}",
@@ -422,25 +439,25 @@ configure do
   
   # Assemble some extra config values from those already set
   config[:app_url] = "http://#{config[:app_domain]}"
-  config[:app_version] = PREYFETCHER_VERSION
+  config[:app_version] = PreyFetcher::VERSION
   config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
   
-  # Put it in a constant so it's not tampered with and so
-  # it's globally accessible
-  PREYFETCHER_CONFIG = config
+  # Put it in the Prey Fetcher module so it's not tampered with
+  # and is globally accessible.
+  PreyFetcher::set_config!(config)
   
-  # Database stuff
-  unless PREYFETCHER_CONFIG[:db_adapter] == 'sqlite3'
-    DataMapper.setup(:default, "#{PREYFETCHER_CONFIG[:db_adapter]}://#{PREYFETCHER_CONFIG[:db_username]}:#{PREYFETCHER_CONFIG[:db_password]}@#{PREYFETCHER_CONFIG[:db_host]}/#{PREYFETCHER_CONFIG[:db_database]}")
+  # Database stuff.
+  unless PreyFetcher::config(:db_adapter) == 'sqlite3'
+    DataMapper.setup(:default, "#{PreyFetcher::config(:db_adapter)}://#{PreyFetcher::config(:db_username)}:#{PreyFetcher::config(:db_password)}@#{PreyFetcher::config(:db_host)}/#{PreyFetcher::config(:db_database)}")
   else
-    DataMapper.setup(:default, "sqlite3:#{PREYFETCHER_CONFIG[:db_database]}")
+    DataMapper.setup(:default, "sqlite3:#{PreyFetcher::config(:db_database)}")
   end
 end
 
 helpers do
   # Return a link to an asset file on another domain.
   def asset(file)
-    "http://#{PREYFETCHER_CONFIG[:app_asset_domain]}/#{file}"
+    "http://#{PreyFetcher::config(:app_asset_domain)}/#{file}"
   end
   
   # Return a number as a string with commas.
@@ -465,8 +482,8 @@ use Rack::Flash, :sweep => true
 
 # Load the Twitter middleware.
 use Twitter::Login,
-  :consumer_key => PREYFETCHER_CONFIG[:twitter_consumer_key],
-  :secret => PREYFETCHER_CONFIG[:twitter_consumer_secret]
+  :consumer_key => PreyFetcher::config(:twitter_consumer_key),
+  :secret => PreyFetcher::config(:twitter_consumer_secret)
 helpers Twitter::Login::Helpers
 
 # Index action -- show the homepage.
