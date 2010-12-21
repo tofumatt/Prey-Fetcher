@@ -226,7 +226,7 @@ class User
   end
   
   # Return the opposite of "disable_retweets"; here for convenience, as Matt
-  # stupidly classes retweets as a subset of mentions at first.
+  # stupidly classed retweets as a subset of mentions at first.
   def enable_retweets
     !disable_retweets
   end
@@ -423,7 +423,7 @@ configure do
   # Assemble some extra config values from those already set
   config[:app_url] = "http://#{config[:app_domain]}"
   config[:app_version] = PREYFETCHER_VERSION
-  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
+  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} " + ((Sinatra::Application.environment == :production) ? "(#{config[:app_url]})" : "(DEVELOPMENT VERSION)")
   
   # Put it in a constant so it's not tampered with and so
   # it's globally accessible
@@ -435,6 +435,9 @@ configure do
   else
     DataMapper.setup(:default, "sqlite3:#{PREYFETCHER_CONFIG[:db_database]}")
   end
+  
+  # Output the current version (to either log or stdout)
+  puts "Booting and config'd #{PREYFETCHER_CONFIG[:app_user_agent]}"
 end
 
 helpers do
