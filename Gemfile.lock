@@ -1,8 +1,8 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.2.1)
-    crack (0.1.6)
+    addressable (2.2.3)
+    crack (0.1.8)
     data_objects (0.10.2)
       addressable (~> 2.1)
     dm-aggregates (1.0.0)
@@ -31,52 +31,51 @@ GEM
       data_objects (= 0.10.2)
     eventmachine (0.12.10)
     extlib (0.9.15)
-    fastprowl (0.2)
+    fastprowl (0.3)
       typhoeus (>= 0.1.0)
     haml (3.0.18)
-    hashie (0.2.2)
-    httparty (0.5.2)
-      crack (= 0.1.6)
+    hashie (0.4.0)
+    httparty (0.6.1)
+      crack (= 0.1.8)
     json (1.4.6)
-    oauth (0.4.2)
+    multi_json (0.0.5)
+    oauth (0.4.4)
     rack (1.2.1)
     rack-flash (0.1.1)
-      rack (>= 1.0)
+      rack
     rack-test (0.5.6)
       rack (>= 1.0)
     roauth (0.0.3)
     sinatra (1.0)
       rack (>= 1.0)
-    twitter (0.9.8)
-      hashie (~> 0.2.0)
-      httparty (~> 0.5.0)
-      oauth (~> 0.4.1)
-      yajl-ruby (~> 0.7.0)
+    twitter (0.9.12)
+      hashie (~> 0.4.0)
+      httparty (~> 0.6.1)
+      multi_json (~> 0.0.4)
+      oauth (~> 0.4.3)
     twitter-login (0.2.3)
       twitter (~> 0.9.5)
     twitter-stream (0.1.8)
       eventmachine (>= 0.12.8)
       roauth (>= 0.0.2)
-    typhoeus (0.1.31)
-      rack
-    yajl-ruby (0.7.7)
+    typhoeus (0.2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  dm-aggregates
-  dm-core
-  dm-migrations
-  dm-mysql-adapter
-  dm-sqlite-adapter
-  dm-timestamps
-  dm-validations
-  fastprowl
-  haml
-  json
-  rack-flash
-  rack-test
-  sinatra
-  twitter-login
-  twitter-stream
+  dm-aggregates (= 1.0.0)
+  dm-core (= 1.0.0)
+  dm-migrations (= 1.0.0)
+  dm-mysql-adapter (= 1.0.0)
+  dm-sqlite-adapter (= 1.0.0)
+  dm-timestamps (= 1.0.0)
+  dm-validations (= 1.0.0)
+  fastprowl (= 0.3)
+  haml (= 3.0.18)
+  json (= 1.4.6)
+  rack-flash (= 0.1.1)
+  rack-test (= 0.5.6)
+  sinatra (= 1.0)
+  twitter-login (= 0.2.3)
+  twitter-stream (= 0.1.8)
