@@ -37,7 +37,7 @@ GEM
     hashie (0.4.0)
     httparty (0.6.1)
       crack (= 0.1.8)
-    json (1.4.6)
+    json (1.5.0)
     multi_json (0.0.5)
     oauth (0.4.4)
     rack (1.2.1)
@@ -73,7 +73,7 @@ DEPENDENCIES
   dm-validations (= 1.0.0)
   fastprowl (= 0.3)
   haml (= 3.0.18)
-  json (= 1.4.6)
+  json
   rack-flash (= 0.1.1)
   rack-test (= 0.5.6)
   sinatra (= 1.0)

@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gem "fastprowl", "0.3"
 gem "haml", "3.0.18"
-gem "json", "1.4.6"
+gem "json"
 gem "rack-flash", "0.1.1"
 gem "rack-test", "0.5.6", :require => 'rack/test', :group => [:test]
 
