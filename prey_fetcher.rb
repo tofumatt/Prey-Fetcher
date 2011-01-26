@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.3.2"
+PREYFETCHER_VERSION = "4.3.3"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -356,9 +356,12 @@ class User
     # If the URL doesn't have a colon we assume a lack of protocol
     # and use http://
     # Try to catch obviously bad URLs, but we can't test for everything
-    unless self.custom_url.blank? || self.custom_url.match(/:/) || self.custom_url = 'http://'
+    unless self.custom_url.blank? || self.custom_url.match(/:/)
       self.custom_url = 'http://' + self.custom_url
     end
+    
+    # Catch basic empty URLs
+    self.custom_url = nil if self.custom_url == 'http://'
   end
   
   # Test this user's OAuth credentials and update/verify their username.
