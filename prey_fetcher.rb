@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.2.3"
+PREYFETCHER_VERSION = "4.3"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -286,7 +286,7 @@ class User
     update(:dm_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]}",
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} DM",
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => dm_priority,
@@ -304,7 +304,7 @@ class User
     
     # Queue up this notification
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]}",
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} List",
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => list_priority,
@@ -321,7 +321,7 @@ class User
     update(:mention_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]}",
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} mention",
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => mention_priority,
@@ -338,7 +338,7 @@ class User
     update(:retweet_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]}",
+      :application => "#{PREYFETCHER_CONFIG[:app_prowl_appname]} retweet",
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => retweet_priority,
