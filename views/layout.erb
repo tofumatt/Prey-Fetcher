@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title><%= PREYFETCHER_CONFIG[:app_name] %><% unless @title.nil? %> :: <%= @title %><% end %></title>
+    <title><%= PREYFETCHER_CONFIG[:app_name] %><% unless @title.nil? %>: <%= @title %><% end %></title>
     
     <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
     <link href="<%= asset "stylesheets/app.css" %>" media="screen" rel="stylesheet" type="text/css">
@@ -64,7 +64,7 @@
         <p><%= number_format(Notification.count) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.<br>
         Powered by <a href="http://twitter.com">Twitter's Streaming APIs</a>.</p>
         
-        <p>© 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
+        <p>© 2011 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
         <a href="/open-source">MIT-licensed</a>. <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
       </div>
     </div>
@@ -82,3 +82,4 @@
     <% end %>
   </body>
 </html>
+<!-- Under a sheet of rain in my heart -->

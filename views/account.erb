@@ -87,7 +87,7 @@
   					</select>
   				</div>
   		  <% else %>
-  			  <p style="font-size: .8em;">Your account doesn't have any lists associated with it.<br>Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
+  			  <p class="input-subtitle">Your account doesn't have any lists associated with it.<br> Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
   		  <% end %>
   		</div>
   	</div>
@@ -97,6 +97,13 @@
   	<div class="clear">
   		<label for="user_prowl_api_key">Prowl API Key <span class="req">*<span class="hide">Required</span></span></label>
   		<input type="text" id="user_prowl_api_key" class="text-long" name="user[prowl_api_key]" value="<%= @user.prowl_api_key %>">
+  	</div>
+	  
+  	<div class="clear">
+  		<label for="user_custom_url">Custom URL Redirect</label>
+  		<input type="text" id="user_custom_url" class="text-long" name="user[custom_url]" value="<%= @user.custom_url %>" placeholder="http://twitter.com/">
+  		
+  		<p class="input-subtitle">If you want all Prey Fetcher notifications to get redirected to a custom URL (eg. twitter.com), enter it above.<br> <strong>Note:</strong> If you want to enter per-event custom URLs you should do so in Prowl on your iOS device.</p>
   	</div>
 	  
   	<div class="clear space">

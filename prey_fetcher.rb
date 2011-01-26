@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.2.3"
+PREYFETCHER_VERSION = "4.3"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -88,6 +88,7 @@ class User
   property :twitter_user_id, Integer
   property :twitter_username, String
   property :prowl_api_key, String
+  property :custom_url, String
   property :access_key, String
   property :access_secret, String
   # Mentions/replies
@@ -149,6 +150,7 @@ class User
   def self.mass_assignable
     [
       :prowl_api_key,
+      :custom_url,
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
@@ -226,7 +228,7 @@ class User
   end
   
   # Return the opposite of "disable_retweets"; here for convenience, as Matt
-  # stupidly classes retweets as a subset of mentions at first.
+  # stupidly classed retweets as a subset of mentions at first.
   def enable_retweets
     !disable_retweets
   end
@@ -288,8 +290,9 @@ class User
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => dm_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "DM from @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_DM)
   end
@@ -305,8 +308,9 @@ class User
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => list_priority,
-      :event => "by @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "List (newest: @#{tweet[:from]})",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_LIST)
   end
@@ -321,8 +325,9 @@ class User
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => mention_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "Mention from @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_MENTION)
   end
@@ -337,8 +342,9 @@ class User
       :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
       :apikey => prowl_api_key,
       :priority => retweet_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "Retweeted by @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_RETWEET)
   end
@@ -423,7 +429,7 @@ configure do
   # Assemble some extra config values from those already set
   config[:app_url] = "http://#{config[:app_domain]}"
   config[:app_version] = PREYFETCHER_VERSION
-  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
+  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} " + ((Sinatra::Application.environment == :production) ? "(#{config[:app_url]})" : "(DEVELOPMENT VERSION)")
   
   # Put it in a constant so it's not tampered with and so
   # it's globally accessible
@@ -435,6 +441,9 @@ configure do
   else
     DataMapper.setup(:default, "sqlite3:#{PREYFETCHER_CONFIG[:db_database]}")
   end
+  
+  # Output the current version (to either log or stdout)
+  puts "Booting and config'd #{PREYFETCHER_CONFIG[:app_user_agent]}"
 end
 
 helpers do
