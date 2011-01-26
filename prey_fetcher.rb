@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.3.1"
+PREYFETCHER_VERSION = "4.3.2"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -116,7 +116,7 @@ class User
   
   has n, :notifications
   
-  validates_with_method :custom_url, :method => :url_has_protocol?
+  before :save, :url_has_protocol?
   validates_with_method :prowl_api_key, :method => :prowl_api_key_is_valid?
   
   # Create a new user from session data retrieved from
@@ -353,17 +353,12 @@ class User
   # Run this validation to make sure the supplied URL is valid (if
   # it's not, just convert it to a valid URL automatically).
   def url_has_protocol?
-    # Skip the check on empty URLs
-    unless !self.custom_url && self.custom_url
-      # If the URL doesn't have a colon we assume a lack of protocol
-      # and use http://
-      unless self.custom_url.match(/:/)
-        self.custom_url = 'http://' + self.custom_url
-      end
+    # If the URL doesn't have a colon we assume a lack of protocol
+    # and use http://
+    # Try to catch obviously bad URLs, but we can't test for everything
+    unless self.custom_url.blank? || self.custom_url.match(/:/) || self.custom_url = 'http://'
+      self.custom_url = 'http://' + self.custom_url
     end
-    
-    # Always return true; this should never fail.
-    true
   end
   
   # Test this user's OAuth credentials and update/verify their username.
