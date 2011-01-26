@@ -6,7 +6,7 @@ Bundler.require
 
 # Current version number + prefix. Gets used in
 # as the User Agent in REST/Streaming requests.
-PREYFETCHER_VERSION = "4.3.1"
+PREYFETCHER_VERSION = "4.3.2"
 
 # Set Sinatra's variables
 set :app_file, __FILE__
