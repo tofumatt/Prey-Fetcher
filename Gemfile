@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "fastprowl", "0.3"
+gem "fastprowl", "0.3.1"
 gem "haml", "3.0.18"
 gem "json"
 gem "rack-flash", "0.1.1"
