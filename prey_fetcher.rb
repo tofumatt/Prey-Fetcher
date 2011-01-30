@@ -52,6 +52,38 @@ class PreyFetcher
       puts e.to_s
     end
   end
+  
+  # This is a hack; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_apikey(token)
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/apikey',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {
+        :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+        :token => token
+      }
+    )
+    
+    if response.code == 200
+      Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('apikey').value
+    else
+      false
+    end
+  end
+  
+  # This is a hack too; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_token
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/token',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {:providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key]}
+    )
+    
+    {
+      :token => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('token').value,
+      :url => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('url').value,
+    }
+  end
 end
 
 # Record of when a notification, including the user record it relates
@@ -537,6 +569,31 @@ end
 get "/open-source" do
   @title = "Open Source"
   erb :open_source
+end
+
+# Get a Prowl API key retrieval token and redirect the user
+# to the Prowl authorization page.
+get "/api-key" do
+  redirect '/' unless twitter_user && session[:token]
+  
+  apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
+  
+  if apikey
+    @user = User.first(:twitter_user_id => twitter_user.id)
+    @user.update({:prowl_api_key => apikey})
+  end
+  
+  redirect '/account'
+end
+
+# Get a Prowl API key retrieval token and redirect the user
+# to the Prowl authorization page.
+get "/prowl-api-key" do
+  redirect '/' unless twitter_user
+  
+  session[:token] = PreyFetcher.retrieve_token
+  
+  redirect session[:token][:url]
 end
 
 # Show account info.
