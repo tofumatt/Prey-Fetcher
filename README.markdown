@@ -27,4 +27,4 @@ This program is free software; it is distributed under an [MIT License](http://g
 
 ---
 
-Copyright (c) 2010 [Matthew Riley MacPherson](http://lonelyvegan.com).
+Copyright (c) 2011 [Matthew Riley MacPherson](http://lonelyvegan.com).
