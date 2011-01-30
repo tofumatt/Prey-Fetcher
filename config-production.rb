@@ -6,7 +6,7 @@ PREYFETCHER_CONFIG_PRODUCTION_RB = {
   :app_domain => 'preyfetcher.com',
   :app_name => 'Prey Fetcher',
   :app_prowl_appname => 'Prey Fetcher',
-  :app_prowl_provider_key => '',
+  # :app_prowl_provider_key => '',
   
   # Assign your own database info here
   :db_adapter => 'mysql',
