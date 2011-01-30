@@ -4,6 +4,13 @@ Bundler.setup
 
 Bundler.require
 
+# Set Sinatra's variables
+set :app_file, __FILE__
+set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
+set :root, File.dirname(__FILE__)
+set :public, "public"
+set :views, "views"
+
 # House internal methods and junk inside our own namespace
 module PreyFetcher
   # Houses app config options loaded from defaults, environment variables,
@@ -84,13 +91,6 @@ module PreyFetcher
     @@_config = config unless @@_config
   end
 end
-
-# Set Sinatra's variables
-set :app_file, __FILE__
-set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
-set :root, File.dirname(__FILE__)
-set :public, "public"
-set :views, "views"
 
 # Monkey patch String to allow unescaped Twitter strings
 class String
