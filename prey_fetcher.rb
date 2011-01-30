@@ -42,6 +42,42 @@ module PreyFetcher
     end
   end
   
+  # This is a hack; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_apikey(token)
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/apikey',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {
+        :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+        :token => token
+      }
+    )
+    
+    if response.code == 200
+      Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('apikey').value
+    else
+      false
+    end
+  end
+  
+  # This is a hack too; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_token
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/token',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {:providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key]}
+    )
+    
+    if response.code == 200
+      {
+        :token => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('token').value,
+        :url => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('url').value,
+      }
+    else
+      false
+    end
+  end
+  
   # Assign configuration to Prey Fetcher from a hash. Config should not be modified
   # after it is set.
   def self.set_config!(config)
@@ -103,6 +139,7 @@ class User
   property :twitter_user_id, Integer
   property :twitter_username, String
   property :prowl_api_key, String
+  property :custom_url, String
   property :access_key, String
   property :access_secret, String
   # Mentions/replies
@@ -130,6 +167,7 @@ class User
   
   has n, :notifications
   
+  before :save, :url_has_protocol?
   validates_with_method :prowl_api_key, :method => :prowl_api_key_is_valid?
   
   # Create a new user from session data retrieved from
@@ -164,6 +202,7 @@ class User
   def self.mass_assignable
     [
       :prowl_api_key,
+      :custom_url,
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
@@ -241,7 +280,7 @@ class User
   end
   
   # Return the opposite of "disable_retweets"; here for convenience, as Matt
-  # stupidly classes retweets as a subset of mentions at first.
+  # stupidly classed retweets as a subset of mentions at first.
   def enable_retweets
     !disable_retweets
   end
@@ -305,8 +344,9 @@ class User
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => dm_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "DM from @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_DM)
   end
@@ -322,8 +362,9 @@ class User
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => list_priority,
-      :event => "by @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "List (newest: @#{tweet[:from]})",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_LIST)
   end
@@ -338,8 +379,9 @@ class User
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => mention_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "Mention from @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_MENTION)
   end
@@ -354,10 +396,25 @@ class User
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => retweet_priority,
-      :event => "From @#{tweet[:from]}",
-      :description => tweet[:text].unescaped
+      :event => "Retweeted by @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_RETWEET)
+  end
+  
+  # Run this validation to make sure the supplied URL is valid (if
+  # it's not, just convert it to a valid URL automatically).
+  def url_has_protocol?
+    # If the URL doesn't have a colon we assume a lack of protocol
+    # and use http://
+    # Try to catch obviously bad URLs, but we can't test for everything
+    unless self.custom_url.blank? || self.custom_url.match(/:/)
+      self.custom_url = 'http://' + self.custom_url
+    end
+    
+    # Catch basic empty URLs
+    self.custom_url = nil if self.custom_url == 'http://'
   end
   
   # Test this user's OAuth credentials and update/verify their username.
@@ -440,7 +497,7 @@ configure do
   # Assemble some extra config values from those already set
   config[:app_url] = "http://#{config[:app_domain]}"
   config[:app_version] = PreyFetcher::VERSION
-  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} (#{config[:app_url]})"
+  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} " + ((Sinatra::Application.environment == :production) ? "(#{config[:app_url]})" : "(DEVELOPMENT VERSION)")
   
   # Put it in the Prey Fetcher module so it's not tampered with
   # and is globally accessible.
@@ -452,6 +509,9 @@ configure do
   else
     DataMapper.setup(:default, "sqlite3:#{PreyFetcher::config(:db_database)}")
   end
+  
+  # Output the current version (to either log or stdout)
+  puts "Booting and config'd #{PREYFETCHER_CONFIG[:app_user_agent]}"
 end
 
 helpers do
@@ -530,6 +590,40 @@ end
 get "/open-source" do
   @title = "Open Source"
   erb :open_source
+end
+
+# This is the URL users who have authorized a Prowl API Key request
+# are sent to after authorization. Use the stored token and our
+# provider key to get a new API key for this user and store it in
+# their account.
+get "/api-key" do
+  redirect '/' unless twitter_user && session[:token]
+  
+  apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
+  
+  if apikey
+    @user = User.first(:twitter_user_id => twitter_user.id)
+    @user.update({:prowl_api_key => apikey})
+  else
+    flash[:alert] = "Authorization with Prowl API denied. You can <a href=\"/prowl-api-key\">try again</a> if you denied access by mistake."
+  end
+  
+  redirect '/account'
+end
+
+# Get a Prowl API key retrieval token and redirect the user
+# to the Prowl authorization page.
+get "/prowl-api-key" do
+  redirect '/' unless twitter_user
+  
+  session[:token] = PreyFetcher.retrieve_token
+  
+  if session[:token]
+    redirect session[:token][:url]
+  else
+    flash[:alert] = "Couldn't communicate with the Prowl API. Try again or <a href=\"http://twitter.com/preyfetcher\">contact @preyfetcher</a>."
+    redirect '/account'
+  end
 end
 
 # Show account info.

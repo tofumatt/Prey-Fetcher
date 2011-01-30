@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title><%= PreyFetcher::config(:app_name) %><% unless @title.nil? %> :: <%= @title %><% end %></title>
+    <title><%= PreyFetcher::config(:app_name) %><% unless @title.nil? %>: <%= @title %><% end %></title>
     
     <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
     <link href="<%= asset "stylesheets/app.css" %>" media="screen" rel="stylesheet" type="text/css">
@@ -27,7 +27,7 @@
           <li><a href="/about" class="<%= request.path_info.slice(1..-1) == 'about' ? 'active ' : '' %>menu-item">About</a></li>
           <li><a href="/privacy" class="<%= request.path_info.slice(1..-1) == 'privacy' ? 'active ' : '' %>menu-item">Privacy</a></li>
           <% unless twitter_user %>
-            <li><a href="/login" id="signup-button">Signup now</a></li>
+            <li><a href="/login" id="sign-in-button">Signup now</a></li>
           <% else %>
             <li id="user-info"><span class="menu-item">@<%= twitter_user.screen_name %> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
           <% end %>
@@ -55,7 +55,7 @@
       <div class="clear last-in-container"></div>
     </div>
     
-    <div id="footer" class"clear">
+    <div id="footer" class="clear">
       <div id="footer-inner">
         <a href="http://www.pledgie.com/campaigns/10696" id="pledgie-link">
           <img alt="Make a donation to Prey Fetcher at www.pledgie.com!" src="http://www.pledgie.com/campaigns/10696.png?skin_name=chrome" />
@@ -64,7 +64,7 @@
         <p><%= number_format(Notification.count) %> notifications delivered. Follow <a href="http://twitter.com/preyfetcher">@preyfetcher</a> for updates.<br>
         Powered by <a href="http://twitter.com">Twitter's Streaming APIs</a>.</p>
         
-        <p>© 2010 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
+        <p>© 2011 <a href="http://lonelyvegan.com">Matthew Riley MacPherson</a>. <a href="http://twitter.com/tofumatt">Follow me on Twitter</a>.<br>
         <a href="/open-source">MIT-licensed</a>. <a href="http://github.com/tofumatt/Prey-Fetcher">Source available on GitHub</a>.</p>
       </div>
     </div>
@@ -81,4 +81,7 @@
       } catch(err) {}</script>
     <% end %>
   </body>
+  
+  <!-- <%= PreyFetcher::config(:app_user_agent) %> -->
 </html>
+<!-- Under a sheet of rain in my heart -->

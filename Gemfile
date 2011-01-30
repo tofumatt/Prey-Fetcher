@@ -1,24 +1,25 @@
 source "http://rubygems.org"
 
-gem "fastprowl"
-gem "haml"
+gem "fastprowl", "0.3.1"
+gem "haml", "3.0.18"
 gem "json"
-gem "rack-flash"
-gem "rack-test", :require => 'rack/test', :group => [:test]
+gem "nokogiri"
+gem "rack-flash", "0.1.1"
+gem "rack-test", "0.5.6", :require => 'rack/test', :group => [:test]
 
 # Sinatra
-gem "sinatra"
+gem "sinatra", "1.0"
 
 # Datamapper
-gem "dm-core"
-gem "dm-aggregates"
-gem "dm-migrations"
-gem "dm-timestamps"
-gem "dm-validations"
+gem "dm-core", "1.0.0"
+gem "dm-aggregates", "1.0.0"
+gem "dm-migrations", "1.0.0"
+gem "dm-timestamps", "1.0.0"
+gem "dm-validations", "1.0.0"
 
-gem "dm-mysql-adapter", :group => :production
-gem "dm-sqlite-adapter", :group => [:development, :test]
+gem "dm-mysql-adapter", "1.0.0", :group => :production
+gem "dm-sqlite-adapter", "1.0.0", :group => [:development, :test]
 
 # Twitter
-gem "twitter-login", :require => "twitter/login"
-gem "twitter-stream", :require => "twitter/json_stream"
+gem "twitter-login", "0.2.3", :require => "twitter/login"
+gem "twitter-stream", "0.1.8", :require => "twitter/json_stream"
