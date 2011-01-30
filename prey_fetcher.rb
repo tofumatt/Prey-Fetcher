@@ -580,10 +580,9 @@ end
 # provider key to get a new API key for this user and store it in
 # their account.
 get "/api-key" do
-  redirect '/' unless twitter_user && (params[:token] || session[:token])
+  redirect '/' unless twitter_user && session[:token]
   
-  token = params[:token] || session[:token]
-  apikey = PreyFetcher.retrieve_apikey(token[:token])
+  apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
   
   if apikey
     @user = User.first(:twitter_user_id => twitter_user.id)
