@@ -46,9 +46,9 @@ module PreyFetcher
   # flexible. Until such a time; this goes here.
   def self.retrieve_apikey(token)
     response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/apikey',
-      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :user_agent => PreyFetcher.config(:app_user_agent),
       :params => {
-        :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+        :providerkey => PreyFetcher.config(:app_prowl_provider_key),
         :token => token
       }
     )
@@ -64,8 +64,8 @@ module PreyFetcher
   # flexible. Until such a time; this goes here.
   def self.retrieve_token
     response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/token',
-      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
-      :params => {:providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key]}
+      :user_agent => PreyFetcher.config(:app_user_agent),
+      :params => {:providerkey => PreyFetcher.config(:app_prowl_provider_key)}
     )
     
     if response.code == 200
