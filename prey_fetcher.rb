@@ -12,7 +12,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.2"
+  VERSION = "4.4"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
@@ -511,7 +511,7 @@ configure do
   end
   
   # Output the current version (to either log or stdout)
-  puts "Booting and config'd #{PREYFETCHER_CONFIG[:app_user_agent]}"
+  puts "Booting and config'd #{PreyFetcher.config(:app_user_agent)}"
 end
 
 helpers do
