@@ -52,6 +52,42 @@ class PreyFetcher
       puts e.to_s
     end
   end
+  
+  # This is a hack; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_apikey(token)
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/apikey',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {
+        :providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key],
+        :token => token
+      }
+    )
+    
+    if response.code == 200
+      Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('apikey').value
+    else
+      false
+    end
+  end
+  
+  # This is a hack too; I need to rewrite FastProwl to allow it to be more
+  # flexible. Until such a time; this goes here.
+  def self.retrieve_token
+    response = Typhoeus::Request.get('https://prowlapp.com/publicapi/retrieve/token',
+      :user_agent => PREYFETCHER_CONFIG[:app_user_agent],
+      :params => {:providerkey => PREYFETCHER_CONFIG[:app_prowl_provider_key]}
+    )
+    
+    if response.code == 200
+      {
+        :token => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('token').value,
+        :url => Nokogiri::XML.parse(response.body).xpath('//retrieve').attr('url').value,
+      }
+    else
+      false
+    end
+  end
 end
 
 # Record of when a notification, including the user record it relates
@@ -537,6 +573,40 @@ end
 get "/open-source" do
   @title = "Open Source"
   erb :open_source
+end
+
+# This is the URL users who have authorized a Prowl API Key request
+# are sent to after authorization. Use the stored token and our
+# provider key to get a new API key for this user and store it in
+# their account.
+get "/api-key" do
+  redirect '/' unless twitter_user && session[:token]
+  
+  apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
+  
+  if apikey
+    @user = User.first(:twitter_user_id => twitter_user.id)
+    @user.update({:prowl_api_key => apikey})
+  else
+    flash[:alert] = "Authorization with Prowl API denied. You can <a href=\"/prowl-api-key\">try again</a> if you denied access by mistake."
+  end
+  
+  redirect '/account'
+end
+
+# Get a Prowl API key retrieval token and redirect the user
+# to the Prowl authorization page.
+get "/prowl-api-key" do
+  redirect '/' unless twitter_user
+  
+  session[:token] = PreyFetcher.retrieve_token
+  
+  if session[:token]
+    redirect session[:token][:url]
+  else
+    flash[:alert] = "Couldn't communicate with the Prowl API. Try again or <a href=\"http://twitter.com/preyfetcher\">contact @preyfetcher</a>."
+    redirect '/account'
+  end
 end
 
 # Show account info.
