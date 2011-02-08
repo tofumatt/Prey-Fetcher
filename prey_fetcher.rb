@@ -356,7 +356,6 @@ class User
     # Update this users's since_id
     update(:list_since_id => tweet[:id])
     
-    # Queue up this notification
     FastProwl.add(
       :application => "#{PreyFetcher::config(:app_prowl_appname)} List",
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
