@@ -22,9 +22,6 @@ user_group = 1
 user_group_i = 1
 
 User.all.each do |user|
-  # Avoid tracking users who have nothing to track or can't be sent notifications
-  next if user.prowl_api_key.nil? || user.prowl_api_key.blank?
-  
   # Handle newly created groups
   track_users[user_group] = [] if track_users[user_group].nil?
   
