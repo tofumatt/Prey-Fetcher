@@ -195,6 +195,13 @@ class User
       mentions = Twitter::Base.new(user.oauth).mentions(:count => 1)
       user.update!(:mention_since_id => mentions.first['id']) if mentions.size > 0
     end
+    
+    # Write this user to our stream track file so we start tracking them.
+    f = File.open(File.join('tmp', 'stream-users.add'), File::RDWR|File::CREAT)
+    f.flock File::LOCK_EX
+    f.write(twitter_user.id)
+    f.flock File::LOCK_UN
+    f.close
   end
   
   # Return a list of values we allow routes to mass-assign
