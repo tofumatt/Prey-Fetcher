@@ -31,7 +31,7 @@ User.all.each do |user|
   # Add this user id to the current group and increnment our counters
   track_users[user_group] << user.twitter_user_id
   user_group_i += 1
-  if user_group_i >= 1#PreyFetcher::config(:twitter_site_stream_size)
+  if user_group_i >= PreyFetcher::config(:twitter_site_stream_size)
     user_group += 1
     user_group_i = 1
   end
