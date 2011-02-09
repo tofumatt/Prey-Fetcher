@@ -199,7 +199,7 @@ class User
     # Write this user to our stream track file so we start tracking them.
     f = File.open(File.join('tmp', 'stream-users.add'), File::RDWR|File::CREAT)
     f.flock File::LOCK_EX
-    f.write(twitter_user.id)
+    f.write(twitter_user.id.to_s + "\n")
     f.flock File::LOCK_UN
     f.close
   end
