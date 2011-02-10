@@ -544,7 +544,7 @@ get "/" do
     end
     
     # The homepage is useless to logged-in users; show them their account instead
-    redirect '/account'
+    redirect '/prowl-api-key'
   end
   
   @title = "Instant Twitter Notifications for iOS"
