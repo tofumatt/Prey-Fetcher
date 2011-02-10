@@ -347,7 +347,7 @@ class User
     update(:dm_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PreyFetcher::config(:app_prowl_appname)} DM",
+      :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => dm_priority,
@@ -364,7 +364,7 @@ class User
     update(:list_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PreyFetcher::config(:app_prowl_appname)} List",
+      :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => list_priority,
@@ -381,7 +381,7 @@ class User
     update(:mention_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PreyFetcher::config(:app_prowl_appname)} mention",
+      :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => mention_priority,
@@ -398,7 +398,7 @@ class User
     update(:retweet_since_id => tweet[:id])
     
     FastProwl.add(
-      :application => "#{PreyFetcher::config(:app_prowl_appname)} retweet",
+      :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
       :priority => retweet_priority,
