@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title><%= PREYFETCHER_CONFIG[:app_name] %><% unless @title.nil? %>: <%= @title %><% end %></title>
+    <title><%= PreyFetcher::config(:app_name) %><% unless @title.nil? %>: <%= @title %><% end %></title>
     
     <link href="<%= asset "stylesheets/reset.css" %>" media="screen" rel="stylesheet" type="text/css">
     <link href="<%= asset "stylesheets/app.css" %>" media="screen" rel="stylesheet" type="text/css">
@@ -17,7 +17,7 @@
   </head>
   <body class="<% if twitter_user %>logged-in<%end %> <% if request.path_info == '/' %>homepage<% else %><%= request.path_info.slice(1..-1) %><% end %>">
     <div id="header">
-      <a href="/" id="app-name"><%= PREYFETCHER_CONFIG[:app_name] %></a>
+      <a href="/" id="app-name"><%= PreyFetcher::config(:app_name) %></a>
     </div>
     
     <div id="menu">
@@ -82,6 +82,6 @@
     <% end %>
   </body>
   
-  <!-- <%= PREYFETCHER_CONFIG[:app_user_agent] %> -->
+  <!-- <%= PreyFetcher::config(:app_user_agent) %> -->
 </html>
 <!-- Under a sheet of rain in my heart -->
