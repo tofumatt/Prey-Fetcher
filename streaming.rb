@@ -181,6 +181,9 @@ module PreyFetcher
       @stream.each_item do |item|
         tweet = parse_from_stream(item)
         
+        # Skip if this tweet is bad or not available
+        next if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
+        
         # Get the user this message belows to
         user = User.first(:twitter_user_id => tweet['for_user'])
         
