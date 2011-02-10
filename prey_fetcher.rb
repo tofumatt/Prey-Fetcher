@@ -19,7 +19,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.5"
+  VERSION = "4.5.1"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
@@ -564,10 +564,13 @@ get "/" do
     if User.count(:twitter_user_id => twitter_user.id) == 0
       @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br>You can now customize your notification settings."
+      
+      # This user is new, so go get their Prowl API key
+      redirect '/prowl-api-key'
     end
     
     # The homepage is useless to logged-in users; show them their account instead
-    redirect '/prowl-api-key'
+    redirect '/account'
   end
   
   @title = "Instant Twitter Notifications for iOS"
