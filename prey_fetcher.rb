@@ -17,6 +17,15 @@ module PreyFetcher
   # and various cascading config files.
   @@_config = nil
   
+  # Static route => title matching for simple, static pages on the site
+  # that don't require much in the way of controllers.
+  STATIC_PAGES = {
+    :about => "About Prey Fetcher",
+    :features => "Features",
+    :privacy => "Privacy",
+    :open_source => "Open Source"
+  }
+  
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
   VERSION = "4.5"
@@ -222,6 +231,15 @@ class User
     ]
   end
   
+  # Return users who share the same API keys as this user
+  def accounts
+    if @accounts.nil?
+      @accounts = User.all(:prowl_api_key => prowl_api_key)
+    end
+    
+    @accounts
+  end
+  
   # Check Twitter for new DMs for this user using the REST API
   def check_dms
     PreyFetcher::protect_from_twitter do
@@ -318,6 +336,12 @@ class User
     end
     
     lists
+  end
+  
+  # Check to see if this user has multiple accounts with the same Prowl
+  # API key.
+  def multiple_accounts?
+    (accounts.count > 1)
   end
   
   # Return this user's OAuth instance.
@@ -526,6 +550,22 @@ helpers do
     "http://#{PreyFetcher::config(:app_asset_domain)}/#{file}"
   end
   
+  # Return the current user based on Prey Fetcher user id in session.
+  # twitter_user might not be the current user, as all users that share
+  # the same Prowl API key are considered linked.
+  def current_user
+    if session && session[:current_user_id]
+      User.get(session[:current_user_id])
+    else
+      nil
+    end
+  end
+  
+  # Return true if user is logged in.
+  def logged_in?
+    session && session[:logged_in]
+  end
+  
   # Return a number as a string with commas.
   def number_format(number)
     (s=number.to_s;x=s.length;s).rjust(x+(3-(x%3))).scan(/.{3}/).join(',').strip.sub(/^,/, '')
@@ -556,46 +596,37 @@ helpers Twitter::Login::Helpers
 get "/" do
   # Index page is the entry point after login/signup
   if twitter_user
-    unless session[:logged_in]
-      flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
-      session[:logged_in] = true
-    end
-    
     if User.count(:twitter_user_id => twitter_user.id) == 0
       @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br>You can now customize your notification settings."
+      
+      # Once we create a user we need their Prowl API Key, so start
+      # the Prowl API Key request.
+      redirect '/prowl-api-key'
+    end
+    
+    # Test for login state after possible user creation, as we'll need
+    # the user ID either way.
+    unless logged_in?
+      flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
+      session[:current_user_id] = (@user) ? @user.id : User.first(:twitter_user_id => twitter_user.id).id
+      session[:logged_in] = true
     end
     
     # The homepage is useless to logged-in users; show them their account instead
-    redirect '/prowl-api-key'
+    redirect '/account'
   end
   
   @title = "Instant Twitter Notifications for iOS"
   erb :index
 end
 
-# Show the FAQ.
-get "/about" do
-  @title = "About Prey Fetcher"
-  erb :about
-end
-
-# Show the feature list.
-get "/features" do
-  @title = "Features"
-  erb :features
-end
-
-# Show the Privacy jazz.
-get "/privacy" do
-  @title = "Privacy"
-  erb :privacy
-end
-
-# Show the OSS page.
-get "/open-source" do
-  @title = "Open Source"
-  erb :open_source
+# Generic, static pages.
+PreyFetcher::STATIC_PAGES.each do |url, title|
+  get "/#{url.to_s.gsub('_', '-')}" do
+    @title = title
+    erb url
+  end
 end
 
 # This is the URL users who have authorized a Prowl API Key request
@@ -608,7 +639,7 @@ get "/api-key" do
   apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
   
   if apikey
-    @user = User.first(:twitter_user_id => twitter_user.id)
+    @user = current_user
     @user.update({:prowl_api_key => apikey})
   else
     flash[:alert] = "Authorization with Prowl API denied. You can <a href=\"/prowl-api-key\">try again</a> if you denied access by mistake."
@@ -637,7 +668,7 @@ get "/account" do
   redirect '/' unless twitter_user
   
   @title = "Account and Notification Settings"
-  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user = current_user
   erb :account
 end
 
@@ -645,7 +676,7 @@ end
 put "/account" do
   redirect '/' unless twitter_user
   
-  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user = current_user
   settings = {}
   
   # Hack to prevent mass assignment
@@ -674,7 +705,7 @@ end
 delete "/account" do
   redirect '/' unless twitter_user
   
-  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user = current_user
   @user.destroy!
   
   flash[:notice] = "Your Prey Fetcher account (for <span class=\"underline\">@#{twitter_user.screen_name}</span>) has been deleted.<br />Sorry to see you go!"
@@ -683,9 +714,28 @@ delete "/account" do
   redirect '/'
 end
 
+# Switch the currently active (Twitter) account for this user.
+put "/account-switch" do
+  redirect '/' unless twitter_user && !params[:id].blank?
+  
+  # Get the user we're going to try to switch to.
+  new_user = User.get(params[:id].to_i)
+  
+  # Check to see if this user is related to the ID being requested.
+  # We relate users to each other by Prowl API keys.
+  if new_user && current_user.prowl_api_key == new_user.prowl_api_key
+    session[:current_user_id] = new_user.id
+    flash[:notice] = "Switched to @#{new_user.twitter_username}."
+  else
+    flash[:error] = "Can't switch to that user. You are still logged in as @#{current_user.twitter_username}."
+  end
+  
+  redirect '/account'
+end
+
 # Put request that updates a user's lists from Twitter.
 put "/lists" do
-  @user = User.first(:twitter_user_id => twitter_user.id)
+  @user = current_user
   if @user
     @user.lists(true)
     flash[:notice] = "Your Twitter lists have been updated."
@@ -702,6 +752,7 @@ get "/logout" do
   
   flash[:notice] = "Logged <span class=\"underline\">@#{twitter_user.screen_name}</span> out of Prey Fetcher."
   twitter_logout
+  session.delete :current_user_id
   session[:logged_in] = false
   
   redirect '/'
