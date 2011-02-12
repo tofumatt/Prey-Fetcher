@@ -29,7 +29,7 @@
           <% unless logged_in? %>
             <li><a href="/login" id="sign-in-button">Signup now</a></li>
           <% else %>
-            <li id="user-info"><span class="menu-item">@<%= current_user.twitter_username %> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
+            <li id="user-info"><span class="menu-item"><a href="#account-switcher" id="account-switcher-link">@<%= current_user.twitter_username %></a> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
           <% end %>
         </ul>
       </nav>
