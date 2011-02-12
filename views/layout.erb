@@ -37,18 +37,6 @@
     
     <div id="container">
       <div id="page">
-        <% unless @title.nil? %><h1><%= @title %></h1><% end %>
-        
-        <div id="content">
-          <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
-          <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
-          <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
-          
-          <%= yield %>
-          
-          <div class="clear"></div>
-        </div>
-        
         <% if current_user.multiple_accounts? %>
           <form action="/account-switch" method="POST" id="account-switcher" class="js-hide">
             <input type="hidden" name="_method" value="put">
@@ -69,7 +57,21 @@
           		<input type="submit" id="account-switch_submit" class="submit" name="commit" value="Switch Account">
           	</div>
           </form>
+          
+          <div class="clear"></div>
         <% end %>
+        
+        <% unless @title.nil? %><h1><%= @title %></h1><% end %>
+        
+        <div id="content">
+          <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
+          <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
+          <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+          
+          <%= yield %>
+          
+          <div class="clear"></div>
+        </div>
         
         <div class="clear"></div>
       </div>
