@@ -32,5 +32,19 @@
 		if ($('#user_enable_list:checked').length == 1)
 			$('#list-container').show();
 		
+		// Reveal account switcher form
+		$('#account-switcher-link').click(function(event) {
+			$(this).blur();
+			$('#account-switcher').slideToggle(ANIMATION_SPEED);
+			
+			event.preventDefault();
+		});
+		
+		// Automatic form submission whenever a radio account
+		// switcher is clicked
+		$('#account-switcher input.radio-button').click(function(event) {
+			$('#account-switcher').submit();
+		});
+		
 	});
 })(jQuery);
