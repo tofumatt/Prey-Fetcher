@@ -16,8 +16,10 @@ $preyf_colour: #7a1515
 
 $page_width: 670px
 
+$preyfetcher_version: '4.6.2'
+
 body
-  background: $footer_colour url(../images/page-bg.png) repeat-x top
+  background: $footer_colour url(../images/page-bg.png?v=#{$preyfetcher_version}) repeat-x top
   color: $text_colour
   font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
   font-size: 1.1em
@@ -87,7 +89,7 @@ dt
   width: 150px
 
 p.quote, blockquote
-  background: url(../images/hanging-quotes.png) right top no-repeat
+  background: url(../images/hanging-quotes.png?v=#{$preyfetcher_version}) right top no-repeat
   text-shadow: #999 1px 1px 2px
 
 blockquote, q
@@ -152,7 +154,7 @@ ul.smaller
 
 .button
   &, &:hover, &:focus
-    background: url(../images/button-bg.png) left bottom repeat-x
+    background: url(../images/button-bg.png?v=#{$preyfetcher_version}) left bottom repeat-x
     border: 1px solid #373737
     border-radius: 10px
     -moz-border-radius: 10px
@@ -182,7 +184,7 @@ body.homepage #signup-button
   &:active
     text-shadow: 0 0 6px rgba(38.25, 11.5, 11.5, 1) !important
   span
-    background: url(../images/twitter-t.png) left center no-repeat
+    background: url(../images/twitter-t.png?v=#{$preyfetcher_version}) left center no-repeat
     padding-left: 23px
   
 label
@@ -226,7 +228,7 @@ input.text-long
   width: 350px
 
 #container
-  background: $body_background_colour url(../images/container-bg.png)
+  background: $body_background_colour url(../images/container-bg.png?v=#{$preyfetcher_version})
   
   .last-in-container
     padding: 0 0 25px
@@ -241,7 +243,7 @@ body.homepage #container .last-in-container
   width: $page_width
 
 #app-name
-  background: transparent url(../images/logo.png) no-repeat left top
+  background: transparent url(../images/logo.png?v=#{$preyfetcher_version}) no-repeat left top
   display: block
   height: 116px
   margin: 0 auto 30px
@@ -353,7 +355,7 @@ body.homepage #menu
   margin: 2px
 
 #menu #sign-in-button
-  background: url(../images/sign-in-with-twitter.png) no-repeat center !important
+  background: url(../images/sign-in-with-twitter.png?v=#{$preyfetcher_version}) no-repeat center !important
   display: block
   height: 24px
   margin: 0 0 0 auto
