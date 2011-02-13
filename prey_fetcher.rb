@@ -4,8 +4,6 @@ Bundler.setup
 
 Bundler.require
 
-ACCOUNT_TRANSITION_MODE = true # Uses old-style user records that don't relate to accounts.
-
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
@@ -30,7 +28,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.6"
+  VERSION = "4.6.1"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
@@ -204,10 +202,6 @@ class User
   property :id, Serial
   property :twitter_user_id, Integer
   property :twitter_username, String
-  if ACCOUNT_TRANSITION_MODE
-    property :prowl_api_key, String
-    property :custom_url, String
-  end
   property :access_key, String
   property :access_secret, String
   property :account_id, Integer
@@ -366,10 +360,8 @@ class User
   end
   
   # Return this user's custom URL redirect
-  unless ACCOUNT_TRANSITION_MODE
-    def custom_url
-      account.custom_url
-    end
+  def custom_url
+    account.custom_url
   end
   
   # Return the opposite of "disable_retweets"; here for convenience, as Matt
@@ -423,10 +415,8 @@ class User
   end
   
   # Return this user's Prowl API key
-  unless ACCOUNT_TRANSITION_MODE
-    def prowl_api_key
-      account.prowl_api_key
-    end
+  def prowl_api_key
+    account.prowl_api_key
   end
   
   # Send a DM notification to Prowl for this user.
