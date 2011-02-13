@@ -32,5 +32,25 @@
 		if ($('#user_enable_list:checked').length == 1)
 			$('#list-container').show();
 		
+		// If the account switcher is available we'll setup some JS to handle it.
+		if ($('#account-controls').length) {
+			// Reveal account switcher form
+			$('#account-controls-link').click(function(event) {
+				$(this).blur();
+				$('#account-controls').slideToggle(ANIMATION_SPEED);
+				
+				event.preventDefault();
+			});
+			
+			// Automatic form submission whenever a radio account
+			// switcher is clicked.
+			var currentUserAccount = $('#account-switcher input.radio-button:checked').val();
+			$('#account-switcher input.radio-button').click(function(event) {
+				if ($(this).val() != currentUserAccount) {
+					$('#account-switcher').submit();
+				}
+			});
+		}
+		
 	});
 })(jQuery);
