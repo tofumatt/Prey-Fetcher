@@ -77,7 +77,7 @@ namespace :prey_fetcher do
         )
         u.update(:account_id => account.id)
         
-        next if DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS
+        next if DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS || u.prowl_api_key.nil? || u.prowl_api_key.blank?
         
         other_users_with_same_api_key = User.all(:prowl_api_key => u.prowl_api_key)
         
