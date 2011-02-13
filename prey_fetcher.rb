@@ -30,7 +30,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.5.2"
+  VERSION = "4.6"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
