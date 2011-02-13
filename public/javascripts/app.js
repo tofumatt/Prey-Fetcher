@@ -33,11 +33,11 @@
 			$('#list-container').show();
 		
 		// If the account switcher is available we'll setup some JS to handle it.
-		if ($('#account-switcher').length) {
+		if ($('#account-controls').length) {
 			// Reveal account switcher form
-			$('#account-switcher-link').click(function(event) {
+			$('#account-controls-link').click(function(event) {
 				$(this).blur();
-				$('#account-switcher').slideToggle(ANIMATION_SPEED);
+				$('#account-controls').slideToggle(ANIMATION_SPEED);
 				
 				event.preventDefault();
 			});

@@ -67,7 +67,14 @@ namespace :prey_fetcher do
       if u.account_id.nil? && User.first(:id => u.id).account_id.nil? # Do another lookup, because the
                                                                       # user in-memory won't have an
                                                                       # account_id.
-        account = Account.create(:name => u.twitter_username)
+        account = Account.create!(
+          :name => u.twitter_username,
+          :prowl_api_key => u.prowl_api_key,
+          :custom_url => u.custom_url,
+          # Because we ignore callbacks
+          :created_at => Time.now,
+          :updated_at => Time.now
+        )
         u.update(:account_id => account.id)
         
         next if DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS

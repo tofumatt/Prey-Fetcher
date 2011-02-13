@@ -29,7 +29,11 @@
           <% unless logged_in? %>
             <li><a href="/login" id="sign-in-button">Signup now</a></li>
           <% else %>
-            <li id="user-info"><span class="menu-item"><a href="#account-switcher" id="account-switcher-link">@<%= current_user.twitter_username %></a> | <a href="/account">Settings</a> | <a href="/logout">Logout</a></span></li>
+            <li id="user-info"><span class="menu-item">
+              <a href="#account-controls" id="account-controls-link">@<%= current_user.twitter_username %></a>
+              | <a href="/account">Settings</a>
+              | <a href="/logout">Logout</a>
+            </span></li>
           <% end %>
         </ul>
       </nav>
@@ -37,26 +41,47 @@
     
     <div id="container">
       <div id="page">
-        <% if current_user.multiple_accounts? %>
-          <form action="/account-switch" method="POST" id="account-switcher" class="js-hide">
-            <input type="hidden" name="_method" value="put">
-            
-            <h3 class="clear">Change Account</h3>
-            
-            <% current_user.accounts.each do |a| %>
-              <div class="account clear">
-            		<input type="radio" id="account_switch_<%= a.id %>" class="radio-button" name="id" value="<%= a.id %>"<% if current_user.id == a.id %> checked="checked"<% end %>>
-            		<label for="account_switch_<%= a.id %>">@<%= a.twitter_username %></label>
+        <% if logged_in? %>
+          <div id="account-controls" class="js-hide">
+            <% if current_user.multiple_accounts? %>
+              <form action="/account-switch" method="POST" id="account-switcher">
+                <input type="hidden" name="_method" value="put">
                 
-            		<div class="clear"></div>
-              </div>
+                <h3 class="clear">Change Account</h3>
+                
+                <div id="accounts">
+                  <% current_user.accounts.each do |a| %>
+                    <div class="account clear">
+                  		<input type="radio" id="account_switch_<%= a.id %>" class="radio-button" name="id" value="<%= a.id %>"<% if current_user.id == a.id %> checked="checked"<% end %>>
+                  		<label for="account_switch_<%= a.id %>">@<%= a.twitter_username %></label>
+                      
+                  		<div class="clear"></div>
+                    </div>
+                  <% end %>
+                </div>
+                
+                <div class="clear js-hide space">
+              		<label for="account-switch_submit" class="hide">Switch Account</label>
+              		<input type="submit" id="account-switch_submit" class="submit" name="commit" value="Switch Account">
+              	</div>
+          	    
+              	<div class="clear"></div>
+              </form>
             <% end %>
             
-            <div class="clear js-hide space">
-          		<label for="account-switch_submit" class="hide">Switch Account</label>
-          		<input type="submit" id="account-switch_submit" class="submit" name="commit" value="Switch Account">
-          	</div>
-          </form>
+            <form action="/account" method="POST" id="account-add-form">
+              <div>
+                <h3 class="clear">Add Account</h3>
+                
+            		<label for="account-add" class="hide">Setup New Account</label>
+            		<input type="submit" id="account-add" class="submit" name="commit" value="Add Twitter Account">
+              </div>
+              
+              <div class="clear"></div>
+            </form>
+            
+            <div class="clear"></div>
+          </div>
           
           <div class="clear"></div>
         <% end %>

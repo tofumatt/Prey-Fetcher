@@ -4,6 +4,8 @@ Bundler.setup
 
 Bundler.require
 
+ACCOUNT_TRANSITION_MODE = false # Uses old-style user records that don't relate to accounts.
+
 # Set Sinatra's variables
 set :app_file, __FILE__
 set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
@@ -114,6 +116,61 @@ class String
   end
 end
 
+# An account is a collection of Users used to login to the web interface.
+class Account
+  include DataMapper::Resource
+  include DataMapper::Validate
+  
+  property :id, Serial
+  property :name, String
+  property :custom_url, String
+  property :prowl_api_key, String
+  # Timestamps
+  property :created_at, DateTime
+  property :updated_at, DateTime
+  
+  has n, :users
+  
+  before :save, :url_has_protocol?
+  validates_with_method :prowl_api_key, :method => :prowl_api_key_is_valid?
+  
+  # Return a list of values we allow routes to mass-assign
+  # to an Account.
+  def self.mass_assignable
+    [
+      :name,
+      :custom_url,
+      :prowl_api_key
+    ]
+  end
+  
+  # Test an account's Prowl API key via the Prowl API.
+  def prowl_api_key_is_valid?
+    return [false, "You must supply a Prowl API key."] if self.prowl_api_key.nil? || self.prowl_api_key.blank?
+    
+    if FastProwl.verify(self.prowl_api_key)
+      true
+    else
+      [false, "The Prowl API key you supplied was invalid."]
+    end
+  end
+  
+  # Run this validation to make sure the supplied URL is valid (if
+  # it's not, just convert it to a valid URL automatically).
+  def url_has_protocol?
+    # If the URL doesn't have a colon we assume a lack of protocol
+    # and use http://
+    # 
+    # Try to catch obviously bad URLs, but we can't test for everything
+    unless self.custom_url.blank? || self.custom_url.match(/:/)
+      self.custom_url = 'http://' + self.custom_url
+    end
+    
+    # Catch basic empty URLs
+    self.custom_url = nil if self.custom_url == 'http://'
+  end
+end
+
 # Record of when a notification, including the user record it relates
 # to, when it was sent, and the item associated with it.
 class Notification
@@ -147,10 +204,13 @@ class User
   property :id, Serial
   property :twitter_user_id, Integer
   property :twitter_username, String
-  property :prowl_api_key, String
-  property :custom_url, String
+  if ACCOUNT_TRANSITION_MODE
+    property :prowl_api_key, String
+    property :custom_url, String
+  end
   property :access_key, String
   property :access_secret, String
+  property :account_id, Integer
   # Mentions/replies
   property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
@@ -174,19 +234,26 @@ class User
   property :created_at, DateTime
   property :updated_at, DateTime
   
+  belongs_to :account
   has n, :notifications
-  
-  before :save, :url_has_protocol?
-  validates_with_method :prowl_api_key, :method => :prowl_api_key_is_valid?
   
   # Create a new user from session data retrieved from
   # twitter-login/OAuth authorization.
-  def self.create_from_twitter(twitter_user, access_key, access_token)
+  def self.create_from_twitter(twitter_user, access_key, access_token, account_id = nil)
+    # Create a new Account if no account_id was specified.
+    if account_id.nil?
+      account = Account.new(:name => twitter_user.screen_name)
+      account.save
+      account_id = account.id
+    end
+    
     User.create!( # Fill in the params manually; we only need a few settings
       :twitter_user_id => twitter_user.id,
       :twitter_username => twitter_user.screen_name,
       :access_key => access_key,
       :access_secret => access_token,
+      # Account id from either a function argument or a newly-created record
+      :account_id => account_id,
       # Because we ignore callbacks
       :created_at => Time.now,
       :updated_at => Time.now
@@ -217,8 +284,6 @@ class User
   # to a User.
   def self.mass_assignable
     [
-      :prowl_api_key,
-      :custom_url,
       :enable_mentions,
       :mention_priority,
       :disable_retweets,
@@ -233,11 +298,7 @@ class User
   
   # Return users who share the same API keys as this user
   def accounts
-    if @accounts.nil?
-      @accounts = User.all(:prowl_api_key => prowl_api_key)
-    end
-    
-    @accounts
+    account.users
   end
   
   # Check Twitter for new DMs for this user using the REST API
@@ -304,6 +365,13 @@ class User
     end
   end
   
+  # Return this user's custom URL redirect
+  unless ACCOUNT_TRANSITION_MODE
+    def custom_url
+      account.custom_url
+    end
+  end
+  
   # Return the opposite of "disable_retweets"; here for convenience, as Matt
   # stupidly classed retweets as a subset of mentions at first.
   def enable_retweets
@@ -354,14 +422,10 @@ class User
     @oauth
   end
   
-  # Test a user's Prowl API key via the Prowl API.
-  def prowl_api_key_is_valid?
-    return [false, "You must supply a Prowl API key."] if self.prowl_api_key.nil? || self.prowl_api_key.blank?
-    
-    if FastProwl.verify(self.prowl_api_key)
-      true
-    else
-      [false, "The Prowl API key you supplied was invalid."]
+  # Return this user's Prowl API key
+  unless ACCOUNT_TRANSITION_MODE
+    def prowl_api_key
+      account.prowl_api_key
     end
   end
   
@@ -431,20 +495,6 @@ class User
       :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_RETWEET)
-  end
-  
-  # Run this validation to make sure the supplied URL is valid (if
-  # it's not, just convert it to a valid URL automatically).
-  def url_has_protocol?
-    # If the URL doesn't have a colon we assume a lack of protocol
-    # and use http://
-    # Try to catch obviously bad URLs, but we can't test for everything
-    unless self.custom_url.blank? || self.custom_url.match(/:/)
-      self.custom_url = 'http://' + self.custom_url
-    end
-    
-    # Catch basic empty URLs
-    self.custom_url = nil if self.custom_url == 'http://'
   end
   
   # Test this user's OAuth credentials and update/verify their username.
@@ -551,8 +601,6 @@ helpers do
   end
   
   # Return the current user based on Prey Fetcher user id in session.
-  # twitter_user might not be the current user, as all users that share
-  # the same Prowl API key are considered linked.
   def current_user
     if session && session[:current_user_id]
       User.get(session[:current_user_id])
@@ -597,25 +645,61 @@ get "/" do
   # Index page is the entry point after login/signup
   if twitter_user
     if User.count(:twitter_user_id => twitter_user.id) == 0
-      @user = User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1])
+      User.create_from_twitter(twitter_user, session[:twitter_access_token][0], session[:twitter_access_token][1], ((current_user) ? current_user.account_id : nil))
       flash[:notice] = "Created Prey Fetcher account for @#{twitter_user.screen_name}.<br>You can now customize your notification settings."
+      
+      @user = User.first(:twitter_user_id => twitter_user.id)
+      
+      # Set our login session data before we redirect to Prowl
+      session[:current_account_id] = @user.account_id
+      session[:current_user_id] = @user.id
+      session[:logged_in] = true
       
       # Once we create a user we need their Prowl API Key, so start
       # the Prowl API Key request.
-      redirect '/prowl-api-key'
+      redirect '/prowl-api-key' unless @user.multiple_accounts?
     end
     
-    # Test for login state after possible user creation, as we'll need
-    # the user ID either way.
-    unless logged_in?
+    # Setup account/login state for existing user adding another account.
+    if logged_in?
+      previous_user = current_user
+      user = User.first(:twitter_user_id => twitter_user.id)
+      
+      # Are we adding an existing Prey Fetcher user to this account?
+      if previous_user.account_id != user.account_id
+        user.update!(:account_id => previous_user.account_id)
+        
+        # Destroy the old Account this user has no accounts after the update.
+        old_account = Account.get(user.account_id)
+        if old_account.users.count == 0
+          old_account.destroy!
+        end
+      end
+      
+      # Setup our session data for login state
+      session[:current_account_id] = previous_user.account_id
+      session[:current_user_id] = user.id
+      session[:logged_in] = true
+    else # Setup "login"/session state for a user who just logged in from Twitter.
+      # Switch "current user" context to the twitter user we just logged in as.
+      user = User.first(:twitter_user_id => twitter_user.id)
+      
       flash[:notice] = "Logged into Prey Fetcher as <span class=\"underline\">@#{twitter_user.screen_name}</span>."
-      session[:current_user_id] = (@user) ? @user.id : User.first(:twitter_user_id => twitter_user.id).id
+      
+      # Setup our session data for login state
+      session[:current_account_id] = user.account_id
+      session[:current_user_id] = user.id
       session[:logged_in] = true
     end
     
     # The homepage is useless to logged-in users; show them their account instead
     redirect '/account'
   end
+  
+  # If there's no twitter_user we remove session data, just in case
+  session.delete :account_account_id
+  session.delete :current_account_id
+  session[:logged_in] = false
   
   @title = "Instant Twitter Notifications for iOS"
   erb :index
@@ -634,13 +718,13 @@ end
 # provider key to get a new API key for this user and store it in
 # their account.
 get "/api-key" do
-  redirect '/' unless twitter_user && session[:token]
+  redirect '/' unless logged_in? && session[:token]
   
   apikey = PreyFetcher.retrieve_apikey(session[:token][:token])
   
   if apikey
     @user = current_user
-    @user.update({:prowl_api_key => apikey})
+    @user.account.update({:prowl_api_key => apikey})
   else
     flash[:alert] = "Authorization with Prowl API denied. You can <a href=\"/prowl-api-key\">try again</a> if you denied access by mistake."
   end
@@ -651,7 +735,7 @@ end
 # Get a Prowl API key retrieval token and redirect the user
 # to the Prowl authorization page.
 get "/prowl-api-key" do
-  redirect '/' unless twitter_user
+  redirect '/' unless logged_in?
   
   session[:token] = PreyFetcher.retrieve_token
   
@@ -665,19 +749,53 @@ end
 
 # Show account info.
 get "/account" do
-  redirect '/' unless twitter_user
+  redirect '/' unless logged_in?
   
   @title = "Account and Notification Settings"
   @user = current_user
   erb :account
 end
 
+# Add a new user record to an existing account.
+post "/account" do
+  redirect '/' unless logged_in?
+  
+  # Remove current twitter user from session
+  twitter_logout
+  
+  # Setup an OAuth Consumer object similar to the one
+  # Twitter::Login uses.
+  consumer = Twitter::OAuth.new(
+    PreyFetcher::config(:twitter_consumer_key),
+    PreyFetcher::config(:twitter_consumer_secret),
+    :site => 'https://api.twitter.com',
+    :authorize_path => '/oauth/authenticate'
+  )
+  
+  # Get a request token and store it in the session so
+  # the login middleware can use it after the redirect
+  # from Twitter's API.
+  request_token = consumer.request_token(
+    :force_login => 'true',
+    :oauth_callback => "#{PreyFetcher::config(:app_url)}/login"
+  )
+  session[:twitter_request_token] = [request_token.token, request_token.secret]
+  
+  # Off to Twitter!
+  redirect request_token.authorize_url
+end
+
 # Receive new account settings.
 put "/account" do
-  redirect '/' unless twitter_user
+  redirect '/' unless logged_in?
   
   @user = current_user
-  settings = {}
+  account_settings, settings = {}, {}
+  
+  # Hack to prevent mass assignment
+  Account.mass_assignable.each do |a|
+    account_settings[a] = params[:account][a]
+  end
   
   # Hack to prevent mass assignment
   User.mass_assignable.each do |a|
@@ -687,15 +805,25 @@ put "/account" do
   # Hotfix for list bug
   settings.delete(:notification_list) if settings[:notification_list] && settings[:notification_list].blank?
   
-  if @user.update(settings)
+  if @user.account.update(account_settings) && @user.update(settings)
     flash[:notice] = "Your account and notification settings have been updated."
     redirect '/account'
   else
     flash.now[:alert] = "Sorry, but your account couldn't be updated.<br><ul>"
-    @user.errors.each do |e|
-      flash.now[:alert] << "<li>#{e}</li>"
+    
+    if @user.account.errors
+      @user.account.errors.each do |e|
+        flash.now[:alert] << "<li>#{e}</li>"
+      end
+    end
+    
+    if @user.errors
+      @user.errors.each do |e|
+        flash.now[:alert] << "<li>#{e}</li>"
+      end
     end
     flash.now[:alert] << "</ul>"
+    
     @title = "Account and Notification Settings"
     erb :account
   end
@@ -703,7 +831,7 @@ end
 
 # Delete user account
 delete "/account" do
-  redirect '/' unless twitter_user
+  redirect '/' unless logged_in?
   
   @user = current_user
   @user.destroy!
@@ -716,14 +844,14 @@ end
 
 # Switch the currently active (Twitter) account for this user.
 put "/account-switch" do
-  redirect '/' unless twitter_user && !params[:id].blank?
+  redirect '/' unless logged_in? && !params[:id].blank?
   
   # Get the user we're going to try to switch to.
   new_user = User.get(params[:id].to_i)
   
   # Check to see if this user is related to the ID being requested.
   # We relate users to each other by Prowl API keys.
-  if new_user && current_user.prowl_api_key == new_user.prowl_api_key
+  if new_user && current_user.account.id == new_user.account.id
     session[:current_user_id] = new_user.id
     flash[:notice] = "Switched to @#{new_user.twitter_username}."
   else
@@ -748,7 +876,7 @@ end
 
 # Logout and remove any session data.
 get "/logout" do
-  redirect '/' unless twitter_user
+  redirect '/' unless logged_in?
   
   flash[:notice] = "Logged <span class=\"underline\">@#{twitter_user.screen_name}</span> out of Prey Fetcher."
   twitter_logout
