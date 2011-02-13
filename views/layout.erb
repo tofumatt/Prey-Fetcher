@@ -17,7 +17,7 @@
   </head>
   <body class="<% if logged_in? %>logged-in<%end %> <% if request.path_info == '/' %>homepage<% else %><%= request.path_info.slice(1..-1) %><% end %>">
     <div id="header">
-      <a href="/" id="app-name"><%= PreyFetcher::config(:app_name) %></a>
+      <a href="/<% if logged_in? %>account<% end %>" id="app-name"><%= PreyFetcher::config(:app_name) %></a>
     </div>
     
     <div id="menu">
