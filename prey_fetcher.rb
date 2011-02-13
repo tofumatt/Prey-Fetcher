@@ -4,7 +4,7 @@ Bundler.setup
 
 Bundler.require
 
-ACCOUNT_TRANSITION_MODE = false # Uses old-style user records that don't relate to accounts.
+ACCOUNT_TRANSITION_MODE = true # Uses old-style user records that don't relate to accounts.
 
 # Set Sinatra's variables
 set :app_file, __FILE__
@@ -30,7 +30,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.5.2"
+  VERSION = "4.6"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
