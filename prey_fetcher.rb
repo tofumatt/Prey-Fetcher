@@ -587,7 +587,7 @@ end
 helpers do
   # Return a link to an asset file on another domain.
   def asset(file)
-    "http://#{PreyFetcher::config(:app_asset_domain)}/#{file}"
+    "http://#{PreyFetcher::config(:app_asset_domain)}/#{file}?v=#{PreyFetcher::config(:app_version)}"
   end
   
   # Return the current user based on Prey Fetcher user id in session.
