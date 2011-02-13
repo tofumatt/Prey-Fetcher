@@ -32,7 +32,7 @@ module PreyFetcher
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
-    !@@_config[option].nil? ? @@_config[option] : nil
+    @@_config[option]
   end
   
   # Protect code run inside this method (as a block) from common
