@@ -4,7 +4,7 @@ Bundler.setup
 
 Bundler.require
 
-ACCOUNT_TRANSITION_MODE = false # Uses old-style user records that don't relate to accounts.
+ACCOUNT_TRANSITION_MODE = true # Uses old-style user records that don't relate to accounts.
 
 # Set Sinatra's variables
 set :app_file, __FILE__
