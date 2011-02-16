@@ -7,6 +7,8 @@
   	<ul class="smaller">
   		<li><em class="underline">DMs</em> — when you have new Direct Messages</li>
   		<li><em class="underline">mentions</em> — when your username appears in a tweet</li>
+  		<li><em class="underline">Retweets</em> — when a user retweets you (includes old-style "RT"s)</li>
+  		<li><em class="underline">Favorites</em> — when another user adds your tweet to their favorites</li>
   		<li><em class="underline">Lists</em> — when a new tweet appears in a list you follow</li>
   	</ul>
 	  
@@ -59,6 +61,22 @@
   			</select>
   		</div>
 		</div>
+	  
+  	<div class="clear space">
+  		<label for="user_enable_favorites" class="for-checkbox">Notify when favorited</label>
+  		<input type="hidden" name="user[enable_favorites]" value="0">
+  		<input type="checkbox" id="user_enable_favorites" class="checkbox" name="user[enable_favorites]" value="1"<% if @user.enable_favorites %> checked="checked"<% end %>>
+		  
+  		<div id="favorites-priority-container" class="clear js-hide">
+  			<label for="user_favorites_priority" class="for-select">Favorites Priority</label>
+  			<select name="user[favorites_priority]" id="user_favorites_priority" class="select">
+  				<option value="-1" <% if @user.favorites_priority == -1 %>selected="selected"<% end %>>Low</option>
+  				<option value="0" <% if @user.favorites_priority == 0 %>selected="selected"<% end %>>Normal</option>
+  				<option value="1" <% if @user.favorites_priority == 1 %>selected="selected"<% end %>>High</option>
+  				<option value="2" <% if @user.favorites_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+  			</select>
+  		</div>
+  	</div>
 	  
   	<div class="clear space">
   		<label for="user_enable_list" class="for-checkbox">Watch A List</label>

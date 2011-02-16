@@ -25,6 +25,13 @@
 		if ($('#user_disable_retweets:checked').length == 1)
 			$('#retweet-priority-container').show();
 		
+		// Favorites on the Settings page
+		$('#user_enable_favorites').click(function(event) {
+			$('#favorites-priority-container').slideToggle(ANIMATION_SPEED);
+		});
+		if ($('#user_enable_favorites:checked').length == 1)
+			$('#favorites-priority-container').show();
+		
 		// Lists on the Settings page
 		$('#user_enable_list').click(function(event) {
 			$('#list-container').slideToggle(ANIMATION_SPEED);

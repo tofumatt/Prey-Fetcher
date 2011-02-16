@@ -116,6 +116,93 @@ module PreyFetcher
   # to be run inside an EventMachine::run block. It provides functionality
   # for adding users to the stream, starting/stopping/restarting the stream, etc.
   class SiteStream
+    # Deliver a tweet parsed from SiteStreams response.
+    def self.deliver(tweet)
+      # Skip if this tweet is bad or not available
+      return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
+      
+      # Get the user this message belongs to
+      user = User.first(:twitter_user_id => tweet['for_user'])
+      
+      # If we didn't find any users (they were deleted?), move on.
+      return if user.nil?
+      
+      # Is this a direct message?
+      if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
+        if user.enable_dms
+          user.send_dm(
+            :id => tweet['message']['direct_message']['id'],
+            :from => tweet['message']['direct_message']['sender_screen_name'],
+            :text => tweet['message']['direct_message']['text']
+          )
+        else
+          # If DM notifications aren't enabled, mark the retweet
+          # so users who enable this feature still have up-to-date
+          # since ids.
+          user.update(:dm_since_id => tweet['message']['direct_message']['id'])
+        end
+      end
+      
+      # Did someone favourite a tweet?
+      if tweet['message'] && tweet['message']['event'] == 'favorite' && tweet['message']['target'] && tweet['message']['target']['id'] == user.twitter_user_id && tweet['message']['source'] && tweet['message']['source']['id'] != user.twitter_user_id # If this user is favouriting themselves, don't notify them.
+        if user.enable_favorites
+          user.send_favorite(
+            :id => tweet['message']['target_object']['id'],
+            :from => tweet['message']['source']['screen_name'],
+            :text => tweet['message']['target_object']['text']
+          )
+        end
+      end
+      
+      # Is this a mention? (Make sure it's not an old-style RT by checking for RT substring)
+      if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
+        if user.enable_mentions
+          user.send_mention(
+            :id => tweet['message']['id'],
+            :from => tweet['message']['user']['screen_name'],
+            :text => tweet['message']['text']
+          )
+        else
+          # If mention notifications aren't enabled, mark the retweet
+          # so users who enable this feature still have up-to-date
+          # since ids.
+          user.update(:mention_since_id => tweet['message']['id'])
+        end
+      end
+      
+      # Is this a retweet?
+      if tweet['message'] && ((tweet['message']['retweeted_status'] && tweet['message']['retweeted_status']['user']['id'] == user.twitter_user_id) || (tweet['message']['retweeted_status'].nil? && tweet['message']['text'] && tweet['message']['text'].retweet?))
+        if user.enable_retweets
+          user.send_retweet(
+            :id => tweet['message']['id'],
+            :from => tweet['message']['user']['screen_name'],
+            :text => tweet['message']['text']
+          )
+        else
+          # If retweet notifications aren't enabled, mark the retweet
+          # so users who enable this feature still have up-to-date
+          # since ids.
+          user.update(:retweet_since_id => tweet['message']['id'])
+        end
+      end
+    end
+    
+    # Parse a JSON stream item (with exception handling for bad
+    # JSON data) and return the result of JSON.parse (or false
+    # if the parse failed).
+    def self.parse_from_stream(stream_item)
+      begin
+        JSON.parse(stream_item)
+      rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
+        puts "STREAMING ERROR: " + Time.now.to_s
+        puts "STREAMING ERROR: " + "Twitter was over capacity? Couldn't make a usable array from JSON data."
+        puts "STREAMING ERROR: " + e.to_s
+        puts ''
+        
+        false
+      end
+    end
+    
     # Load user ids for this stream and start the Twitter::JSONStream connection.
     def initialize(user_ids)
       # Load Twitter ids for this stream
@@ -132,22 +219,6 @@ module PreyFetcher
     # Return the currently-tracked user ids for this stream.
     def current_user_ids
       @current_user_ids
-    end
-    
-    # Parse a JSON stream item (with exception handling for bad
-    # JSON data) and return the result of JSON.parse (or false
-    # if the parse failed).
-    def parse_from_stream(stream_item)
-      begin
-        JSON.parse(stream_item)
-      rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-        puts "STREAMING ERROR: " + Time.now.to_s
-        puts "STREAMING ERROR: " + "Twitter was over capacity? Couldn't make a usable array from JSON data."
-        puts "STREAMING ERROR: " + e.to_s
-        puts ''
-        
-        false
-      end
     end
     
     # Restart the stream by stopping it and starting it again. Any new
@@ -179,64 +250,9 @@ module PreyFetcher
       )
       
       @stream.each_item do |item|
-        tweet = parse_from_stream(item)
+        tweet = SiteStream::parse_from_stream(item)
         
-        # Skip if this tweet is bad or not available
-        next if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
-        
-        # Get the user this message belows to
-        user = User.first(:twitter_user_id => tweet['for_user'])
-        
-        # If we didn't find any users (they were deleted?), move on.
-        next if user.nil?
-        
-        # Is this a direct message?
-        if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
-          if user.enable_dms
-            user.send_dm(
-              :id => tweet['message']['direct_message']['id'],
-              :from => tweet['message']['direct_message']['sender_screen_name'],
-              :text => tweet['message']['direct_message']['text']
-            )
-          else
-            # If DM notifications aren't enabled, mark the retweet
-            # so users who enable this feature still have up-to-date
-            # since ids.
-            user.update(:dm_since_id => tweet['message']['direct_message']['id'])
-          end
-        end
-        
-        # Is this a mention? (Make sure it's not an old-style RT by checking for RT substring)
-        if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
-          if user.enable_mentions
-            user.send_mention(
-              :id => tweet['message']['id'],
-              :from => tweet['message']['user']['screen_name'],
-              :text => tweet['message']['text']
-            )
-          else
-            # If mention notifications aren't enabled, mark the retweet
-            # so users who enable this feature still have up-to-date
-            # since ids.
-            user.update(:mention_since_id => tweet['message']['id'])
-          end
-        end
-        
-        # Is this a retweet?
-        if tweet['message'] && ((tweet['message']['retweeted_status'] && tweet['message']['retweeted_status']['user']['id'] == user.twitter_user_id) || (tweet['message']['retweeted_status'].nil? && tweet['message']['text'] && tweet['message']['text'].retweet?))
-          if user.enable_retweets
-            user.send_retweet(
-              :id => tweet['message']['id'],
-              :from => tweet['message']['user']['screen_name'],
-              :text => tweet['message']['text']
-            )
-          else
-            # If retweet notifications aren't enabled, mark the retweet
-            # so users who enable this feature still have up-to-date
-            # since ids.
-            user.update(:retweet_since_id => tweet['message']['id'])
-          end
-        end
+        SiteStream::deliver(tweet)
       end
       
       @stream.on_error do |message|
