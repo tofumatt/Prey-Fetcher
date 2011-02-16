@@ -144,7 +144,7 @@ module PreyFetcher
       end
       
       # Did someone favourite a tweet?
-      if tweet['message'] && tweet['message']['event'] == 'favorite' && tweet['message']['target'] && tweet['message']['target']['id'] == user.twitter_user_id && tweet['message']['source']['id'] != user.twitter_user_id # If this user is favouriting themselves, don't notify them.
+      if tweet['message'] && tweet['message']['event'] == 'favorite' && tweet['message']['target'] && tweet['message']['target']['id'] == user.twitter_user_id && tweet['message']['source'] && tweet['message']['source']['id'] != user.twitter_user_id # If this user is favouriting themselves, don't notify them.
         if user.enable_favorites
           user.send_favorite(
             :id => tweet['message']['target_object']['id'],
