@@ -179,6 +179,7 @@ class Notification
   TYPE_LIST = 2
   TYPE_MENTION = 3
   TYPE_RETWEET = 4
+  TYPE_FAVORITE = 5
   
   property :id, Serial
   property :twitter_user_id, Integer
@@ -224,6 +225,9 @@ class User
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
+  # Favourites
+  property :enable_favorites, Boolean, :default => false
+  property :favorites_priority, Integer, :default => 0
   # Timestamps
   property :created_at, DateTime
   property :updated_at, DateTime
@@ -286,7 +290,9 @@ class User
       :dm_priority,
       :enable_list,
       :notification_list,
-      :list_priority
+      :list_priority,
+      :enable_favorites,
+      :favorites_priority
     ]
   end
   
@@ -434,6 +440,20 @@ class User
       :url => (custom_url.blank?) ? nil : custom_url
     )
     Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_DM)
+  end
+  
+  # Send a favourite notification to Prowl for this user.
+  def send_favorite(tweet)
+    FastProwl.add(
+      :application => PreyFetcher::config(:app_prowl_appname),
+      :providerkey => PreyFetcher::config(:app_prowl_provider_key),
+      :apikey => prowl_api_key,
+      :priority => list_priority,
+      :event => "Favorited by @#{tweet[:from]}",
+      :description => tweet[:text].unescaped,
+      :url => (custom_url.blank?) ? nil : custom_url
+    )
+    Notification.create(:twitter_user_id => twitter_user_id, :type => Notification::TYPE_FAVORITE)
   end
   
   # Send a List notification to Prowl for this user.
