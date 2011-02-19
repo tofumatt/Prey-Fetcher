@@ -240,8 +240,12 @@ class User
   def self.create_from_twitter(twitter_user, access_key, access_token, account_id = nil)
     # Create a new Account if no account_id was specified.
     if account_id.nil?
-      account = Account.new(:name => twitter_user.screen_name)
-      account.save
+      account = Account.create!(
+        :name => twitter_user.screen_name,
+        :created_at => Time.now,
+        :updated_at => Time.now
+      )
+      
       account_id = account.id
     end
     
@@ -298,7 +302,7 @@ class User
   
   # Return users who share the same API keys as this user
   def accounts
-    account.users
+    (account) ? account.users : nil
   end
   
   # Check Twitter for new DMs for this user using the REST API

@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 
 # Set this to true to disable account-linking based on API keys
 # when running the prey_fetcher:setup_accounts task.
-DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS = false
+DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS = true
 
 asset_servers = [
   {
@@ -69,8 +69,6 @@ namespace :prey_fetcher do
                                                                       # account_id.
         account = Account.create!(
           :name => u.twitter_username,
-          :prowl_api_key => u.prowl_api_key,
-          :custom_url => u.custom_url,
           # Because we ignore callbacks
           :created_at => Time.now,
           :updated_at => Time.now
