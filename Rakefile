@@ -69,8 +69,6 @@ namespace :prey_fetcher do
                                                                       # account_id.
         account = Account.create!(
           :name => u.twitter_username,
-          :prowl_api_key => u.prowl_api_key,
-          :custom_url => u.custom_url,
           # Because we ignore callbacks
           :created_at => Time.now,
           :updated_at => Time.now
