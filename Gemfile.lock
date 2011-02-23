@@ -2,6 +2,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.4)
+    chronic (0.3.0)
     crack (0.1.8)
     data_objects (0.10.2)
       addressable (~> 2.1)
@@ -67,6 +68,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  chronic (= 0.3.0)
   dm-aggregates (= 1.0.0)
   dm-core (= 1.0.0)
   dm-migrations (= 1.0.0)
