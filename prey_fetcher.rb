@@ -28,7 +28,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.7.5"
+  VERSION = "4.8"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
@@ -543,6 +543,12 @@ configure do
     :db_database => 'development.sqlite3',
     :db_username => nil,
     :db_password => nil,
+    
+    # Spam filtering settings
+    :spam_days_ago_for_spam_accounts => 4,
+    :spam_filters_enabled => true,
+    :spam_max_offenses => 3,
+    :spam_low_followers_count => 10,
     
     # Twitter configs
     :twitter_consumer_key => '',

@@ -1,5 +1,6 @@
 source "http://rubygems.org"
 
+gem "chronic", "0.3.0"
 gem "fastprowl", "0.3.1"
 gem "haml", "3.0.18"
 gem "json"
