@@ -43,6 +43,59 @@ module PreyFetcher
     @@_streams << stream
   end
   
+  # Check to see if this tweet has all, or most, of the earmarks of
+  # a spam tweet. Spam has become a serious issue on Twitter over
+  # the past week (this code committed on Feb. 23, 2011) and this
+  # should hopefully cut down on iPhones buzzing from Nike spam bots.
+  def self.is_spam?(tweet)
+    # Don't check anything if we don't have the right keys to operate on
+    return false unless tweet['message'] && tweet['message']['user'] && tweet['message']['user']['followers_count'] && tweet['message']['user']['friends_count'] && tweet['message']['user']['profile_image_url'] && tweet['message']['user']['created_at'] && tweet['message']['entities'] && tweet['message']['entities']['urls']
+    
+    # Start with zero offences; tweets are innocent until proven guilty.
+    offenses = 0
+    
+    # Check for accounts created recently. Spammers are smart and
+    # usually create accounts then use them a few days later, so we
+    # assume accounts that are [X] days ago are bad. This is a settable
+    # config option but the default is 4.
+    if Chronic.parse(tweet['message']['user']['created_at']) > Chronic.parse("#{PreyFetcher::config(:spam_days_ago_for_spam_accounts)} days ago")
+      offenses += 1
+      
+      # If the account was created today it's even more suspicious. Sorry new users!
+      if Chronic.parse(tweet['message']['user']['created_at']) > Chronic.parse('today')
+        offenses += 1
+      end
+      
+      # If a tweet from a user that new has exactly one link it's a bad sign too.
+      if tweet['message']['entities']['urls'].count == 1
+        offenses += 1
+      end
+      
+      # Not many friends? Suspicious.
+      if tweet['message']['user']['followers_count'] < PreyFetcher::config(:spam_low_followers_count)
+        offenses += 1
+      end
+    end
+    
+    # If they're using the default profile image that's also a bad sign.
+    if tweet['message']['user']['profile_image_url'].match('default_profile')
+      offenses += 1
+    end
+    
+    # No friends? No fun.
+    if tweet['message']['user']['followers_count'] == 0
+      offenses += 1
+    end
+    
+    # If their friends ratio is one-sided, that's a good sign of spam.
+    if tweet['message']['user']['followers_count'] <= (tweet['message']['user']['friends_count'] / 20).to_i
+      offenses += 1
+    end
+    
+    # If there's enough signs of spam, we should ignore this tweet.
+    offenses >= PreyFetcher::config(:spam_max_offenses)
+  end
+  
   def self.streams
     @@_streams
   end
@@ -127,6 +180,8 @@ module PreyFetcher
       # If we didn't find any users (they were deleted?), move on.
       return if user.nil?
       
+      puts tweet.inspect
+      
       # Is this a direct message?
       if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
         if user.enable_dms
@@ -156,17 +211,20 @@ module PreyFetcher
       
       # Is this a mention? (Make sure it's not an old-style RT by checking for RT substring)
       if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
-        if user.enable_mentions
-          user.send_mention(
-            :id => tweet['message']['id'],
-            :from => tweet['message']['user']['screen_name'],
-            :text => tweet['message']['text']
-          )
-        else
-          # If mention notifications aren't enabled, mark the retweet
-          # so users who enable this feature still have up-to-date
-          # since ids.
-          user.update(:mention_since_id => tweet['message']['id'])
+        # Make sure this isn't spam.
+        unless PreyFetcher::is_spam?(tweet)
+          if user.enable_mentions
+            user.send_mention(
+              :id => tweet['message']['id'],
+              :from => tweet['message']['user']['screen_name'],
+              :text => tweet['message']['text']
+            )
+          else
+            # If mention notifications aren't enabled, mark the retweet
+            # so users who enable this feature still have up-to-date
+            # since ids.
+            user.update(:mention_since_id => tweet['message']['id'])
+          end
         end
       end
       
