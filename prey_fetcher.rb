@@ -544,6 +544,12 @@ configure do
     :db_username => nil,
     :db_password => nil,
     
+    # Spam filtering settings
+    :spam_days_ago_for_spam_accounts => 4,
+    :spam_filters_enabled => true,
+    :spam_max_offenses => 3,
+    :spam_low_followers_count => 10,
+    
     # Twitter configs
     :twitter_consumer_key => '',
     :twitter_consumer_secret => '',
