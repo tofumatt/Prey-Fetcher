@@ -123,6 +123,7 @@ class Account
   property :name, String
   property :custom_url, String
   property :prowl_api_key, String
+  property :enable_spam_filters, Boolean
   # Timestamps
   property :created_at, DateTime
   property :updated_at, DateTime
@@ -138,7 +139,8 @@ class Account
     [
       :name,
       :custom_url,
-      :prowl_api_key
+      :prowl_api_key,
+      :enable_spam_filters
     ]
   end
   
