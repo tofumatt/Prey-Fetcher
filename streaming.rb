@@ -180,8 +180,6 @@ module PreyFetcher
       # If we didn't find any users (they were deleted?), move on.
       return if user.nil?
       
-      puts tweet.inspect
-      
       # Is this a direct message?
       if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
         if user.enable_dms
