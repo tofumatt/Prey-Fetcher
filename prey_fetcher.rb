@@ -11,6 +11,7 @@ set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
 set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
+disable :run unless __FILE__ == $0
 
 # House internal methods and junk inside our own namespace
 module PreyFetcher
@@ -29,7 +30,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.9.1"
+  VERSION = "4.9.2"
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
