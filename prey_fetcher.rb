@@ -529,13 +529,13 @@ class User
 end
 
 configure do
-  # Grab stuff from config.rb -- it's _required_
+  # Grab stuff from config.yaml -- it's _required_
   config = YAML.load(File.open(File.join(File.dirname(__FILE__), "config.yaml"), File::RDONLY).read)
   
   # Local-specific/not-git-managed config
   begin
     config.merge!(YAML.load(File.open(File.join(File.dirname(__FILE__), "config_local.yaml"), File::RDONLY).read))
-  rescue Errno::ENOENT # No config_local.rb found
+  rescue Errno::ENOENT # No config_local.yaml found
     puts "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
   end
   
