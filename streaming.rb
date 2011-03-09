@@ -96,6 +96,15 @@ module PreyFetcher
     offenses >= PreyFetcher::config(:spam_max_offenses)
   end
   
+  # Stop all Prey Fetcher streams and remove the stream-process file.
+  def self.stop_streams!
+    PreyFetcher::streams.each do |s|
+      s.stop!
+    end
+    
+    File.delete(File.join('tmp', 'stream-process.pid'))
+  end
+  
   def self.streams
     @@_streams
   end
@@ -347,21 +356,12 @@ EventMachine::run do
     PreyFetcher::add_stream(stream)
   end
   
-  trap('INT') {
-    PreyFetcher::streams.each do |s|
-      s.stop!
+  ['INT', 'TERM'].each do |sig|
+    trap(sig) do
+      puts "#{sig} signal received: quitting streaming.rb"
+      PreyFetcher::stop_streams!
     end
-    
-    File.delete(File.join('tmp', 'stream-process.pid'))
-  }
-  
-  trap('TERM') {
-    PreyFetcher::streams.each do |s|
-      s.stop!
-    end
-    
-    File.delete(File.join('tmp', 'stream-process.pid'))
-  }
+  end
   
   EventMachine.watch_file(File.join('tmp', 'stream-process.pid'), PreyFetcher::PIDFileHandler)
   EventMachine.watch_file(File.join('tmp', 'stream-users.add'), PreyFetcher::FileHandler)
