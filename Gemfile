@@ -9,7 +9,7 @@ gem "rack-flash", "0.1.1"
 gem "rack-test", "0.5.6", :require => 'rack/test', :group => [:test]
 
 # Sinatra
-gem "sinatra", "1.0"
+gem "sinatra", "1.2"
 
 # Datamapper
 gem "dm-core", "1.0.0"
