@@ -1,5 +1,6 @@
 require "rubygems"
 require "bundler"
+require "yaml"
 Bundler.setup
 
 Bundler.require
@@ -32,7 +33,7 @@ module PreyFetcher
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
   def self.config(option)
-    @@_config[option]
+    @@_config[option.to_s]
   end
   
   # Protect code run inside this method (as a block) from common
@@ -305,27 +306,6 @@ class User
     (account) ? account.users : nil
   end
   
-  # Check Twitter for new DMs for this user using the REST API
-  def check_dms
-    PreyFetcher::protect_from_twitter do
-      direct_messages = Twitter::Base.new(oauth).direct_messages(
-        :count => 1,
-        :since_id => dm_since_id
-      )
-      
-      if direct_messages.size > 0
-        # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
-        if dm_since_id != 1
-          send_dm(
-            :id => direct_messages.first['id'],
-            :from => direct_messages.first['sender']['screen_name'],
-            :text => direct_messages.first['text']
-          )
-        end
-      end
-    end
-  end
-  
   # Check Twitter for new tweets for any lists Prey Fetcher
   # checks for this user using the REST API.
   def check_lists
@@ -340,30 +320,6 @@ class User
           :id => list_tweets.first['id'],
           :from => list_tweets.first['user']['screen_name'],
           :text => list_tweets.first['text']
-        )
-      end
-    end
-  end
-  
-  # Look for the most recent mention. If we missed more than one
-  # for some reason, it just gets ignored.
-  def check_mentions
-    PreyFetcher::protect_from_twitter do
-      mentions = Twitter::Base.new(oauth).mentions(
-        :count => 1,
-        :include_entities => 1,
-        :include_rts => 0,
-        :since_id => mention_since_id
-      )
-      
-      if mentions.size > 0
-        # Make sure this isn't an old-style RT
-        return if mentions.first['text'].retweet?
-        
-        user.send_mention(
-          :id => mentions.first['id'],
-          :from => mentions.first['user']['screen_name'],
-          :text => mentions.first['text']
         )
       end
     end
@@ -528,76 +484,20 @@ class User
 end
 
 configure do
-  # Default values to store in our CONFIG hash
-  config_defaults = {
-    # Regular app config
-    :app_asset_domain => '0.0.0.0:4567',
-    :app_domain => '0.0.0.0:4567',
-    :app_name => 'Prey Fetcher',
-    :app_prowl_appname => 'Prey Fetcher',
-    :app_prowl_provider_key => nil,
-    
-    # Assume development; use SQLite3
-    :db_adapter => 'sqlite3',
-    :db_host => nil,
-    :db_database => 'development.sqlite3',
-    :db_username => nil,
-    :db_password => nil,
-    
-    # Spam filtering settings
-    :spam_days_ago_for_spam_accounts => 4,
-    :spam_filters_enabled => true,
-    :spam_max_offenses => 3,
-    :spam_low_followers_count => 10,
-    
-    # Twitter configs
-    :twitter_consumer_key => '',
-    :twitter_consumer_secret => '',
-    :twitter_access_key => '',
-    :twitter_access_secret => '',
-    :twitter_site_stream_size => 100
-  }
-  
-  # Grab stuff from config.rb, if it exists
-  begin
-    require File.join(File.dirname(__FILE__), "config.rb")
-    config_defaults.merge!(PREYFETCHER_CONFIG_RB)
-  rescue LoadError # No config.rb found
-    puts "No config.rb found; continuing on using Prey Fetcher defaults."
-  end
+  # Grab stuff from config.yaml -- it's _required_
+  config = YAML.load(File.open(File.join(File.dirname(__FILE__), "config.yaml"), File::RDONLY).read)
   
   # Local-specific/not-git-managed config
   begin
-    require File.join(File.dirname(__FILE__), "config-local.rb")
-    config_defaults.merge!(PREYFETCHER_CONFIG_LOCAL_RB)
-  rescue LoadError # No config.rb found
-    puts "No config-local.rb found; nothing exported."
-  end
-  
-  # Same deal with config-production.rb
-  if Sinatra::Application.environment == :production
-    begin
-      require File.join(File.dirname(__FILE__), "config-production.rb")
-      config_defaults.merge!(PREYFETCHER_CONFIG_PRODUCTION_RB)
-    rescue LoadError # No config-production.rb found
-      puts "No config-production.rb found; continuing on using Prey Fetcher defaults."
-    end
-  end
-  
-  # Store our config stuff in this hash temporarily
-  config = {}
-  
-  # Set our config keys based on environmental variables.
-  # If they aren't present, fallback to config.rb/defaults.
-  config_defaults.each do |key, default|
-    from_env = ENV["PREYFETCHER_#{key.to_s.upcase}"]
-    config[key] = (from_env) ? from_env : default
+    config.merge!(YAML.load(File.open(File.join(File.dirname(__FILE__), "config_local.yaml"), File::RDONLY).read))
+  rescue Errno::ENOENT # No config_local.yaml found
+    puts "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
   end
   
   # Assemble some extra config values from those already set
-  config[:app_url] = "http://#{config[:app_domain]}"
-  config[:app_version] = PreyFetcher::VERSION
-  config[:app_user_agent] = "#{config[:app_name]} #{config[:app_version]} " + ((Sinatra::Application.environment == :production) ? "(#{config[:app_url]})" : "(DEVELOPMENT VERSION)")
+  config['app_url'] = "http://#{config['app_domain']}"
+  config['app_version'] = PreyFetcher::VERSION
+  config['app_user_agent'] = "#{config['app_name']} #{config['app_version']} " + ((Sinatra::Application.environment == :production) ? "(#{config['app_url']})" : "(DEVELOPMENT VERSION)")
   
   # Put it in the Prey Fetcher module so it's not tampered with
   # and is globally accessible.

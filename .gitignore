@@ -3,4 +3,4 @@
 *.sqlite3
 *.log
 
-config-local.rb
+config_local.yaml
