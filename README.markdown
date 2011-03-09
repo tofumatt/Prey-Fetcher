@@ -8,6 +8,12 @@ Prey Fetcher is a _free and open source service_ that pushes new tweets and dire
 
 Prey Fetcher is a Sinatra web app/service, so you'll need Ruby, Sinatra, and some gems to run your own version of it. Prey Fetcher uses [Bundler](http://gembundler.com/), so you should be able to setup the gems/resolve dependencies as long as you have Bundler 1.0 installed. You'll also need to generate your own OAuth tokens and put them in your own config file. You should be able to run your own Prey Fetcher instance, should you choose to do so. **If you are running your own instance, please let me know how it's going.**
 
+### Installation ###
+
+Copy `config_local.dist.yaml` and tweak settings in that file as needed. You can also alter `config.yaml` if you like, but it's not recommended unless you want git to know about the changes you've made.
+
+This section could be expanded upon to provide a better sense of setup from server to Twitter API whitelisting, etc.
+
 ## Contributing ##
 
 If you're a Ruby coder and think you can make Prey Fetcher better or add a cool feature, let me know! If you plan on writing a feature for [preyfetcher.com](http://preyfetcher.com), you might want to check the issues queue to make sure it's not already being worked on and would actually be included in the site.
