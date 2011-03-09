@@ -1,10 +1,6 @@
 # Load up Prey Fetcher
 require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 
-# Set this to true to disable account-linking based on API keys
-# when running the prey_fetcher:setup_accounts task.
-DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS = true
-
 app_servers = [
   {
     :user => 'preyfetcher',
@@ -71,36 +67,7 @@ namespace :prey_fetcher do
     User.all.each do |u|
       # If the user doesn't have an API key we won't do anything
       unless u.nil? || u.prowl_api_key.nil? || u.prowl_api_key.blank?
-        u.check_dms if u.enable_dms
         u.check_lists if u.enable_list
-      end
-    end
-  end
-  
-  # Setup all Account records.
-  desc "Setup Account records; one-time operation."
-  task :setup_accounts do
-    User.all.each do |u|
-      if u.account_id.nil? && User.first(:id => u.id).account_id.nil? # Do another lookup, because the
-                                                                      # user in-memory won't have an
-                                                                      # account_id.
-        account = Account.create!(
-          :name => u.twitter_username,
-          # Because we ignore callbacks
-          :created_at => Time.now,
-          :updated_at => Time.now
-        )
-        u.update(:account_id => account.id)
-        
-        next if DONT_LINK_ACCOUNTS_WITH_THE_SAME_PROWL_API_KEYS || u.prowl_api_key.nil? || u.prowl_api_key.blank?
-        
-        other_users_with_same_api_key = User.all(:prowl_api_key => u.prowl_api_key)
-        
-        unless other_users_with_same_api_key.nil?
-          other_users_with_same_api_key.each do |other_user|
-            other_user.update(:account_id => u.account_id)
-          end
-        end
       end
     end
   end
