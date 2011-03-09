@@ -11,6 +11,7 @@ set :environment, (ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development
 set :root, File.dirname(__FILE__)
 set :public, "public"
 set :views, "views"
+disable :run unless __FILE__ == $0
 
 # House internal methods and junk inside our own namespace
 module PreyFetcher
