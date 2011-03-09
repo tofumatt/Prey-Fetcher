@@ -306,27 +306,6 @@ class User
     (account) ? account.users : nil
   end
   
-  # Check Twitter for new DMs for this user using the REST API
-  def check_dms
-    PreyFetcher::protect_from_twitter do
-      direct_messages = Twitter::Base.new(oauth).direct_messages(
-        :count => 1,
-        :since_id => dm_since_id
-      )
-      
-      if direct_messages.size > 0
-        # A since_id of 1 means the user is brand new -- we don't send notifications on the first check
-        if dm_since_id != 1
-          send_dm(
-            :id => direct_messages.first['id'],
-            :from => direct_messages.first['sender']['screen_name'],
-            :text => direct_messages.first['text']
-          )
-        end
-      end
-    end
-  end
-  
   # Check Twitter for new tweets for any lists Prey Fetcher
   # checks for this user using the REST API.
   def check_lists
@@ -341,30 +320,6 @@ class User
           :id => list_tweets.first['id'],
           :from => list_tweets.first['user']['screen_name'],
           :text => list_tweets.first['text']
-        )
-      end
-    end
-  end
-  
-  # Look for the most recent mention. If we missed more than one
-  # for some reason, it just gets ignored.
-  def check_mentions
-    PreyFetcher::protect_from_twitter do
-      mentions = Twitter::Base.new(oauth).mentions(
-        :count => 1,
-        :include_entities => 1,
-        :include_rts => 0,
-        :since_id => mention_since_id
-      )
-      
-      if mentions.size > 0
-        # Make sure this isn't an old-style RT
-        return if mentions.first['text'].retweet?
-        
-        user.send_mention(
-          :id => mentions.first['id'],
-          :from => mentions.first['user']['screen_name'],
-          :text => mentions.first['text']
         )
       end
     end
