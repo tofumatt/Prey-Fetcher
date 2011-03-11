@@ -6,7 +6,8 @@ app_servers = [
     :user => 'preyfetcher',
     :server => "stray.hosts.kicksass.ca",
     :path => "/home/preyfetcher/sites/preyfetcher.com",
-    :url => 'http://preyfetcher.com/'
+    :url => 'http://preyfetcher.com/',
+    :ruby => '/opt/ruby-enterprise-1.8.7-2010.02/bin/ruby'
   }
 ]
 
@@ -44,7 +45,7 @@ namespace :deploy do
   task :production do
     Rake::Task['deploy:update_assets'].invoke
     app_servers.each do |server|
-      system "ssh #{server[:user]}@#{server[:server]} 'cd #{server[:path]} && git pull origin master && touch tmp/restart.txt && RACK_ENV=production /opt/ruby-enterprise-1.8.7-2010.02/bin/ruby #{server[:path]}/stream_controller.rb stop && RACK_ENV=production /opt/ruby-enterprise-1.8.7-2010.02/bin/ruby #{server[:path]}/stream_controller.rb start && ab -n 10 #{server[:url]}/'"
+      system "ssh #{server[:user]}@#{server[:server]} 'cd #{server[:path]} && git pull origin master && touch tmp/restart.txt && RACK_ENV=production #{server[:ruby]} #{server[:path]}/stream_controller.rb stop && RACK_ENV=production #{server[:ruby]} #{server[:path]}/stream_controller.rb start && ab -n 10 #{server[:url]}/'"
     end
   end
   
