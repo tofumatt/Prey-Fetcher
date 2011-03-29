@@ -39,6 +39,12 @@
 		if ($('#user_enable_list:checked').length == 1)
 			$('#list-container').show();
 		
+		$('.js-hide-parent').click(function(event) {
+			$(this).parent().fadeOut(ANIMATION_SPEED);
+			
+			event.preventDefault();
+		});
+		
 		// If the account switcher is available we'll setup some JS to handle it.
 		if ($('#account-controls').length) {
 			// Reveal account switcher form
@@ -59,5 +65,9 @@
 			});
 		}
 		
+		// Tabs on the settings page
+		if ($('body').hasClass('account')) {
+			$('#tabs').tabs();
+		}
 	});
 })(jQuery);

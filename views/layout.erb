@@ -90,9 +90,9 @@
         <% unless @title.nil? %><h1><%= @title %></h1><% end %>
         
         <div id="content">
-          <% unless flash[:error].blank? %><div id="error" class="notice"><%= flash[:error] %></div><% end %>
-          <% unless flash[:alert].blank? %><div id="alert" class="notice"><%= flash[:alert] %></div><% end %>
-          <% unless flash[:notice].blank? %><div id="notice" class="notice"><%= flash[:notice] %></div><% end %>
+          <% [:error, :alert, :notice].each do |flash_type| %>
+            <% unless flash[flash_type].blank? %><div id="<%= flash_type %>" class="notice"><%= flash[flash_type] %> (<a href="#hide" class="js-hide-parent">Hide</a>)</div><% end %>
+          <% end %>
           
           <%= yield %>
           
