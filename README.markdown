@@ -10,7 +10,7 @@ Prey Fetcher is a Sinatra web app/service, so you'll need Ruby, Sinatra, and som
 
 ### Installation ###
 
-Copy `config_local.dist.yaml` and tweak settings in that file as needed. You can also alter `config.yaml` if you like, but it's not recommended unless you want git to know about the changes you've made.
+Copy `config_local.dist.yaml` (`cp config_local.dist.yaml config_local.yaml`) and tweak settings in that file as needed. You can also alter `config.yaml` if you like, but it's not recommended unless you want git to know about the changes you've made.
 
 This section could be expanded upon to provide a better sense of setup from server to Twitter API whitelisting, etc.
 
