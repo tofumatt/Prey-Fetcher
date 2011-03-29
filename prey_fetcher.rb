@@ -22,7 +22,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.10.1"
+  VERSION = "4.10.2"
   
   # Setup Prey Fetcher config and such
   def self.boot!
@@ -39,7 +39,7 @@ module PreyFetcher
     # Assemble some extra config values from those already set
     config['app_url'] = "http://#{config['app_domain']}"
     config['app_version'] = PreyFetcher::VERSION
-    config['app_user_agent'] = "#{config['app_name']} #{config['app_version']} " + ((ENV['RACK_ENV'].to_sym == :production) ? "(#{config['app_url']})" : "(DEVELOPMENT VERSION)")
+    config['app_user_agent'] = "#{config['app_name']} #{config['app_version']} " + ((ENV['RACK_ENV'] == 'production') ? "(#{config['app_url']})" : "(DEVELOPMENT VERSION)")
     
     # Put it in the Prey Fetcher module so it's not tampered with
     # and is globally accessible.
