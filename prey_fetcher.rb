@@ -68,15 +68,12 @@ module PreyFetcher
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
       puts Time.now.to_s
       puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
-      puts e.to_s
     rescue Timeout::Error => e
       puts Time.now.to_s
       puts "Twitter timed out."
-      puts e.to_s
     rescue Exception => e # Bad data or some other weird response
       puts Time.now.to_s
       puts "Error getting data. Twitter probably returned bad data."
-      puts e.to_s
     end
   end
   
