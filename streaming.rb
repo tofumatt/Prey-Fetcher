@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'json'
-
 # Load Prey Fetcher
 require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
 
