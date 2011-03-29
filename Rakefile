@@ -6,7 +6,8 @@ app_servers = [
     :user => 'preyfetcher',
     :server => "stray.hosts.kicksass.ca",
     :path => "/home/preyfetcher/sites/preyfetcher.com",
-    :url => 'http://preyfetcher.com/'
+    :url => 'http://preyfetcher.com/',
+    :ruby => '/opt/ruby-enterprise-1.8.7-2010.02/bin/ruby'
   }
 ]
 
@@ -21,6 +22,23 @@ asset_servers = [
 task :default => :test
 
 namespace :deploy do
+  desc "Deploy master branch into production"
+  task :app do
+    Rake::Task['deploy:assets'].invoke
+    app_servers.each do |server|
+      system "ssh #{server[:user]}@#{server[:server]} 'cd #{server[:path]} && git pull origin master && touch tmp/restart.txt && RACK_ENV=production #{server[:ruby]} #{server[:path]}/stream_controller.rb stop && RACK_ENV=production #{server[:ruby]} #{server[:path]}/stream_controller.rb start && ab -n 10 #{server[:url]}/'"
+    end
+  end
+  
+  desc "Copy public files to asset webserver"
+  task :assets do
+    Rake::Task['deploy:build_sass'].invoke
+    asset_servers.each do |server|
+      system "scp -r #{Dir.pwd}/public/* #{server[:user]}@#{server[:server]}:#{server[:path]}"
+    end
+    Rake::Task['deploy:clear_sass'].invoke
+  end
+  
   desc 'Updates stylesheets if necessary from their Sass templates.'
   task :build_sass do
     Dir['views/*.sass'].each do |file|
@@ -38,23 +56,6 @@ namespace :deploy do
     sass_files.each do |file|
       system "rm #{file}"
     end
-  end
-  
-  desc "Deploy master branch into production"
-  task :production do
-    Rake::Task['deploy:update_assets'].invoke
-    app_servers.each do |server|
-      system "ssh #{server[:user]}@#{server[:server]} 'cd #{server[:path]} && git pull origin master && touch tmp/restart.txt && RACK_ENV=production /opt/ruby-enterprise-1.8.7-2010.02/bin/ruby #{server[:path]}/stream_controller.rb stop && RACK_ENV=production /opt/ruby-enterprise-1.8.7-2010.02/bin/ruby #{server[:path]}/stream_controller.rb start && ab -n 10 #{server[:url]}/'"
-    end
-  end
-  
-  desc "Copy public files to asset webserver"
-  task :update_assets do
-    Rake::Task['deploy:build_sass'].invoke
-    asset_servers.each do |server|
-      system "scp -r #{Dir.pwd}/public/* #{server[:user]}@#{server[:server]}:#{server[:path]}"
-    end
-    Rake::Task['deploy:clear_sass'].invoke
   end
 end
 
