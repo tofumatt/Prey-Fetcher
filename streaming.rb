@@ -177,8 +177,6 @@ module PreyFetcher
   class SiteStream
     # Deliver a tweet parsed from SiteStreams response.
     def self.deliver(tweet)
-      puts tweet.inspect
-      
       # Skip if this tweet is bad or not available
       return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
       
