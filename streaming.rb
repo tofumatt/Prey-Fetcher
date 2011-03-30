@@ -177,6 +177,12 @@ module PreyFetcher
   class SiteStream
     # Deliver a tweet parsed from SiteStreams response.
     def self.deliver(tweet)
+      unless ENV['RACK_ENV'] == 'production'
+        puts ''
+        puts tweet.inspect
+        puts ''
+      end
+      
       # Skip if this tweet is bad or not available
       return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
       
