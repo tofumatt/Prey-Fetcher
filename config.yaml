@@ -1,6 +1,6 @@
 # Regular app config
-app_asset_domain: 0.0.0.04567
-app_domain: 0.0.0.04567
+app_asset_domain: 0.0.0.0:4567
+app_domain: 0.0.0.0:4567
 app_name: Prey Fetcher
 app_prowl_appname: Prey Fetcher
 app_prowl_provider_key: 

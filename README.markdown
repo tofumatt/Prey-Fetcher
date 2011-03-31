@@ -10,7 +10,7 @@ Prey Fetcher is a Sinatra web app/service, so you'll need Ruby, Sinatra, and som
 
 ### Installation ###
 
-Copy `config_local.dist.yaml` and tweak settings in that file as needed. You can also alter `config.yaml` if you like, but it's not recommended unless you want git to know about the changes you've made.
+Copy `config_local.dist.yaml` (`cp config_local.dist.yaml config_local.yaml`) and tweak settings in that file as needed. You can also alter `config.yaml` if you like, but it's not recommended unless you want git to know about the changes you've made.
 
 This section could be expanded upon to provide a better sense of setup from server to Twitter API whitelisting, etc.
 
@@ -22,7 +22,7 @@ Once you've added a feature/made fixes, assuming you made a fork, just send me a
 
 ## Donating ##
 
-Prey Fetcher is, and will always be, a totally free service for users. I run it on [its own VPS](http://www.linode.com) out of my own pocket. The server is not super expensive (about $20/month) and I'm happy to have the service running, though I welcome donations to keep the project going, server resources available, and to motivate me to actually work on the project.
+Prey Fetcher is, and will always be, a totally free service for users. I run it on [its own VPS](http://www.linode.com/?r=96feefe13f5d0b9316647556f8c02c3bacad1582) out of my own pocket. The server is not super expensive (about $20/month) and I'm happy to have the service running, though I welcome donations to keep the project going, server resources available, and to motivate me to actually work on the project.
 
 Prey Fetcher does basically everything _I_ want it to do already, but I want to add features for others. Because I work on it in my spare time and most new features will require more API polling and thus more resources, donations are greatly appreciated.
 

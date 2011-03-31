@@ -177,6 +177,12 @@ module PreyFetcher
   class SiteStream
     # Deliver a tweet parsed from SiteStreams response.
     def self.deliver(tweet)
+      unless ENV['RACK_ENV'] == 'production'
+        puts ''
+        puts tweet.inspect
+        puts ''
+      end
+      
       # Skip if this tweet is bad or not available
       return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
       
@@ -238,7 +244,7 @@ module PreyFetcher
           user.send_retweet(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
-            :text => tweet['message']['text']
+            :text => (tweet['message']['retweeted_status'].nil?) ? tweet['message']['text'] : tweet['message']['retweeted_status']['text']
           )
         else
           # If retweet notifications aren't enabled, mark the retweet
