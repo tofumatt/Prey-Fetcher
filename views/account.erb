@@ -2,167 +2,164 @@
   <div>
     <input type="hidden" name="_method" value="put">
     
-  	<p>Choose the tweets you want to be notified about:</p>
-	  
-  	<ul class="smaller">
-  		<li><em class="underline">DMs</em> — when you have new Direct Messages</li>
-  		<li><em class="underline">mentions</em> — when your username appears in a tweet</li>
-  		<li><em class="underline">Retweets</em> — when a user retweets you (includes old-style "RT"s)</li>
-  		<li><em class="underline">Favorites</em> — when another user adds your tweet to their favorites</li>
-  		<li><em class="underline">Lists</em> — when a new tweet appears in a list you follow</li>
-  	</ul>
-	  
-  	<h3 class="clear">Twitter Options</h3>
-	  
-  	<div class="clear">
-  		<label for="user_enable_dms" class="for-checkbox">Notify on DM</label>
-  		<input type="hidden" name="user[enable_dms]" value="0">
-  		<input type="checkbox" id="user_enable_dms" class="checkbox" name="user[enable_dms]" value="1"<% if @user.enable_dms %> checked="checked"<% end %>>
-		  
-  		<div id="dm-priority-container" class="clear js-hide">
-  			<label for="dm-priority" class="for-select">DM Priority</label>
-  			<select name="user[dm_priority]" id="dm-priority" class="select">
-  				<option value="-1"<% if @user.dm_priority == -1 %> selected="selected"<% end %>>Low</option>
-  				<option value="0"<% if @user.dm_priority == 0 %> selected="selected"<% end %>>Normal</option>
-  				<option value="1"<% if @user.dm_priority == 1 %> selected="selected"<% end %>>High</option>
-  				<option value="2"<% if @user.dm_priority == 2 %> selected="selected"<% end %>>Emergency</option>
-  			</select>
-  		</div>
-  	</div>
-	  
-  	<div class="clear space">
-  		<label for="user_enable_mentions" class="for-checkbox">Notify on mention</label>
-  		<input type="hidden" name="user[enable_mentions]" value="0">
-  		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
-		  
-  		<div id="mention-priority-container" class="clear js-hide">
-  			<label for="mention-priority" class="for-select">mention Priority</label>
-  			<select name="user[mention_priority]" id="mention-priority" class="select">
-  				<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
-  				<option value="0" <% if @user.mention_priority == 0 %>selected="selected"<% end %>>Normal</option>
-  				<option value="1" <% if @user.mention_priority == 1 %>selected="selected"<% end %>>High</option>
-  				<option value="2" <% if @user.mention_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-  			</select>
-  		</div>
-  	</div>
-  	
-  	<div class="clear space">
-  	  <label for="user_disable_retweets" class="for-checkbox">Notify when retweeted</label>
-		  <input type="hidden" name="user[disable_retweets]" value="1">
-  		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="0"<% if !@user.disable_retweets %> checked="checked"<% end %>>
+	  <div id="tabs">
+  	  <ul>
+    	  <li><a href="#twitter-options">Twitter Options</a></li>
+    	  <li><a href="#iphone-options">iPhone Options</a></li>
+    	</ul>
+	    
+  	  <div id="twitter-options">
+  	   	<div class="clear">
+      		<label for="user_enable_dms" class="for-checkbox">Direct messages</label>
+      		<input type="hidden" name="user[enable_dms]" value="0">
+      		<input type="checkbox" id="user_enable_dms" class="checkbox" name="user[enable_dms]" value="1"<% if @user.enable_dms %> checked="checked"<% end %>>
+          
+      		<div id="dm-priority-container" class="clear js-hide">
+      			<label for="dm-priority" class="for-select">DM Priority</label>
+      			<select name="user[dm_priority]" id="dm-priority" class="select">
+      				<option value="-1"<% if @user.dm_priority == -1 %> selected="selected"<% end %>>Low</option>
+      				<option value="0"<% if @user.dm_priority == 0 %> selected="selected"<% end %>>Normal</option>
+      				<option value="1"<% if @user.dm_priority == 1 %> selected="selected"<% end %>>High</option>
+      				<option value="2"<% if @user.dm_priority == 2 %> selected="selected"<% end %>>Emergency</option>
+      			</select>
+      		</div>
+      	</div>
+        
+      	<div class="clear space">
+      		<label for="user_enable_mentions" class="for-checkbox">@replies/mentions</label>
+      		<input type="hidden" name="user[enable_mentions]" value="0">
+      		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
+          
+      		<div id="mention-priority-container" class="clear js-hide">
+      			<label for="mention-priority" class="for-select">mention Priority</label>
+      			<select name="user[mention_priority]" id="mention-priority" class="select">
+      				<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
+      				<option value="0" <% if @user.mention_priority == 0 %>selected="selected"<% end %>>Normal</option>
+      				<option value="1" <% if @user.mention_priority == 1 %>selected="selected"<% end %>>High</option>
+      				<option value="2" <% if @user.mention_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+      			</select>
+      		</div>
+      	</div>
+        
+      	<div class="clear space">
+      	  <label for="user_disable_retweets" class="for-checkbox">Retweets</label>
+    		  <input type="hidden" name="user[disable_retweets]" value="1">
+      		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="0"<% if !@user.disable_retweets %> checked="checked"<% end %>>
+          
+          <div id="retweet-priority-container" class="clear js-hide">
+      			<label for="retweet-priority" class="for-select">Retweet Priority</label>
+      			<select name="user[retweet_priority]" id="retweet-priority" class="select">
+      				<option value="-1"<% if @user.retweet_priority == -1 %> selected="selected"<% end %>>Low</option>
+      				<option value="0"<% if @user.retweet_priority == 0 %> selected="selected"<% end %>>Normal</option>
+      				<option value="1"<% if @user.retweet_priority == 1 %> selected="selected"<% end %>>High</option>
+      				<option value="2"<% if @user.retweet_priority == 2 %> selected="selected"<% end %>>Emergency</option>
+      			</select>
+      		</div>
+    		</div>
+        
+      	<div class="clear space">
+      		<label for="user_enable_favorites" class="for-checkbox">Favorited</label>
+      		<input type="hidden" name="user[enable_favorites]" value="0">
+      		<input type="checkbox" id="user_enable_favorites" class="checkbox" name="user[enable_favorites]" value="1"<% if @user.enable_favorites %> checked="checked"<% end %>>
+          
+      		<div id="favorites-priority-container" class="clear js-hide">
+      			<label for="user_favorites_priority" class="for-select">Favorites Priority</label>
+      			<select name="user[favorites_priority]" id="user_favorites_priority" class="select">
+      				<option value="-1" <% if @user.favorites_priority == -1 %>selected="selected"<% end %>>Low</option>
+      				<option value="0" <% if @user.favorites_priority == 0 %>selected="selected"<% end %>>Normal</option>
+      				<option value="1" <% if @user.favorites_priority == 1 %>selected="selected"<% end %>>High</option>
+      				<option value="2" <% if @user.favorites_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+      			</select>
+      		</div>
+      	</div>
+        
+      	<div class="clear space">
+      		<label for="user_enable_list" class="for-checkbox">Watch A List</label>
+      		<input type="hidden" name="user[enable_list]" value="0">
+      		<input type="checkbox" id="user_enable_list" class="checkbox" name="user[enable_list]" value="1"<% if @user.enable_list %> checked="checked"<% end %>>
+          
+      		<div id="list-container" class="clear js-hide">
+      			<% if @user.lists and @user.lists.size > 0 %>
+      				<div class="clear">
+      					<label for="notification-list" class="for-select">List To Watch</label>
+      					<select name="user[notification_list]" id="notification-list" class="select">
+      						<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
+      						<% @user.lists.each do |list| %>
+      							<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= list.full_name %></option>
+      						<% end %>
+      					</select>
+      				</div>
+              
+      				<div class="clear">
+      					<label for="list-priority" class="for-select">List Priority</label>
+      					<select name="user[list_priority]" id="list-priority" class="select">
+      						<option value="-1" <% if @user.list_priority == -1 %>selected="selected"<% end %>>Low</option>
+      						<option value="0" <% if @user.list_priority == 0 %>selected="selected"<% end %>>Normal</option>
+      						<option value="1" <% if @user.list_priority == 1 %>selected="selected"<% end %>>High</option>
+      						<option value="2" <% if @user.list_priority == 2 %>selected="selected"<% end %>>Emergency</option>
+      					</select>
+      				</div>
+      		  <% else %>
+      			  <p class="input-subtitle">Your account doesn't have any lists associated with it.<br> Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
+      		  <% end %>
+      		</div>
+      	</div>
+  	  </div>
+	    
+    	<div id="iphone-options">
+      	<div class="clear">
+      		<label for="account_prowl_api_key">Prowl API Key <span class="req">*<span class="hide">Required</span></span></label>
+      		<input type="text" id="account_prowl_api_key" class="text-long" name="account[prowl_api_key]" value="<%= @user.prowl_api_key %>">
+          
+      		<% if @user.prowl_api_key.nil? or @user.prowl_api_key.blank? or @user.account.errors.count > 0 %>
+      		  <p class="input-subtitle"><a href="/prowl-api-key">Generate a new Prowl API key for Prey Fetcher.</a></p>
+      		<% end %>
+      	</div>
+        
+      	<div class="clear">
+      		<label for="account_custom_url">Custom URL Redirect</label>
+      		<input type="text" id="account_custom_url" class="text-long" name="account[custom_url]" value="<%= @user.custom_url %>" placeholder="http://twitter.com/">
+          
+      		<p class="input-subtitle">If you want all Prey Fetcher notifications to get redirected to a custom URL (eg. twitter.com), enter it above.<br> <strong>Note:</strong> If you want to enter per-event custom URLs you should do so in Prowl on your iOS device.</p>
+      	</div>
+    	</div>
       
-      <div id="retweet-priority-container" class="clear js-hide">
-  			<label for="retweet-priority" class="for-select">Retweet Priority</label>
-  			<select name="user[retweet_priority]" id="retweet-priority" class="select">
-  				<option value="-1"<% if @user.retweet_priority == -1 %> selected="selected"<% end %>>Low</option>
-  				<option value="0"<% if @user.retweet_priority == 0 %> selected="selected"<% end %>>Normal</option>
-  				<option value="1"<% if @user.retweet_priority == 1 %> selected="selected"<% end %>>High</option>
-  				<option value="2"<% if @user.retweet_priority == 2 %> selected="selected"<% end %>>Emergency</option>
-  			</select>
-  		</div>
-		</div>
-	  
-  	<div class="clear space">
-  		<label for="user_enable_favorites" class="for-checkbox">Notify when favorited</label>
-  		<input type="hidden" name="user[enable_favorites]" value="0">
-  		<input type="checkbox" id="user_enable_favorites" class="checkbox" name="user[enable_favorites]" value="1"<% if @user.enable_favorites %> checked="checked"<% end %>>
-		  
-  		<div id="favorites-priority-container" class="clear js-hide">
-  			<label for="user_favorites_priority" class="for-select">Favorites Priority</label>
-  			<select name="user[favorites_priority]" id="user_favorites_priority" class="select">
-  				<option value="-1" <% if @user.favorites_priority == -1 %>selected="selected"<% end %>>Low</option>
-  				<option value="0" <% if @user.favorites_priority == 0 %>selected="selected"<% end %>>Normal</option>
-  				<option value="1" <% if @user.favorites_priority == 1 %>selected="selected"<% end %>>High</option>
-  				<option value="2" <% if @user.favorites_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-  			</select>
-  		</div>
-  	</div>
-	  
-  	<div class="clear space">
-  		<label for="user_enable_list" class="for-checkbox">Watch A List</label>
-  		<input type="hidden" name="user[enable_list]" value="0">
-  		<input type="checkbox" id="user_enable_list" class="checkbox" name="user[enable_list]" value="1"<% if @user.enable_list %> checked="checked"<% end %>>
-		  
-  		<div id="list-container" class="clear js-hide">
-  			<% if @user.lists and @user.lists.size > 0 %>
-  				<div class="clear">
-  					<label for="notification-list" class="for-select">List To Watch</label>
-  					<select name="user[notification_list]" id="notification-list" class="select">
-  						<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
-  						<% @user.lists.each do |list| %>
-  							<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= list.full_name %></option>
-  						<% end %>
-  					</select>
-  				</div>
-				  
-  				<div class="clear">
-  					<label for="list-priority" class="for-select">List Priority</label>
-  					<select name="user[list_priority]" id="list-priority" class="select">
-  						<option value="-1" <% if @user.list_priority == -1 %>selected="selected"<% end %>>Low</option>
-  						<option value="0" <% if @user.list_priority == 0 %>selected="selected"<% end %>>Normal</option>
-  						<option value="1" <% if @user.list_priority == 1 %>selected="selected"<% end %>>High</option>
-  						<option value="2" <% if @user.list_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-  					</select>
-  				</div>
-  		  <% else %>
-  			  <p class="input-subtitle">Your account doesn't have any lists associated with it.<br> Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
-  		  <% end %>
-  		</div>
-  	</div>
-	  
-  	<h3 class="clear space">iPhone Options</h3>
-	  
-  	<div class="clear">
-  		<label for="user_prowl_api_key">Prowl API Key <span class="req">*<span class="hide">Required</span></span></label>
-  		<input type="text" id="account_prowl_api_key" class="text-long" name="account[prowl_api_key]" value="<%= @user.prowl_api_key %>">
-  		
-  		<% if @user.prowl_api_key.nil? or @user.prowl_api_key.blank? or @user.account.errors.count > 0 %>
-  		  <p class="input-subtitle"><a href="/prowl-api-key">Generate a new Prowl API key for Prey Fetcher.</a></p>
-  		<% end %>
-  	</div>
-	  
-  	<div class="clear">
-  		<label for="account_custom_url">Custom URL Redirect</label>
-  		<input type="text" id="account_custom_url" class="text-long" name="account[custom_url]" value="<%= @user.custom_url %>" placeholder="http://twitter.com/">
-  		
-  		<p class="input-subtitle">If you want all Prey Fetcher notifications to get redirected to a custom URL (eg. twitter.com), enter it above.<br> <strong>Note:</strong> If you want to enter per-event custom URLs you should do so in Prowl on your iOS device.</p>
-  	</div>
-	  
-  	<div class="clear space">
-  		<label for="user_submit" class="hide">Submit Settings Change</label>
-  		<input type="submit" id="user_submit" class="submit" name="commit" value="Update Settings">
-  	</div>
+      <div id="user_submit-container" class="clear-right text-center">
+    		<label for="user_submit" class="hide">Submit Settings Change</label>
+    		<input type="submit" id="user_submit" class="button" name="commit" value="Update Settings">
+    	</div>
+    </div>
   </div>
 </form>
 
-<h3 class="clear space">Refresh Twitter Lists</h3>
-
-<p>If you have added/removed lists from your Twitter account and they aren't showing up on this page, you can force a refresh of available Twitter lists.</p>
-
-<form action="/lists" method="POST" class="clear">
+<form action="/lists" method="POST" class="clear space">
   <div>
     <input type="hidden" name="_method" value="put">
     
+    <h3 class="clear space">Refresh Twitter Lists</h3>
+    
+    <p>If you have added/removed lists from your Twitter account and they aren't showing up on this page, you can force a refresh of available Twitter lists.</p>
+    
  		<label for="refresh_lists" class="hide">Refresh available lists from Twitter</label>
-		<input type="submit" id="refresh_lists" class="submit" name="commit" value="Refresh available lists">
+		<input type="submit" id="refresh_lists" class="button" name="commit" value="Refresh available lists">
   	<div class="block clear"></div>
   </div>
 </form>
 
-<h3 class="clear space">Delete Your Account</h3>
-
-<p>You can delete your Prey Fetcher account here.</p>
-
-<form action="/account" method="POST" class="clear">
+<form action="/account" method="POST" class="clear space">
 	<div>
 	  <input type="hidden" name="_method" value="delete">
 	  
+	  <h3 class="clear space">Delete Your Account</h3>
+    
+    <p>You can delete your Prey Fetcher account here.</p>
+    
 		<p>Note that deleting your account will not remove Prey Fetcher from your <a href="http://twitter.com/account/connections">Connections pane</a> on Twitter. You can alternatively revoke access for Prey Fetcher from the <a href="http://twitter.com/account/connections">Connections pane</a> on Twitter and your Prey Fetcher account will be automatically deleted.</p>
 		
 		<p>Either way, deleting your account will mean no more Prey Fetcher notifications. You can sign up again if you change your mind.</p>
 		
  		<label for="delete_account" class="hide">Remove Your Prey Fetcher Account</label>
-		<input type="submit" id="delete_account" class="submit" name="commit" value="Delete my account">
+		<input type="submit" id="delete_account" class="button" name="commit" value="Delete my account">
 	</div>
 	<div class="block clear space"></div>
 </form>

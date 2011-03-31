@@ -116,7 +116,7 @@ cite
 .clear
   clear: both
 
-.hide, body.js .js-hide
+.hide, body.js .js-hide, .ui-tabs-hide
   display: none
 
 ul.smaller
@@ -174,7 +174,6 @@ ul.smaller
     text-shadow: 0 0 6px rgba(0, 0, 0, 1) !important
 
 body.homepage #signup-button
-  background-color: #1adf36
   background-color: #1abcdf
   color: rgba(243, 243, 243, .95)
   margin: 0 0 0 28px
@@ -186,13 +185,12 @@ body.homepage #signup-button
   span
     background: url(../images/twitter-t.png?v=#{$preyfetcher_version}) left center no-repeat
     padding-left: 23px
-  
+
 label
-  clear: both
+  clear: right
   display: block
   line-height: 1em
-  margin-bottom: 0
-  margin-top: 3px
+  margin: 3px 60px 0 0
 
 label span.req
   color: red
@@ -201,10 +199,10 @@ label.for-checkbox, label.for-select
   float: left
 
 label.for-checkbox
-  width: 205px
+  width: 235px
 
 label.for-select
-  width: 150px
+  width: 180px
 
 input
   display: block
@@ -399,6 +397,51 @@ body.homepage #menu
     float: left
     margin: 5px 25px 0 0
     width: 150px
+
+body.account
+  #tabs
+    ul.ui-tabs-nav
+      float: left
+      margin: 0 15px 0 0
+      min-height: 375px
+      width: 140px
+      li
+        display: inline
+        margin: 0
+        a
+          background: #797979
+          border: 1px #030303 solid
+          border-radius: 3px
+          -moz-border-radius: 3px
+          -webkit-border-radius: 3px
+          background-clip: padding-box
+          -webkit-background-clip: padding-box
+          color: #fefefe
+          display: block
+          font-size: 16px
+          margin: 0 0 3px 3px
+          outline: 0
+          padding: 2px 4px
+          text-align: center
+          text-decoration: none
+          text-shadow: 1px 1px 2px #030303
+        &.ui-state-active a
+          background: #595959
+    .ui-widget-content
+      float: left
+      margin: 0 0 10px
+    
+    select#notification-list
+      margin-left: -69px
+  #user_submit-container
+    float: left
+    #user_submit
+      margin-left: 65px
+  #refresh_lists
+    margin-left: 190px
+  #delete_account
+    background-color: #df3a1a
+    margin-left: 210px
 
 #footer
   background: $footer_colour
