@@ -119,7 +119,7 @@ module PreyFetcher
   module FileHandler
     def file_modified
       return if File.zero?(path)
-      puts "#{path} modified"
+      Log.debug "#{path} modified"
       
       user_ids_to_add = [];
       f = File.open(path, File::RDWR|File::CREAT)
@@ -142,32 +142,32 @@ module PreyFetcher
     end
     
     def file_moved
-      puts "#{path} moved"
+      Log.debug "#{path} moved"
     end
     
     def unbind
-      puts "#{path} monitoring ceased"
+      Log.debug "#{path} monitoring ceased"
     end
   end
   
   # Watch files in Prey Fetcher's tmp/ directory to know when to delete streams.
   module PIDFileHandler
     def file_moved
-      puts "#{path} moved"
+      Log.debug "#{path} moved"
       
       File.delete(File.join('tmp', 'stream-users.add'))
       EventMachine.stop if EventMachine.reactor_running?
     end
     
     def file_deleted
-      puts "#{path} deleted"
+      Log.debug "#{path} deleted"
       
       File.delete(File.join('tmp', 'stream-users.add'))
       EventMachine.stop if EventMachine.reactor_running?
     end
     
     def unbind
-      puts "#{path} monitoring ceased"
+      Log.debug "#{path} monitoring ceased"
     end
   end
   
@@ -177,11 +177,7 @@ module PreyFetcher
   class SiteStream
     # Deliver a tweet parsed from SiteStreams response.
     def self.deliver(tweet)
-      unless ENV['RACK_ENV'] == 'production'
-        puts ''
-        puts tweet.inspect
-        puts ''
-      end
+      Log.debug tweet.inspect
       
       # Skip if this tweet is bad or not available
       return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
@@ -262,10 +258,7 @@ module PreyFetcher
       begin
         JSON.parse(stream_item)
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-        puts "STREAMING ERROR: " + Time.now.to_s
-        puts "STREAMING ERROR: " + "Twitter was over capacity? Couldn't make a usable array from JSON data."
-        puts "STREAMING ERROR: " + e.to_s
-        puts ''
+        Log.debug "STREAMING ERROR: Twitter was over capacity? Couldn't make a usable array from JSON data. | #{e}"
         
         false
       end
@@ -324,7 +317,7 @@ module PreyFetcher
       end
       
       @stream.on_error do |message|
-        puts message
+        Log.info message
       end
       
       @stream.on_max_reconnects do |timeout, retries|
@@ -361,7 +354,7 @@ EventMachine::run do
   
   ['INT', 'TERM'].each do |sig|
     trap(sig) do
-      puts "#{sig} signal received: quitting streaming.rb"
+      Log.info "#{sig} signal received: quitting streaming.rb"
       PreyFetcher::stop_streams!
     end
   end

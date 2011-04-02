@@ -34,14 +34,6 @@ helpers do
   end
 end
 
-# Setup logging...
-$log = File.new(File.join(File.dirname(__FILE__), "#{Sinatra::Application.environment}.log"), "a")
-# ... but don't log certain things when developing
-if Sinatra::Application.environment == :production
-  STDOUT.reopen($log)
-  STDERR.reopen($log)
-end
-
 # We'll need sessions.
 enable :sessions
 

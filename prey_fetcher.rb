@@ -1,9 +1,17 @@
 require "rubygems"
 require "bundler"
+require "logger"
 require "yaml"
 Bundler.setup(:default, ((ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development))
 
 Bundler.require
+
+# Define a generic logging interface.
+Log = Logger.new(File.join(File.dirname(__FILE__), (ENV['RACK_ENV'] || 'development') + '.log'))
+Log.level = (ENV['RACK_ENV'] == 'production') ? Logger::INFO : Logger::DEBUG
+Log.formatter = proc { |severity, datetime, progname, msg|
+  "#{datetime}: #{msg}\n"
+}
 
 # House internal methods and junk inside our own namespace
 module PreyFetcher
@@ -33,7 +41,7 @@ module PreyFetcher
     begin
       config.merge!(YAML.load(File.open(File.join(File.dirname(__FILE__), "config_local.yaml"), File::RDONLY).read))
     rescue Errno::ENOENT # No config_local.yaml found
-      puts "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
+      Log.warn "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
     end
     
     # Assemble some extra config values from those already set
@@ -49,7 +57,7 @@ module PreyFetcher
     self::use_database!
     
     # Output the current version (to either log or stdout)
-    puts "Booting and config'd #{PreyFetcher.config(:app_user_agent)}"
+    Log.info "Booting and config'd #{PreyFetcher.config(:app_user_agent)}"
   end
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
@@ -66,14 +74,14 @@ module PreyFetcher
     begin
       yield
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s
-      puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
+      Log.debug Time.now.to_s
+      Log.debug "Twitter was over capacity? Couldn't make a usable array from JSON data."
     rescue Timeout::Error => e
-      puts Time.now.to_s
-      puts "Twitter timed out."
+      Log.debug Time.now.to_s
+      Log.debug "Twitter timed out."
     rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s
-      puts "Error getting data. Twitter probably returned bad data."
+      Log.debug Time.now.to_s
+      Log.debug "Error getting data. Twitter probably returned bad data."
     end
   end
   
@@ -507,7 +515,7 @@ class User
       # users who changed their screen name from getting notifications
       # through the Streaming API)
       if twitter_username && twitter_username != creds['screen_name']
-        puts "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
+        Log.info "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
     end
