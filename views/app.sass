@@ -1,12 +1,11 @@
 $body_background_colour: #ababab
-$background_colour: #999999
-$text_colour: #030303
-$link_colour: #2e6299
+$background_colour: #434343
+$text_colour: #efefef
+$link_colour: #bf3939
+$link_colour_active: #802626
 
 $border_colour: #030303
-$header_colour: #712121
 $menu_colour: #444
-$footer_colour: #5d0808
 
 $error_colour: #f2a2a2
 $alert_colour: #f2d7a2
@@ -14,26 +13,45 @@ $notice_colour: #a8f2a2
 
 $preyf_colour: #7a1515
 
-$page_width: 670px
+$page_width: 690px
 
 $preyfetcher_version: '4.10.4'
 
 body
-  background: $footer_colour url(../images/page-bg.png?v=#{$preyfetcher_version}) repeat-x top
+  background: $background_colour
   color: $text_colour
   font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
   font-size: 1.1em
   line-height: 1.6em
-  text-shadow: #999 1px 1px 3px
+  text-shadow: 1px 1px 0 #222
 
 a
-  color: $link_colour
+  color: $text_colour
   text-decoration: underline
-  text-shadow: $body_background_colour 1px 1px 6px
+  text-shadow: none
   &:hover, &:focus
-    color: $link_colour + #222
-    text-decoration: none
-    text-shadow: $background_colour + #222 1px 1px 6px
+    background: $link_colour
+    color: #000
+    text-shadow: none
+  &:active
+    background: $link_colour_active
+
+*
+  transition: all 170ms linear
+  -moz-transition: all 170ms linear
+  -webkit-transition: all 170ms linear
+
+::selection
+  background: #000
+  color: $text_colour
+
+::-moz-selection
+  background: #000
+  color: $text_colour
+
+::-webkit-selection
+  background: #000
+  color: $text_colour
 
 strong
   font-weight: bold
@@ -52,11 +70,10 @@ span.ampersand
 
 h1, h2, h3, h4, h5, h6
   border-bottom: $border_colour 1px solid
-  color: $header_colour
   font-family: Helvetica, Arial, sans-serif
   font-size: 1.5em
   margin: 0 0 .5em
-  text-shadow: #777 0 0 5px
+  text-shadow: 1px 1px 0 #300606
 
 h1
   font-size: 1.75em
@@ -134,6 +151,9 @@ ul.smaller
 .half-space
   padding: 6px 0 0
 
+.center
+  text-align: center
+
 .justify
   text-align: justify
 
@@ -168,15 +188,21 @@ ul.smaller
     text-decoration: none
     text-shadow: 0 0 3px rgba(0, 0, 0, .15) !important
   &:hover, &:focus
-    text-shadow: 0 0 6px rgba(200, 200, 200, 1) !important
+    box-shadow: 0 0 6px #fff
+    -moz-box-shadow: 0 0 6px #fff
+    -webkit-box-shadow: 0 0 6px #fff
+    text-shadow: 1px 1px 0 rgba(100, 100, 100, 1) !important
   &:active
-    color: rgba(242, 242, 242, .75) !important
-    text-shadow: 0 0 6px rgba(0, 0, 0, 1) !important
+    box-shadow: 0 0 9px #fff
+    -moz-box-shadow: 0 0 9px #fff
+    -webkit-box-shadow: 0 0 9px #fff
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 1) !important
 
 body.homepage #signup-button
   background-color: #1abcdf
   color: rgba(243, 243, 243, .95)
-  margin: 0 0 0 28px
+  float: left
+  margin: 15px 0 0 50px
   text-shadow: 0 0 3px rgba(153, 46, 46, 1) !important
   &:hover, &:focus
     text-shadow: 0 0 6px rgba(76.5, 23, 23, 1) !important
@@ -241,20 +267,20 @@ body.homepage #container .last-in-container
   width: $page_width
 
 #app-name
-  background: transparent url(../images/logo.png?v=#{$preyfetcher_version}) no-repeat left top
+  background: transparent url(../images/logo.png?v=#{$preyfetcher_version}) no-repeat center top
   display: block
   height: 116px
   margin: 0 auto 30px
   padding: 12px 0
   position: relative
   text-indent: -9999px
-  width: $page_width + 20px
   &:active
     outline: 0
 body.homepage #app-name
   margin-bottom: 0
-body.homepage #header
-  border-bottom: $border_colour 1px solid
+
+#header
+  background: #000
 
 #content
   font-size: .95em
@@ -444,50 +470,25 @@ body.account
     margin-left: 210px
 
 #footer
-  background: $footer_colour
+  background: $background_colour
   border-top: $border_colour 1px solid
-  color: #999
+  color: #d4d4d4
   font-size: .75em
   padding: 6px 0
   width: auto
-  text-shadow: .1em .1em 3px $header_colour - #fff
   a
-    color: #bbb
+    color: #d4d4d4
     text-decoration: underline
-    text-shadow: .1em .1em 3px $header_colour - #fff
     &:hover, &:focus
       text-decoration: none
   p, ul, dl, ol
     margin-left: 10px
+    width: 390px
   &-inner
     margin: 0 auto
     width: $page_width + 20px
   *:last-child
     margin-bottom: 0
-  #footer-nav
-    float: right
-    margin: 0
-    width: 333px
-    li
-      display: inline
-      list-style: none
-      a
-        border-left: 1px solid #777
-        color: #5c9bf2
-        float: left
-        padding: 0 10px 0 12px
-        text-decoration: none
-        text-shadow: 0 0 6px #030303
-        &.first
-          border: 0
-          margin-left: 31px
-          padding-left: 6px
-        &.last
-          padding-right: 5px
-        &:hover, &:focus
-          text-shadow: 0 0 6px #aaa !important
-        &:active
-          text-shadow: 0 0 3px #030303 !important
 
 #pledgie-link
   float: right
@@ -497,9 +498,11 @@ body.account
 
 #homepage-intro
   h2
+    font-size: 1.75em
+    font-style: italic
     line-height: 1.1em
-    font-size: 1.1em
-    margin: .75em 0 .25em
+    margin: .75em 20px .25em 0
+    padding-top: 40px
   p
     margin: 0 0 1em
     &.small
@@ -509,4 +512,4 @@ body.account
 
 #homepage-iphone
   float: right
-  margin: 0 0 0 40px
+  margin: 0 0 0 55px
