@@ -10,99 +10,67 @@
 	    
   	  <div id="twitter-options">
   	   	<div class="clear">
-      		<label for="user_enable_dms" class="for-checkbox">Direct messages</label>
-      		<input type="hidden" name="user[enable_dms]" value="0">
-      		<input type="checkbox" id="user_enable_dms" class="checkbox" name="user[enable_dms]" value="1"<% if @user.enable_dms %> checked="checked"<% end %>>
-          
+  	   	  <label for="dm_priority" class="for-select">Direct Messages</label>
+  	   	  
       		<div id="dm-priority-container" class="clear js-hide">
-      			<label for="dm-priority" class="for-select">DM Priority</label>
-      			<select name="user[dm_priority]" id="dm-priority" class="select">
-      				<option value="-1"<% if @user.dm_priority == -1 %> selected="selected"<% end %>>Low</option>
-      				<option value="0"<% if @user.dm_priority == 0 %> selected="selected"<% end %>>Normal</option>
-      				<option value="1"<% if @user.dm_priority == 1 %> selected="selected"<% end %>>High</option>
-      				<option value="2"<% if @user.dm_priority == 2 %> selected="selected"<% end %>>Emergency</option>
-      			</select>
+      			<%= priority_tag(@user, :dm_priority) %>
       		</div>
+      		
+      		<div id="user_dm-slider" class="priority-slider"></div>
       	</div>
         
       	<div class="clear space">
-      		<label for="user_enable_mentions" class="for-checkbox">@replies/mentions</label>
-      		<input type="hidden" name="user[enable_mentions]" value="0">
-      		<input type="checkbox" id="user_enable_mentions" class="checkbox" name="user[enable_mentions]" value="1"<% if @user.enable_mentions %> checked="checked"<% end %>>
-          
+      	  <label for="mention_priority" class="for-select">@replies/mentions</label>
+      	  
       		<div id="mention-priority-container" class="clear js-hide">
-      			<label for="mention-priority" class="for-select">mention Priority</label>
-      			<select name="user[mention_priority]" id="mention-priority" class="select">
-      				<option value="-1" <% if @user.mention_priority == -1 %>selected="selected"<% end %>>Low</option>
-      				<option value="0" <% if @user.mention_priority == 0 %>selected="selected"<% end %>>Normal</option>
-      				<option value="1" <% if @user.mention_priority == 1 %>selected="selected"<% end %>>High</option>
-      				<option value="2" <% if @user.mention_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-      			</select>
+      			<%= priority_tag(@user, :mention_priority) %>
       		</div>
+      		
+      		<div id="user_mention-slider" class="priority-slider"></div>
       	</div>
         
       	<div class="clear space">
-      	  <label for="user_disable_retweets" class="for-checkbox">Retweets</label>
-    		  <input type="hidden" name="user[disable_retweets]" value="1">
-      		<input type="checkbox" id="user_disable_retweets" class="checkbox" name="user[disable_retweets]" value="0"<% if !@user.disable_retweets %> checked="checked"<% end %>>
-          
+      	  <label for="retweet_priority" class="for-select">Retweets</label>
+      	  
           <div id="retweet-priority-container" class="clear js-hide">
-      			<label for="retweet-priority" class="for-select">Retweet Priority</label>
-      			<select name="user[retweet_priority]" id="retweet-priority" class="select">
-      				<option value="-1"<% if @user.retweet_priority == -1 %> selected="selected"<% end %>>Low</option>
-      				<option value="0"<% if @user.retweet_priority == 0 %> selected="selected"<% end %>>Normal</option>
-      				<option value="1"<% if @user.retweet_priority == 1 %> selected="selected"<% end %>>High</option>
-      				<option value="2"<% if @user.retweet_priority == 2 %> selected="selected"<% end %>>Emergency</option>
-      			</select>
+      			<%= priority_tag(@user, :retweet_priority) %>
       		</div>
+      		
+      		<div id="user_retweet-slider" class="priority-slider"></div>
     		</div>
         
       	<div class="clear space">
-      		<label for="user_enable_favorites" class="for-checkbox">Favorited</label>
-      		<input type="hidden" name="user[enable_favorites]" value="0">
-      		<input type="checkbox" id="user_enable_favorites" class="checkbox" name="user[enable_favorites]" value="1"<% if @user.enable_favorites %> checked="checked"<% end %>>
-          
+      	  <label for="favorites_priority" class="for-select">Favorites</label>
+      	  
       		<div id="favorites-priority-container" class="clear js-hide">
-      			<label for="user_favorites_priority" class="for-select">Favorites Priority</label>
-      			<select name="user[favorites_priority]" id="user_favorites_priority" class="select">
-      				<option value="-1" <% if @user.favorites_priority == -1 %>selected="selected"<% end %>>Low</option>
-      				<option value="0" <% if @user.favorites_priority == 0 %>selected="selected"<% end %>>Normal</option>
-      				<option value="1" <% if @user.favorites_priority == 1 %>selected="selected"<% end %>>High</option>
-      				<option value="2" <% if @user.favorites_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-      			</select>
+      			<%= priority_tag(@user, :favorites_priority)%>
       		</div>
+      		
+      		<div id="user_favorites-slider" class="priority-slider"></div>
       	</div>
         
       	<div class="clear space">
-      		<label for="user_enable_list" class="for-checkbox">Watch A List</label>
-      		<input type="hidden" name="user[enable_list]" value="0">
-      		<input type="checkbox" id="user_enable_list" class="checkbox" name="user[enable_list]" value="1"<% if @user.enable_list %> checked="checked"<% end %>>
-          
-      		<div id="list-container" class="clear js-hide">
-      			<% if @user.lists and @user.lists.size > 0 %>
-      				<div class="clear">
-      					<label for="notification-list" class="for-select">List To Watch</label>
-      					<select name="user[notification_list]" id="notification-list" class="select">
-      						<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
-      						<% @user.lists.each do |list| %>
-      							<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= list.full_name %></option>
-      						<% end %>
-      					</select>
-      				</div>
-              
-      				<div class="clear">
-      					<label for="list-priority" class="for-select">List Priority</label>
-      					<select name="user[list_priority]" id="list-priority" class="select">
-      						<option value="-1" <% if @user.list_priority == -1 %>selected="selected"<% end %>>Low</option>
-      						<option value="0" <% if @user.list_priority == 0 %>selected="selected"<% end %>>Normal</option>
-      						<option value="1" <% if @user.list_priority == 1 %>selected="selected"<% end %>>High</option>
-      						<option value="2" <% if @user.list_priority == 2 %>selected="selected"<% end %>>Emergency</option>
-      					</select>
-      				</div>
-      		  <% else %>
-      			  <p class="input-subtitle">Your account doesn't have any lists associated with it.<br> Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
-      		  <% end %>
-      		</div>
+    			<% if @user.lists and @user.lists.size > 0 %>
+      			<label for="list_priority" class="for-select">Watch A List</label>
+      	    
+        		<div id="list-container" class="clear js-hide">
+    					<%= priority_tag(@user, :list_priority)%>
+          	</div>
+          	
+          	<div id="user_list-slider" class="priority-slider"></div>
+          	
+    				<div id="list-selector" class="clear">
+    					<label for="notification-list" class="for-select">List To Watch</label>
+    					<select name="user[notification_list]" id="notification-list" class="select">
+    						<% unless @user.notification_list %><option value="" selected="selected">--- Select a list ---</option><% end %>
+    						<% @user.lists.each do |list| %>
+    							<option value="<%= list.id %>" <% if @user.notification_list == list.id %>selected="selected"<% end %>><%= list.full_name %></option>
+    						<% end %>
+    					</select>
+    				</div>
+    		  <% else %>
+    			  <p class="input-subtitle">Your account doesn't have any lists associated with it.<br> Please add a list at <a href="http://twitter.com">Twitter</a>.</p>
+    		  <% end %>
       	</div>
   	  </div>
 	    
@@ -124,7 +92,7 @@
       	</div>
     	</div>
       
-      <div id="user_submit-container" class="clear-right text-center">
+      <div id="user_submit-container" class="clear-right center space">
     		<label for="user_submit" class="hide">Submit Settings Change</label>
     		<input type="submit" id="user_submit" class="button" name="commit" value="Update Settings">
     	</div>
@@ -132,7 +100,7 @@
   </div>
 </form>
 
-<form action="/lists" method="POST" class="clear space">
+<form action="/lists" method="POST" class="clear js-hide space">
   <div>
     <input type="hidden" name="_method" value="put">
     
@@ -146,7 +114,7 @@
   </div>
 </form>
 
-<form action="/account" method="POST" class="clear space">
+<form action="/account" method="POST" class="clear js-hide space">
 	<div>
 	  <input type="hidden" name="_method" value="delete">
 	  

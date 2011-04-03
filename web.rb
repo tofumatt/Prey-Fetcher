@@ -32,6 +32,17 @@ helpers do
   def number_format(number)
     (s=number.to_s;x=s.length;s).rjust(x+(3-(x%3))).scan(/.{3}/).join(',').strip.sub(/^,/, '')
   end
+  
+  # Generate a select input priority HTML tag
+  def priority_tag(user, property)
+    tag = %Q{<select name="user[#{property}]" id="#{property}" class="select">}
+    User::PRIORITY_RANGE.each do |p|
+      tag += %Q{<option value="#{p}" #{(user.send(property) == p) ? 'selected="selected"' : ''}>#{User::PRIORITY_MAP[p]}</option>}
+    end
+    tag += "</select>"
+    
+    tag
+  end
 end
 
 # We'll need sessions.
@@ -109,14 +120,6 @@ get "/" do
   
   @title = "Instant Twitter Notifications for iOS"
   erb :index
-end
-
-# Generic, static pages.
-PreyFetcher::STATIC_PAGES.each do |url, title|
-  get "/#{url.to_s.gsub('_', '-')}" do
-    @title = title
-    erb url
-  end
 end
 
 # This is the URL users who have authorized a Prowl API Key request

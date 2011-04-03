@@ -73,7 +73,7 @@ h1, h2, h3, h4, h5, h6
   font-family: Helvetica, Arial, sans-serif
   font-size: 1.5em
   margin: 0 0 .5em
-  text-shadow: 1px 1px 0 #300606
+  text-shadow: -1px 0 6px #000
 
 h1
   font-size: 1.75em
@@ -143,7 +143,7 @@ ul.smaller
   font-size: .9em
 
 .space
-  padding: 12px 0 0
+  padding: 6px 0 0
 
 .space-bottom
   padding: 0 0 12px
@@ -153,6 +153,9 @@ ul.smaller
 
 .center
   text-align: center
+
+.right
+  text-align: right
 
 .justify
   text-align: justify
@@ -175,19 +178,23 @@ ul.smaller
 .button
   &, &:hover, &:focus
     background: url(../images/button-bg.png?v=#{$preyfetcher_version}) left bottom repeat-x
-    border: 1px solid #373737
+    border: 1px solid #c7c7c7
     border-radius: 10px
     -moz-border-radius: 10px
     -webkit-border-radius: 10px
-    color: #252525
+    box-shadow: 0 0 6px #030303
+    -moz-box-shadow: 0 0 6px #030303
+    -webkit-box-shadow: 0 0 6px #030303
+    color: #d5d5d5
     cursor: pointer
     font-size: 1.2em
     font-weight: bold
     margin: 7px 0
     padding: 7px 15px
     text-decoration: none
-    text-shadow: 0 0 3px rgba(0, 0, 0, .15) !important
+    text-shadow: 0 0 3px rgba(0, 0, 0, .85) !important
   &:hover, &:focus
+    border-color: #373737
     box-shadow: 0 0 6px #fff
     -moz-box-shadow: 0 0 6px #fff
     -webkit-box-shadow: 0 0 6px #fff
@@ -220,36 +227,6 @@ label
 
 label span.req
   color: red
-
-label.for-checkbox, label.for-select
-  float: left
-
-label.for-checkbox
-  width: 235px
-
-label.for-select
-  width: 180px
-
-input
-  display: block
-  line-height: 1.2em
-  margin-bottom: 0
-  margin-top: 3px
-
-input.checkbox
-  float: left
-  width: auto
-
-input.submit
-  float: left
-  margin: -1px .75em 0 0
-
-input.text-long
-  width: 267px
-
-.input-subtitle
-  font-size: .8em
-  width: 350px
 
 #container
   background: $body_background_colour url(../images/container-bg.png?v=#{$preyfetcher_version})
@@ -324,14 +301,9 @@ body.homepage #app-name
           background: $menu_colour - #333
         &:active
           background: $menu_colour + #111
-    #user-info
+    #current-user
       float: right
-      a
-        color: #fff
-        &:hover, &:focus
-          background: transparent !important
-          text-decoration: none
-          text-shadow: none
+
 body.homepage #menu
   display: none
 
@@ -424,50 +396,35 @@ body.homepage #menu
     margin: 5px 25px 0 0
     width: 150px
 
+body.js #twitter-options label
+  float: left
+  margin: 6.5px 92.5px 0 0
+
 body.account
-  #tabs
-    ul.ui-tabs-nav
-      float: left
-      margin: 0 15px 0 0
-      min-height: 375px
-      width: 140px
-      li
-        display: inline
-        margin: 0
-        a
-          background: #797979
-          border: 1px #030303 solid
-          border-radius: 3px
-          -moz-border-radius: 3px
-          -webkit-border-radius: 3px
-          background-clip: padding-box
-          -webkit-background-clip: padding-box
-          color: #fefefe
-          display: block
-          font-size: 16px
-          margin: 0 0 3px 3px
-          outline: 0
-          padding: 2px 4px
-          text-align: center
-          text-decoration: none
-          text-shadow: 1px 1px 2px #030303
-        &.ui-state-active a
-          background: #595959
-    .ui-widget-content
-      float: left
-      margin: 0 0 10px
-    
-    select#notification-list
-      margin-left: -69px
-  #user_submit-container
-    float: left
-    #user_submit
-      margin-left: 65px
-  #refresh_lists
-    margin-left: 190px
-  #delete_account
-    background-color: #df3a1a
-    margin-left: 210px
+  .priority-slider
+    background: url(../images/slider-bg.png?v=#{$preyfetcher_version}) no-repeat center
+    height: 30px
+    margin: 0 0 0 180px
+    width: 375px
+    a.ui-slider-handle
+      background: $link_colour
+      border: 1px solid #030303
+      border-radius: 30px
+      -moz-border-radius: 30px
+      -webkit-border-radius: 30px
+      color: #fff
+      display: block
+      margin-top: 10px
+      margin-left: -37.5px
+      padding: 0 1px
+      width: 75px
+      text-decoration: none
+      text-shadow: 1px 1px 2px #252525
+      span
+        display: block
+        font-size: 12px
+        margin-top: -5px
+        text-align: center
 
 #footer
   background: $background_colour
@@ -483,14 +440,17 @@ body.account
       text-decoration: none
   p, ul, dl, ol
     margin-left: 10px
-    width: 390px
+    margin-right: 20px
   &-inner
     margin: 0 auto
     width: $page_width + 20px
   *:last-child
     margin-bottom: 0
+  #source-link
+    float: right
 
 #pledgie-link
+  background: none !important
   float: right
   margin: 0 20px 0 0
 

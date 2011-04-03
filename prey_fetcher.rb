@@ -19,15 +19,6 @@ module PreyFetcher
   # and various cascading config files.
   @@_config = nil
   
-  # Static route => title matching for simple, static pages on the site
-  # that don't require much in the way of controllers.
-  STATIC_PAGES = {
-    :about => "About Prey Fetcher",
-    :features => "Features",
-    :privacy => "Privacy",
-    :open_source => "Open Source"
-  }
-  
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
   VERSION = "4.10.4"
@@ -240,6 +231,17 @@ class User
   include DataMapper::Resource
   include DataMapper::Validate
   
+  PRIORITY_RANGE = -3..2
+  
+  PRIORITY_MAP = {
+    -3 => 'Off',
+    -2 => 'Very Low',
+    -1 => 'Low',
+    0 => 'Normal',
+    1 => 'High',
+    2 => 'Emergency'
+  }
+  
   property :id, Serial
   property :twitter_user_id, Integer
   property :twitter_username, String
@@ -247,26 +249,26 @@ class User
   property :access_secret, String
   property :account_id, Integer
   # Mentions/replies
-  property :enable_mentions, Boolean, :default => true
+  #property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
   # Retweets
-  property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
+  #property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
   property :retweet_priority, Integer, :default => 0
   property :retweet_since_id, Integer, :default => 1
   # Direct Messages
-  property :enable_dms, Boolean, :default => true
+  #property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
   property :dm_since_id, Integer, :default => 1
   # Lists
-  property :enable_list, Boolean, :default => true
+  #property :enable_list, Boolean, :default => true
   property :notification_list, Integer
   property :list_priority, Integer, :default => 0
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
   # Favourites
-  property :enable_favorites, Boolean, :default => false
+  #property :enable_favorites, Boolean, :default => false
   property :favorites_priority, Integer, :default => 0
   # Timestamps
   property :created_at, DateTime
@@ -326,16 +328,11 @@ class User
   # to a User.
   def self.mass_assignable
     [
-      :enable_mentions,
       :mention_priority,
-      :disable_retweets,
       :retweet_priority,
-      :enable_dms,
       :dm_priority,
-      :enable_list,
       :notification_list,
       :list_priority,
-      :enable_favorites,
       :favorites_priority
     ]
   end
@@ -369,10 +366,11 @@ class User
     account.custom_url
   end
   
-  # Return the opposite of "disable_retweets"; here for convenience, as Matt
-  # stupidly classed retweets as a subset of mentions at first.
-  def enable_retweets
-    !disable_retweets
+  # Meta-program the "[feature]_enabled?" methods.
+  [:dm, :favorite, :list, :mention, :retweet].each do |feature|
+    send :define_method, :"#{feature}_enabled?" do
+      (send :"#{feature}_priority") != -3
+    end
   end
   
   # Return lists this user owns, includes private lists.
