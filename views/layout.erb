@@ -26,9 +26,8 @@
       <nav>
         <ul>
           <% if logged_in? %>
-            <li id="current-user"><span class="menu-item">Signed in as: <span class="underline">@<%= current_user.twitter_username %></span></span></li>
-            <li><a href="#account-controls" id="account-controls-link" class="menu-item">Accounts</a></li>
-            <li><a href="/logout" class="menu-item">Logout</a></li>
+            <li id="current-user"><span class="menu-item">Signed in as: <span class="underline">@<%= current_user.twitter_username %></span> | <a href="/logout">Logout</a></span></li>
+            <li><a href="#account-controls" id="account-controls-link" class="menu-item">Customize Accounts</a></li>
           <% else %>
             <li><a href="/login" id="sign-in-button">Signup now</a></li>
           <% end %>
