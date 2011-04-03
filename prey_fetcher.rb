@@ -231,6 +231,8 @@ class User
   include DataMapper::Resource
   include DataMapper::Validate
   
+  FEATURES = [:dm, :favorite, :list, :mention, :retweet]
+  
   PRIORITY_RANGE = -3..2
   
   PRIORITY_MAP = {
@@ -249,26 +251,21 @@ class User
   property :access_secret, String
   property :account_id, Integer
   # Mentions/replies
-  #property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
   # Retweets
-  #property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
   property :retweet_priority, Integer, :default => 0
   property :retweet_since_id, Integer, :default => 1
   # Direct Messages
-  #property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
   property :dm_since_id, Integer, :default => 1
   # Lists
-  #property :enable_list, Boolean, :default => true
   property :notification_list, Integer
   property :list_priority, Integer, :default => 0
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
   # Favourites
-  #property :enable_favorites, Boolean, :default => false
   property :favorites_priority, Integer, :default => 0
   # Timestamps
   property :created_at, DateTime
@@ -367,7 +364,7 @@ class User
   end
   
   # Meta-program the "[feature]_enabled?" methods.
-  [:dm, :favorite, :list, :mention, :retweet].each do |feature|
+  User::FEATURES.each do |feature|
     send :define_method, :"#{feature}_enabled?" do
       (send :"#{feature}_priority") != -3
     end
