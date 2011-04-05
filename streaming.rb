@@ -190,7 +190,7 @@ module PreyFetcher
       
       # Is this a direct message?
       if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
-        if user.enable_dms
+        if user.dm_enabled?
           user.send_dm(
             :id => tweet['message']['direct_message']['id'],
             :from => tweet['message']['direct_message']['sender_screen_name'],
@@ -206,7 +206,7 @@ module PreyFetcher
       
       # Did someone favourite a tweet?
       if tweet['message'] && tweet['message']['event'] == 'favorite' && tweet['message']['target'] && tweet['message']['target']['id'] == user.twitter_user_id && tweet['message']['source'] && tweet['message']['source']['id'] != user.twitter_user_id # If this user is favouriting themselves, don't notify them.
-        if user.enable_favorites
+        if user.favorite_enabled?
           user.send_favorite(
             :id => tweet['message']['target_object']['id'],
             :from => tweet['message']['source']['screen_name'],
@@ -219,7 +219,7 @@ module PreyFetcher
       if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
         # Make sure this isn't spam.
         unless PreyFetcher::is_spam?(tweet)
-          if user.enable_mentions
+          if user.mention_enabled?
             user.send_mention(
               :id => tweet['message']['id'],
               :from => tweet['message']['user']['screen_name'],
@@ -236,7 +236,7 @@ module PreyFetcher
       
       # Is this a retweet?
       if tweet['message'] && ((tweet['message']['retweeted_status'] && tweet['message']['retweeted_status']['user']['id'] == user.twitter_user_id) || (tweet['message']['retweeted_status'].nil? && tweet['message']['text'] && tweet['message']['text'].retweet?))
-        if user.enable_retweets
+        if user.retweet_enabled?
           user.send_retweet(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],

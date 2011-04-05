@@ -1,43 +1,49 @@
 (function($) {
 	$().ready(function() {
-		var ANIMATION_SPEED = 250;
+		var ANIMATION_SPEED = 250,
+		priorities = ['dm', 'favorites', 'mention', 'list', 'retweet'],
+		priorityNames = {
+			'-3': 'Off',
+			'-2': 'Very Low',
+			'-1': 'Low',
+			'0': 'Normal',
+			'1': 'High',
+			'2': 'Emergency'
+		};
 		
 		$('body').addClass('js');
 		
-		// DMs on the Settings page
-		$('#user_enable_dms').click(function(event) {
-			$('#dm-priority-container').slideToggle(ANIMATION_SPEED);
-		});
-		if ($('#user_enable_dms:checked').length == 1)
-			$('#dm-priority-container').show();
-		
-		// Mentions on the Settings page
-		$('#user_enable_mentions').click(function(event) {
-			$('#mention-priority-container').slideToggle(ANIMATION_SPEED);
-		});
-		if ($('#user_enable_mentions:checked').length == 1)
-			$('#mention-priority-container').show();
-		
-		// Retweets on the Settings page
-		$('#user_disable_retweets').click(function(event) {
-			$('#retweet-priority-container').slideToggle(ANIMATION_SPEED);
-		});
-		if ($('#user_disable_retweets:checked').length == 1)
-			$('#retweet-priority-container').show();
-		
-		// Favorites on the Settings page
-		$('#user_enable_favorites').click(function(event) {
-			$('#favorites-priority-container').slideToggle(ANIMATION_SPEED);
-		});
-		if ($('#user_enable_favorites:checked').length == 1)
-			$('#favorites-priority-container').show();
-		
-		// Lists on the Settings page
-		$('#user_enable_list').click(function(event) {
-			$('#list-container').slideToggle(ANIMATION_SPEED);
-		});
-		if ($('#user_enable_list:checked').length == 1)
-			$('#list-container').show();
+		for (var i = 0; i < priorities.length; i++) {
+			var selectedOption = $('#' + priorities[i] + '_priority option:selected');
+			$('<input type="hidden" name="user[' + priorities[i] + '_priority]" id="user_' + priorities[i] + '-slider-value" data-priority="' + priorities[i] + '" />').appendTo('#twitter-options');
+			$('#user_' + priorities[i] + '-slider').slider({
+				max: 2,
+				min: -3,
+				step: 1,
+				value: $(selectedOption).val(),
+				slide: function(event, ui) {
+					$('#user_' + $(ui.handle).data('for') + '-slider-value').val(ui.value);
+					$(ui.handle).html('<span>' + priorityNames[ui.value] + '</span>');
+					
+					// Special list stuff
+					if ($(ui.handle).data('for') === 'list') {
+						if (ui.value == -3) {
+							$('#list-selector').slideUp(ANIMATION_SPEED);
+						} else {
+							$('#list-selector').slideDown(ANIMATION_SPEED);
+						}
+					}
+				}
+			}).children('a').data('for', priorities[i]);
+			$('#user_' + priorities[i] + '-slider a.ui-slider-handle').html('<span>' + priorityNames[selectedOption.val()] + '</span>');
+			
+			$('#user_' + priorities[i] + '-slider-value').val($('#user_' + priorities[i] + '-slider').slider('value'));
+			
+			// Special list stuff
+			if (selectedOption.val() == -3) {
+				$('#list-selector').hide();
+			}
+		}
 		
 		$('.js-hide-parent').click(function(event) {
 			$(this).parent().fadeOut(ANIMATION_SPEED);
@@ -67,7 +73,23 @@
 		
 		// Tabs on the settings page
 		if ($('body').hasClass('account')) {
-			$('#tabs').tabs();
+			$('#tabs').tabs({
+				select: function(event, ui) {
+					if ($(ui.tab).attr('href') === '#account-options') {
+						$('#user_submit-container').hide();
+					} else {
+						$('#user_submit-container').show();
+					}
+				}
+			});
+			
+			$('#js-refresh_lists').click(function(event) {
+				$('#list-form').submit();
+			});
+			
+			$('#js-delete_account').click(function(event) {
+				$('#delete-form').submit();
+			});
 		}
 	});
 })(jQuery);
