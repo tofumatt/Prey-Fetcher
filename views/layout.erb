@@ -63,14 +63,14 @@
           	    
               	<div class="clear"></div>
               </form>
+            <% else %>
+              <p>@<%= current_user.twitter_username %> is the only Twitter account you authorized to get notifications, but you can add more accounts:</p>
             <% end %>
             
             <form action="/account" method="POST" id="account-add-form">
               <div>
-                <h3 class="clear">Add Account</h3>
-                
             		<label for="account-add" class="hide">Setup New Account</label>
-            		<input type="submit" id="account-add" class="submit" name="commit" value="Add Twitter Account">
+            		<input type="submit" id="account-add" class="button submit" name="commit" value="Add Twitter Account">
               </div>
               
               <div class="clear"></div>

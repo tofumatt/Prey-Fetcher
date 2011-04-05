@@ -305,6 +305,8 @@ body.homepage #app-name
         outline: 0
         &:hover, &:focus, &.active
           background: $menu_colour - #333
+          color: #fefefe
+          text-decoration: none
         &:active
           background: $menu_colour + #111
     #current-user
@@ -365,19 +367,17 @@ body.homepage #menu
   width: 151px
 
 #account-controls
-  background: #f3f3f3
+  background: rgba(0, 0, 0, 0.25)
   border: 1px #030303 solid
-  margin: 0 80px 20px auto
-  padding: 2.5px
-  text-shadow: #cdcdcd 1px 1px 3px
-  width: 325px
+  float: left
+  margin: 0 0 20px 25px
+  padding: 5px
   h3
     border: 0
     float: left
     font-size: 1em
     margin: 0
     padding: 0
-    text-shadow: #cdcdcd 1px 1px 3px
     width: 150px
   #accounts
     float: left
@@ -399,7 +399,7 @@ body.homepage #menu
     float: left
   #account-add
     float: left
-    margin: 5px 25px 0 0
+    font-size: 12px
     width: 150px
 
 body.js #twitter-options label
