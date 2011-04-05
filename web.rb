@@ -303,6 +303,9 @@ end
 
 # Any other error
 error do
+  # Log any 500 error
+  Log.error "500 error! Request info: #{request.inspect}"
+  
   @title = "Bad Server, Bad!"
   erb :'500'
 end
