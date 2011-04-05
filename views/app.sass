@@ -130,11 +130,17 @@ cite
 .block
   display: block
 
+.inline-block
+  display: inline-block
+
 .clear
   clear: both
 
-.hide, body.js .js-hide, .ui-tabs-hide
+.hide, body.js .js-hide, .ui-tabs-hide, .js-show
   display: none
+
+body.js .js-show
+  display: inline
 
 ul.smaller
   margin-top: -0.75em
@@ -401,6 +407,37 @@ body.js #twitter-options label
   margin: 6.5px 92.5px 0 0
 
 body.account
+  ul.options-selector
+    border-bottom: 1px solid #000
+    height: 29px
+    margin: 0 auto
+    width: 600px
+    li
+      display: inline
+      &.js-show
+        display: none
+      a
+        background: rgba(0, 0, 0, 0.25)
+        border: 1px solid #000
+        float: left
+        font-size: .9em
+        height: 20px
+        margin: 0 0 0 5px
+        padding: 4px
+        text-decoration: none
+        text-shadow: 1px 1px 0 #000
+        &:hover, &:focus
+          background: rgba(190, 190, 190, 0.4)
+          color: #fefefe
+      &.ui-tabs-selected a
+        background: rgba(190, 190, 190, 0.4)
+  
+  .ui-tabs-panel
+    clear: both
+    margin: 0 auto
+    padding: 5px
+    width: 600px
+  
   .priority-slider
     background: url(../images/slider-bg.png?v=#{$preyfetcher_version}) no-repeat center
     height: 30px
@@ -425,6 +462,25 @@ body.account
         font-size: 12px
         margin-top: -5px
         text-align: center
+  
+  p
+    font-size: .9em
+  
+  input.text-long
+    width: 275px
+  
+  a.button
+    margin: 0 auto 17.5px
+    text-align: center
+    width: 185px
+    &.delete
+      background-color: #bd3a3a
+  
+  #user_submit
+    background-color: rgba(67, 189, 58, 0.75)
+  
+body.js ul.options-selector li.js-show
+  display: inline
 
 #footer
   background: $background_colour

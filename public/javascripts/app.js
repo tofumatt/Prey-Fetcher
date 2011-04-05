@@ -73,7 +73,23 @@
 		
 		// Tabs on the settings page
 		if ($('body').hasClass('account')) {
-			$('#tabs').tabs();
+			$('#tabs').tabs({
+				select: function(event, ui) {
+					if ($(ui.tab).attr('href') === '#account-options') {
+						$('#user_submit-container').hide();
+					} else {
+						$('#user_submit-container').show();
+					}
+				}
+			});
+			
+			$('#js-refresh_lists').click(function(event) {
+				$('#list-form').submit();
+			});
+			
+			$('#js-delete_account').click(function(event) {
+				$('#delete-form').submit();
+			});
 		}
 	});
 })(jQuery);
