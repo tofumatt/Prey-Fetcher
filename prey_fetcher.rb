@@ -250,6 +250,7 @@ class User
   property :access_key, String
   property :access_secret, String
   property :account_id, Integer
+  property :following_serialized, Object
   # Mentions/replies
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
