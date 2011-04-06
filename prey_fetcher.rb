@@ -254,6 +254,7 @@ class User
   # Mentions/replies
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
+  property :restrict_mentions_to_friends, Boolean, :default => false
   # Retweets
   property :retweet_priority, Integer, :default => 0
   property :retweet_since_id, Integer, :default => 1
@@ -369,6 +370,11 @@ class User
     send :define_method, :"#{feature}_enabled?" do
       (send :"#{feature}_priority") != -3
     end
+  end
+  
+  # Return true if this user is following another twitter_user_id
+  def following?(following_user_id)
+    following_serialized.include?(following_user_id)
   end
   
   # Return lists this user owns, includes private lists.
