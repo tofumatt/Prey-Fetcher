@@ -1,0 +1,31 @@
+$preyfetcher_version: '4.10.4'
+
+*
+  transition: none
+  -moz-transition: none
+  -webkit-transition: none
+
+body, div, p, ul, ol, dl
+  font-size: 11px
+  
+#footer
+  p, ul, dl, ol
+    margin-left: 10px
+    margin-right: 20px
+  &-inner
+    margin: 0 auto
+    width: auto
+#app-name
+  background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat -115px top
+
+@media screen and (min-screen-width: 480px)
+  #app-name
+    background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat center top
+
+#homepage-iphone
+  display: none
+
+#page
+  margin: 0
+  padding: 0
+  width: auto
