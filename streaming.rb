@@ -219,7 +219,7 @@ module PreyFetcher
       if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
         # Make sure this isn't spam.
         unless PreyFetcher::is_spam?(tweet)
-          if user.mention_enabled?
+          if user.mention_enabled? and (!user.restrict_mentions_to_friends or user.following?(tweet['message']['user']['id']))
             user.send_mention(
               :id => tweet['message']['id'],
               :from => tweet['message']['user']['screen_name'],
