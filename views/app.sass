@@ -543,21 +543,63 @@ body.js ul.options-selector li.js-show
   
   #footer
     p, ul, dl, ol
+      font-size: 8px
       margin-left: 10px
       margin-right: 20px
     &-inner
       margin: 0 auto
       width: auto
+    #source-link
+      float: none
+      font-size: 14px
   #app-name
     background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat -115px top
+    margin-bottom: 0
   
   #homepage-iphone
     display: none
   
   #page
     margin: 0
-    padding: 0
+    padding: 0 5px
     width: auto
+  
+  #menu
+    display: none
+  
+  h1
+    font-size: 2.5em
+    line-height: 1.5em
+    margin: 0 0 5px
+  
+  #homepage-intro p.center
+    font-size: .95em
+    margin: 0
+  
+  #homepage-intro li
+    font-size: 1.5em
+    line-height: 1.5em
+  
+  #homepage-intro h2
+    font-size: 2.5em
+    line-height: 1.5em
+    margin: -10px 0 0
+    text-align: center
+  
+  body.homepage #signup-button
+    display: block
+    font-size: 24px
+    margin: 12px 0 24px 95px
+    padding: 10px 10px 12.5px
+  
+  body.account
+    .priority-slider
+      width: 250px
+    ul.options-selector, h3, .ui-tabs-panel
+      width: auto
+    ul.options-selector li a
+      margin-top: 4px
+      padding-bottom: 0
 
 @media screen and (min-screen-width: 480px)
   #app-name
