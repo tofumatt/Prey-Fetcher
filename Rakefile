@@ -1,5 +1,5 @@
 # Load up Prey Fetcher
-require File.join(File.dirname(__FILE__), "prey_fetcher.rb")
+require File.join(File.dirname(__FILE__), "prey_fetcher")
 
 app_servers = [
   {
@@ -85,5 +85,5 @@ end
 
 desc "Run all Prey Fetcher tests"
 task :test do
-  system "ruby test/prey_fetcher_test.rb"
+  require File.join(File.dirname(__FILE__), 'test', 'prey_fetcher_test')
 end
