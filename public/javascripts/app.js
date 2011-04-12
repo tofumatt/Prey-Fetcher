@@ -25,6 +25,15 @@
 					$('#user_' + $(ui.handle).data('for') + '-slider-value').val(ui.value);
 					$(ui.handle).html('<span>' + priorityNames[ui.value] + '</span>');
 					
+					// Special mention stuff
+					if ($(ui.handle).data('for') === 'mention') {
+						if (ui.value == -3) {
+							$('#mention-restriction').slideUp(ANIMATION_SPEED);
+						} else {
+							$('#mention-restriction').slideDown(ANIMATION_SPEED);
+						}
+					}
+					
 					// Special list stuff
 					if ($(ui.handle).data('for') === 'list') {
 						if (ui.value == -3) {
@@ -39,8 +48,13 @@
 			
 			$('#user_' + priorities[i] + '-slider-value').val($('#user_' + priorities[i] + '-slider').slider('value'));
 			
+			// Special mention stuff
+			if (priorities[i] === 'mention' && selectedOption.val() == -3) {
+				$('#mention-restriction').hide();
+			}
+			
 			// Special list stuff
-			if (selectedOption.val() == -3) {
+			if (priorities[i] === 'list' && selectedOption.val() == -3) {
 				$('#list-selector').hide();
 			}
 		}

@@ -30,7 +30,7 @@
       		<div id="user_mention-slider" class="priority-slider"></div>
       	</div>
       	
-      	<div class="clear">
+      	<div id="mention-restriction" class="clear">
   	      <label for="restrict_mentions_to_friends" class="for-checkbox" id="restrict_mentions_to_friends-label">Only notify me about @replies/mentions from people I follow</label>
   	      <input type="hidden" name="user[restrict_mentions_to_friends]" value="0">
   	      <input type="checkbox" id="restrict_mentions_to_friends" name="user[restrict_mentions_to_friends]" value="1" <% if @user.restrict_mentions_to_friends %>checked="checked"<% end %>>
