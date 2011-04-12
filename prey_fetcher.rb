@@ -329,6 +329,7 @@ class User
     [
       :mention_priority,
       :retweet_priority,
+      :restrict_mentions_to_friends,
       :dm_priority,
       :notification_list,
       :list_priority,
