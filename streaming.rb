@@ -119,7 +119,7 @@ module PreyFetcher
   module FileHandler
     def file_modified
       return if File.zero?(path)
-      puts "#{path} modified"
+      Log.debug "#{path} modified"
       
       user_ids_to_add = [];
       f = File.open(path, File::RDWR|File::CREAT)
@@ -142,32 +142,32 @@ module PreyFetcher
     end
     
     def file_moved
-      puts "#{path} moved"
+      Log.debug "#{path} moved"
     end
     
     def unbind
-      puts "#{path} monitoring ceased"
+      Log.debug "#{path} monitoring ceased"
     end
   end
   
   # Watch files in Prey Fetcher's tmp/ directory to know when to delete streams.
   module PIDFileHandler
     def file_moved
-      puts "#{path} moved"
+      Log.debug "#{path} moved"
       
       File.delete(File.join('tmp', 'stream-users.add'))
       EventMachine.stop if EventMachine.reactor_running?
     end
     
     def file_deleted
-      puts "#{path} deleted"
+      Log.debug "#{path} deleted"
       
       File.delete(File.join('tmp', 'stream-users.add'))
       EventMachine.stop if EventMachine.reactor_running?
     end
     
     def unbind
-      puts "#{path} monitoring ceased"
+      Log.debug "#{path} monitoring ceased"
     end
   end
   
@@ -177,11 +177,7 @@ module PreyFetcher
   class SiteStream
     # Deliver a tweet parsed from SiteStreams response.
     def self.deliver(tweet)
-      unless ENV['RACK_ENV'] == 'production'
-        puts ''
-        puts tweet.inspect
-        puts ''
-      end
+      Log.debug tweet.inspect
       
       # Skip if this tweet is bad or not available
       return if !tweet || tweet['for_user'].nil? || tweet['for_user'].blank?
@@ -194,7 +190,7 @@ module PreyFetcher
       
       # Is this a direct message?
       if tweet['message'] && tweet['message']['direct_message'] && tweet['message']['direct_message']['recipient']['id'] == user.twitter_user_id
-        if user.enable_dms
+        if user.dm_enabled?
           user.send_dm(
             :id => tweet['message']['direct_message']['id'],
             :from => tweet['message']['direct_message']['sender_screen_name'],
@@ -210,7 +206,7 @@ module PreyFetcher
       
       # Did someone favourite a tweet?
       if tweet['message'] && tweet['message']['event'] == 'favorite' && tweet['message']['target'] && tweet['message']['target']['id'] == user.twitter_user_id && tweet['message']['source'] && tweet['message']['source']['id'] != user.twitter_user_id # If this user is favouriting themselves, don't notify them.
-        if user.enable_favorites
+        if user.favorite_enabled?
           user.send_favorite(
             :id => tweet['message']['target_object']['id'],
             :from => tweet['message']['source']['screen_name'],
@@ -223,7 +219,7 @@ module PreyFetcher
       if tweet['message'] && tweet['message']['entities'] && tweet['message']['entities']['user_mentions'] && tweet['message']['entities']['user_mentions'].detect { |m| m['id'] == user.twitter_user_id } && !tweet['message']['text'].retweet?
         # Make sure this isn't spam.
         unless PreyFetcher::is_spam?(tweet)
-          if user.enable_mentions
+          if user.mention_enabled? and (!user.restrict_mentions_to_friends or user.following?(tweet['message']['user']['id']))
             user.send_mention(
               :id => tweet['message']['id'],
               :from => tweet['message']['user']['screen_name'],
@@ -240,7 +236,7 @@ module PreyFetcher
       
       # Is this a retweet?
       if tweet['message'] && ((tweet['message']['retweeted_status'] && tweet['message']['retweeted_status']['user']['id'] == user.twitter_user_id) || (tweet['message']['retweeted_status'].nil? && tweet['message']['text'] && tweet['message']['text'].retweet?))
-        if user.enable_retweets
+        if user.retweet_enabled?
           user.send_retweet(
             :id => tweet['message']['id'],
             :from => tweet['message']['user']['screen_name'],
@@ -262,10 +258,7 @@ module PreyFetcher
       begin
         JSON.parse(stream_item)
       rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-        puts "STREAMING ERROR: " + Time.now.to_s
-        puts "STREAMING ERROR: " + "Twitter was over capacity? Couldn't make a usable array from JSON data."
-        puts "STREAMING ERROR: " + e.to_s
-        puts ''
+        Log.debug "STREAMING ERROR: Twitter was over capacity? Couldn't make a usable array from JSON data. | #{e}"
         
         false
       end
@@ -321,10 +314,17 @@ module PreyFetcher
         tweet = SiteStream::parse_from_stream(item)
         
         SiteStream::deliver(tweet)
+        
+        # Check for a friends/following message
+        if tweet['for_user'] && tweet['message'] && tweet['message']['friends']
+          # Get the user this message belongs to
+          user = User.first(:twitter_user_id => tweet['for_user'])
+          user.update(:following_serialized => tweet['message']['friends'])
+        end
       end
       
       @stream.on_error do |message|
-        puts message
+        Log.info message
       end
       
       @stream.on_max_reconnects do |timeout, retries|
@@ -361,7 +361,7 @@ EventMachine::run do
   
   ['INT', 'TERM'].each do |sig|
     trap(sig) do
-      puts "#{sig} signal received: quitting streaming.rb"
+      Log.info "#{sig} signal received: quitting streaming.rb"
       PreyFetcher::stop_streams!
     end
   end

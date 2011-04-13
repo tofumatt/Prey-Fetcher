@@ -1,9 +1,17 @@
 require "rubygems"
 require "bundler"
+require "logger"
 require "yaml"
 Bundler.setup(:default, ((ENV['RACK_ENV']) ? ENV['RACK_ENV'].to_sym : :development))
 
 Bundler.require
+
+# Define a generic logging interface.
+Log = Logger.new(File.join(File.dirname(__FILE__), (ENV['RACK_ENV'] || 'development') + '.log'))
+Log.level = (ENV['RACK_ENV'] == 'production') ? Logger::INFO : Logger::DEBUG
+Log.formatter = proc { |severity, datetime, progname, msg|
+  "#{datetime}: #{msg}\n"
+}
 
 # House internal methods and junk inside our own namespace
 module PreyFetcher
@@ -11,18 +19,9 @@ module PreyFetcher
   # and various cascading config files.
   @@_config = nil
   
-  # Static route => title matching for simple, static pages on the site
-  # that don't require much in the way of controllers.
-  STATIC_PAGES = {
-    :about => "About Prey Fetcher",
-    :features => "Features",
-    :privacy => "Privacy",
-    :open_source => "Open Source"
-  }
-  
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "4.10.4"
+  VERSION = "5.0"
   
   # Setup Prey Fetcher config and such
   def self.boot!
@@ -33,7 +32,7 @@ module PreyFetcher
     begin
       config.merge!(YAML.load(File.open(File.join(File.dirname(__FILE__), "config_local.yaml"), File::RDONLY).read))
     rescue Errno::ENOENT # No config_local.yaml found
-      puts "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
+      Log.warn "No config_local.yaml found; you need to install one from config_local.dist.yaml to use most of Prey Fetcher's features."
     end
     
     # Assemble some extra config values from those already set
@@ -49,7 +48,7 @@ module PreyFetcher
     self::use_database!
     
     # Output the current version (to either log or stdout)
-    puts "Booting and config'd #{PreyFetcher.config(:app_user_agent)}"
+    Log.info "Booting and config'd #{PreyFetcher.config(:app_user_agent)}"
   end
   
   # Return a requested config value or nil if the value is nil/doesn't exist.
@@ -66,14 +65,14 @@ module PreyFetcher
     begin
       yield
     rescue JSON::ParserError => e # Bad data (probably not even JSON) returned for this response
-      puts Time.now.to_s
-      puts "Twitter was over capacity? Couldn't make a usable array from JSON data."
+      Log.debug Time.now.to_s
+      Log.debug "Twitter was over capacity? Couldn't make a usable array from JSON data."
     rescue Timeout::Error => e
-      puts Time.now.to_s
-      puts "Twitter timed out."
+      Log.debug Time.now.to_s
+      Log.debug "Twitter timed out."
     rescue Exception => e # Bad data or some other weird response
-      puts Time.now.to_s
-      puts "Error getting data. Twitter probably returned bad data."
+      Log.debug Time.now.to_s
+      Log.debug "Error getting data. Twitter probably returned bad data."
     end
   end
   
@@ -232,33 +231,43 @@ class User
   include DataMapper::Resource
   include DataMapper::Validate
   
+  FEATURES = [:dm, :favorite, :list, :mention, :retweet]
+  
+  PRIORITY_RANGE = -3..2
+  
+  PRIORITY_MAP = {
+    -3 => 'Off',
+    -2 => 'Very Low',
+    -1 => 'Low',
+    0 => 'Normal',
+    1 => 'High',
+    2 => 'Emergency'
+  }
+  
   property :id, Serial
   property :twitter_user_id, Integer
   property :twitter_username, String
   property :access_key, String
   property :access_secret, String
   property :account_id, Integer
+  property :following_serialized, Object
   # Mentions/replies
-  property :enable_mentions, Boolean, :default => true
   property :mention_priority, Integer, :default => 0
   property :mention_since_id, Integer, :default => 1
+  property :restrict_mentions_to_friends, Boolean, :default => false
   # Retweets
-  property :disable_retweets, Boolean, :default => true # I regret naming it like this now... -- Matt
   property :retweet_priority, Integer, :default => 0
   property :retweet_since_id, Integer, :default => 1
   # Direct Messages
-  property :enable_dms, Boolean, :default => true
   property :dm_priority, Integer, :default => 0
   property :dm_since_id, Integer, :default => 1
   # Lists
-  property :enable_list, Boolean, :default => true
   property :notification_list, Integer
   property :list_priority, Integer, :default => 0
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
   # Favourites
-  property :enable_favorites, Boolean, :default => false
   property :favorites_priority, Integer, :default => 0
   # Timestamps
   property :created_at, DateTime
@@ -318,16 +327,12 @@ class User
   # to a User.
   def self.mass_assignable
     [
-      :enable_mentions,
       :mention_priority,
-      :disable_retweets,
       :retweet_priority,
-      :enable_dms,
+      :restrict_mentions_to_friends,
       :dm_priority,
-      :enable_list,
       :notification_list,
       :list_priority,
-      :enable_favorites,
       :favorites_priority
     ]
   end
@@ -361,10 +366,16 @@ class User
     account.custom_url
   end
   
-  # Return the opposite of "disable_retweets"; here for convenience, as Matt
-  # stupidly classed retweets as a subset of mentions at first.
-  def enable_retweets
-    !disable_retweets
+  # Meta-program the "[feature]_enabled?" methods.
+  User::FEATURES.each do |feature|
+    send :define_method, :"#{feature}_enabled?" do
+      (send :"#{feature}_priority") != -3
+    end
+  end
+  
+  # Return true if this user is following another twitter_user_id
+  def following?(following_user_id)
+    following_serialized.include?(following_user_id)
   end
   
   # Return lists this user owns, includes private lists.
@@ -507,7 +518,7 @@ class User
       # users who changed their screen name from getting notifications
       # through the Streaming API)
       if twitter_username && twitter_username != creds['screen_name']
-        puts "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
+        Log.info "Updating screen name for id \##{id}. Changing name from @#{twitter_username} to @#{creds['screen_name']}"
         update(:twitter_username => creds['screen_name'])
       end
     end
