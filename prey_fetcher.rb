@@ -21,7 +21,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "5.0"
+  VERSION = "5.0.1"
   
   # Setup Prey Fetcher config and such
   def self.boot!
