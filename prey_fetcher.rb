@@ -263,7 +263,7 @@ class User
   property :dm_since_id, Integer, :default => 1
   # Lists
   property :notification_list, Integer
-  property :list_priority, Integer, :default => 0
+  property :list_priority, Integer, :default => -3
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
