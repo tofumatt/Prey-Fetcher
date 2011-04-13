@@ -1,7 +1,7 @@
 (function($) {
 	$().ready(function() {
 		var ANIMATION_SPEED = 250,
-		priorities = ['dm', 'favorites', 'mention', 'list', 'retweet'],
+		priorities = ['dm', 'favorite', 'mention', 'list', 'retweet'],
 		priorityNames = {
 			'-3': 'Off',
 			'-2': 'Very Low',

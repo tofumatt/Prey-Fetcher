@@ -268,7 +268,7 @@ class User
   property :list_owner, String
   property :lists_serialized, Object
   # Favourites
-  property :favorites_priority, Integer, :default => 0
+  property :favorite_priority, Integer, :default => 0
   # Timestamps
   property :created_at, DateTime
   property :updated_at, DateTime
@@ -333,7 +333,7 @@ class User
       :dm_priority,
       :notification_list,
       :list_priority,
-      :favorites_priority
+      :favorite_priority
     ]
   end
   
