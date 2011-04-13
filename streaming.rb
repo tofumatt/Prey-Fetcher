@@ -316,7 +316,7 @@ module PreyFetcher
         SiteStream::deliver(tweet)
         
         # Check for a friends/following message
-        if tweet['for_user'] && tweet['message'] && tweet['message']['friends']
+        if tweet && tweet['for_user'] && tweet['message'] && tweet['message']['friends']
           # Get the user this message belongs to
           user = User.first(:twitter_user_id => tweet['for_user'])
           user.update(:following_serialized => tweet['message']['friends'])
