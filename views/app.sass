@@ -505,6 +505,9 @@ body.js ul.options-selector li.js-show
   #source-link
     float: right
 
+#footer-logout-link
+  display: none
+
 #pledgie-link
   background: none !important
   float: right
@@ -532,7 +535,7 @@ body.js ul.options-selector li.js-show
 
 /** iPhone-specific */
 
-@media screen and (max-device-width: 480px)
+@media screen and (max-device-width: 320px)
   *
     transition: none
     -moz-transition: none
@@ -543,18 +546,28 @@ body.js ul.options-selector li.js-show
   
   #footer
     p, ul, dl, ol
-      font-size: 8px
+      font-size: .95em
       margin-left: 10px
       margin-right: 20px
     &-inner
       margin: 0 auto
       width: auto
+    #footer-logout-link
+      display: block
+      font-size: 1.2em
+      padding: 5px 0
+      text-align: center
     #source-link
       float: none
-      font-size: 14px
+    #pledgie-link
+      width: 80px
+      img
+        width: 100%
   #app-name
-    background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat -115px top
+    background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat center -10px
+    height: 100px
     margin-bottom: 0
+    padding: 0
   
   #homepage-iphone
     display: none
@@ -568,35 +581,34 @@ body.js ul.options-selector li.js-show
     display: none
   
   h1
-    font-size: 2.5em
+    font-size: 1.75em
     line-height: 1.5em
     margin: 0 0 5px
   
   #homepage-intro p.center
-    font-size: .95em
+    font-size: 1.1em
     margin: 0
   
-  #homepage-intro li
-    font-size: 1.5em
-    line-height: 1.5em
+  #homepage-intro ul
+    margin-right: 0
   
   #homepage-intro h2
-    font-size: 2.5em
+    font-size: 1.75em
     line-height: 1.5em
     margin: -10px 0 0
     text-align: center
   
   body.homepage #signup-button
     display: block
-    font-size: 24px
-    margin: 12px 0 24px 95px
-    padding: 10px 10px 12.5px
+    margin: 12px 0 24px 70px
   
   body.account
     #twitter-options label
-      font-size: 10px
+      font-size: 1em
+      margin-right: 0
     .priority-slider
-      width: 250px
+      margin-left: 125px
+      width: 160px
       a.ui-slider-handle
         padding: 0
         width: 50px
@@ -610,6 +622,5 @@ body.js ul.options-selector li.js-show
       padding-bottom: 0
 
 @media screen and (min-screen-width: 480px)
-  #app-name
-    background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat center top
-
+  *
+    background: green
