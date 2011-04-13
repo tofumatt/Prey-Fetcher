@@ -511,6 +511,9 @@ body.js ul.options-selector li.js-show
   #source-link
     float: right
 
+#footer-logout-link
+  display: none
+
 #pledgie-link
   background: none !important
   float: right
@@ -535,3 +538,95 @@ body.js ul.options-selector li.js-show
 #homepage-iphone
   float: right
   margin: 0 0 0 55px
+
+/** iPhone-specific */
+
+@media screen and (max-device-width: 320px)
+  *
+    transition: none
+    -moz-transition: none
+    -webkit-transition: none
+  
+  body, div, p, ul, ol, dl
+    font-size: 11px
+  
+  #footer
+    p, ul, dl, ol
+      font-size: .95em
+      margin-left: 10px
+      margin-right: 20px
+    &-inner
+      margin: 0 auto
+      width: auto
+    #footer-logout-link
+      display: block
+      font-size: 1.2em
+      padding: 5px 0
+      text-align: center
+    #source-link
+      float: none
+    #pledgie-link
+      width: 80px
+      img
+        width: 100%
+  #app-name
+    background: transparent url(../images/logo-iphone.png?v=#{$preyfetcher_version}) no-repeat center -10px
+    height: 100px
+    margin-bottom: 0
+    padding: 0
+  
+  #homepage-iphone
+    display: none
+  
+  #page
+    margin: 0
+    padding: 0 5px
+    width: auto
+  
+  #menu
+    display: none
+  
+  h1
+    font-size: 1.75em
+    line-height: 1.5em
+    margin: 0 0 5px
+  
+  #homepage-intro p.center
+    font-size: 1.1em
+    margin: 0
+  
+  #homepage-intro ul
+    margin-right: 0
+  
+  #homepage-intro h2
+    font-size: 1.75em
+    line-height: 1.5em
+    margin: -10px 0 0
+    text-align: center
+  
+  body.homepage #signup-button
+    display: block
+    margin: 12px 0 24px 70px
+  
+  body.account
+    #twitter-options label
+      font-size: 1em
+      margin-right: 0
+    .priority-slider
+      margin-left: 125px
+      width: 160px
+      a.ui-slider-handle
+        padding: 0
+        width: 50px
+        span
+          font-size: 8px
+          margin-top: -2px
+    ul.options-selector, h3, .ui-tabs-panel
+      width: auto
+    ul.options-selector li a
+      margin-top: 4px
+      padding-bottom: 0
+
+@media screen and (min-screen-width: 480px)
+  *
+    background: green
