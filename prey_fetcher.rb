@@ -21,7 +21,7 @@ module PreyFetcher
   
   # Current version number + prefix. Gets used in
   # as the User Agent in REST/Streaming requests.
-  VERSION = "5.0.1"
+  VERSION = "5.0.2"
   
   # Setup Prey Fetcher config and such
   def self.boot!
@@ -263,7 +263,7 @@ class User
   property :dm_since_id, Integer, :default => 1
   # Lists
   property :notification_list, Integer
-  property :list_priority, Integer, :default => 0
+  property :list_priority, Integer, :default => -3
   property :list_since_id, Integer, :default => 1
   property :list_owner, String
   property :lists_serialized, Object
@@ -450,7 +450,7 @@ class User
       :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
-      :priority => list_priority,
+      :priority => favorite_priority,
       :event => "Favorited by @#{tweet[:from]}",
       :description => tweet[:text].unescaped,
       :url => (custom_url.blank?) ? nil : custom_url
