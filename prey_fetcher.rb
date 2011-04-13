@@ -450,7 +450,7 @@ class User
       :application => PreyFetcher::config(:app_prowl_appname),
       :providerkey => PreyFetcher::config(:app_prowl_provider_key),
       :apikey => prowl_api_key,
-      :priority => list_priority,
+      :priority => favorite_priority,
       :event => "Favorited by @#{tweet[:from]}",
       :description => tweet[:text].unescaped,
       :url => (custom_url.blank?) ? nil : custom_url
