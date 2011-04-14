@@ -152,8 +152,8 @@ class Account
   
   property :id, Serial
   property :name, String
-  property :custom_event, String
   property :custom_url, String
+  property :name_in_event, Boolean, :default => false
   property :prowl_api_key, String
   # Timestamps
   property :created_at, DateTime
