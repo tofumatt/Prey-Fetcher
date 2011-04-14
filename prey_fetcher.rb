@@ -152,6 +152,7 @@ class Account
   
   property :id, Serial
   property :name, String
+  property :custom_event, String
   property :custom_url, String
   property :prowl_api_key, String
   # Timestamps
